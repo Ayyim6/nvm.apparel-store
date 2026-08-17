@@ -12,27 +12,38 @@
 
 <div class="page-wrap">
 
-  <!-- NAV -->
-  <nav class="navbar">
-    <ul class="nav-links">
-      <li><a href="shop.html">Shop</a></li>
-      <li><a href="index.html#new">New In</a></li>
-      <li><a href="index.html#collections">Collections</a></li>
-      <li><a href="index.html#about">About</a></li>
-      <li><a href="index.html#contact">Contact</a></li>
-    </ul>
-    <a class="brand" href="index.html">NVM Store</a>
-    <div class="nav-right">
-      <button class="icon-btn" aria-label="Search" title="Search">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      </button>
-      <div class="avatar" title="Account"></div>
-      <a href="cart.html" class="cart-pill" aria-label="View cart">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 3h2l2.4 12.2a2 2 0 0 0 2 1.8h8.2a2 2 0 0 0 2-1.6L21 8H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="21" r="1" fill="currentColor"/><circle cx="18" cy="21" r="1" fill="currentColor"/></svg>
-        <span id="navCartCount">0 items</span>
-      </a>
-    </div>
+  <!-- PILL NAV -->
+<div class="pill-nav-wrap">
+
+  <!-- Centered navigation -->
+  <nav class="pill-nav">
+    <a href="index.html" class="active">⌂ Home</a>
+    <a href="shop.html">Shop</a>
+    <a href="shop.html">New Arrivals</a>
+    <a href="#categories">Collections</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
   </nav>
+
+  <!-- Cart fixed to right side -->
+  <a href="cart.html"
+     class="cart-btn"
+     aria-label="View cart"
+     title="Cart">
+
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
+      <path
+        d="M3 3h2l2.4 12.2a2 2 0 0 0 2 1.8h8.2a2 2 0 0 0 2-1.6L21 8H6"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+    </svg>
+
+    <span class="badge" id="navCartCount">0</span>
+  </a>
+
+</div>
 
   <!-- SHOP HEADER -->
   <div class="shop-header">

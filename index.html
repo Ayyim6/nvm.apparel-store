@@ -12,30 +12,35 @@
 
 <div class="page-wrap" style="background:var(--lilac-bg);">
 
-  <!-- PILL NAV -->
-  <div class="pill-nav-wrap">
-    <nav class="pill-nav">
-      <a href="index.html" class="active">⌂ Home</a>
-      <a href="shop.html">Shop</a>
-      <a href="shop.html">New Arrivals</a>
-      <a href="#categories">Collections</a>
-      <a href="#about">About</a>
-      <a href="#contact">Contact</a>
-    </nav>
-  </div>
+<!-- PILL NAV -->
+<div class="pill-nav-wrap">
 
-  <div class="nav-utility">
-    <a href="cart.html" class="icon-btn" aria-label="View cart" title="Cart">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M3 3h2l2.4 12.2a2 2 0 0 0 2 1.8h8.2a2 2 0 0 0 2-1.6L21 8H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <span class="badge" id="navCartCount">0</span>
-    </a>
-    <button class="icon-btn" id="likeBtn" aria-label="Wishlist" title="Wishlist">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 21s-6.7-4.35-9.5-8.28C.8 10.1 1.4 6.6 4.4 5.1c2.3-1.15 4.9-.3 6.1 1.6.4.6.9 1.4 1.5 1.4s1.1-.8 1.5-1.4c1.2-1.9 3.8-2.75 6.1-1.6 3 1.5 3.6 5 1.9 7.62C18.7 16.65 12 21 12 21z" stroke="currentColor" stroke-width="1.6"/></svg>
-    </button>
-    <button class="icon-btn" aria-label="Account" title="Account">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-    </button>
-  </div>
+  <!-- Cart - left side -->
+  <a href="cart.html" class="cart-btn" aria-label="View cart" title="Cart">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
+      <path
+        d="M3 3h2l2.4 12.2a2 2 0 0 0 2 1.8h8.2a2 2 0 0 0 2-1.6L21 8H6"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+
+    <span class="badge" id="navCartCount">0</span>
+  </a>
+
+  <!-- Main navigation - centered -->
+  <nav class="pill-nav">
+    <a href="index.html" class="active">⌂ Home</a>
+    <a href="shop.html">Shop</a>
+    <a href="shop.html">New Arrivals</a>
+    <a href="#categories">Collections</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+  </nav>
+
+</div>
 
   <!-- HERO -->
   <section class="hero-v2">
