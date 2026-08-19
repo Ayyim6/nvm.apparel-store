@@ -15,22 +15,20 @@
   <!-- PILL NAV -->
 <div class="pill-nav-wrap">
 
+  <a class="brand" href="index.html">NVM Store</a>
+
   <!-- Centered navigation -->
   <nav class="pill-nav">
-    <a href="index.html" class="active">⌂ Home</a>
-    <a href="shop.html">Shop</a>
+    <a href="index.html">Home</a>
+    <a href="shop.html" class="active">Shop</a>
     <a href="shop.html">New Arrivals</a>
-    <a href="#categories">Collections</a>
+    <a href="index.html#categories">Collections</a>
     <a href="#about">About</a>
     <a href="#contact">Contact</a>
   </nav>
 
-  <!-- Cart fixed to right side -->
-  <a href="cart.html"
-     class="cart-btn"
-     aria-label="View cart"
-     title="Cart">
-
+  <!-- Cart drawer trigger -->
+  <button type="button" class="cart-btn" id="cartToggleBtn" aria-label="Open cart" title="Cart">
     <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
       <path
         d="M3 3h2l2.4 12.2a2 2 0 0 0 2 1.8h8.2a2 2 0 0 0 2-1.6L21 8H6"
@@ -39,9 +37,8 @@
         stroke-linecap="round"
         stroke-linejoin="round"/>
     </svg>
-
     <span class="badge" id="navCartCount">0</span>
-  </a>
+  </button>
 
 </div>
 
@@ -62,6 +59,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabaseClient.js"></script>
 <script src="js/cart.js"></script>
+<script src="js/cart-drawer.js"></script>
 <script src="js/shop.js"></script>
 </body>
 </html>

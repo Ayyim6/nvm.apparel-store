@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout — NVM Store</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="page-wrap">
+
+  <!-- PILL NAV -->
+<div class="pill-nav-wrap">
+
+  <a class="brand" href="index.html">NVM Store</a>
+
+  <!-- Centered navigation -->
+  <nav class="pill-nav">
+    <a href="index.html">Home</a>
+    <a href="shop.html">Shop</a>
+    <a href="shop.html">New Arrivals</a>
+    <a href="index.html#categories">Collections</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+  </nav>
+
+  <!-- Cart drawer trigger -->
+  <button type="button" class="cart-btn" id="cartToggleBtn" aria-label="Open cart" title="Cart">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
+      <path
+        d="M3 3h2l2.4 12.2a2 2 0 0 0 2 1.8h8.2a2 2 0 0 0 2-1.6L21 8H6"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+    </svg>
+    <span class="badge" id="navCartCount">0</span>
+  </button>
+
+</div>
+
+  <div class="checkout-header">
+    <h1>Checkout</h1>
+  </div>
+
+  <div class="checkout-wrap">
+    <form class="checkout-form-card" id="checkout-form">
+      <h3>Delivery Details</h3>
+
+      <div class="form-error" id="form-error"></div>
+
+      <div class="form-field">
+        <label for="customer-name">Full Name</label>
+        <input type="text" id="customer-name" placeholder="Jane Doe" required>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label for="customer-email">Email</label>
+          <input type="email" id="customer-email" placeholder="jane@email.com" required>
+        </div>
+        <div class="form-field">
+          <label for="customer-phone">Phone (optional)</label>
+          <input type="tel" id="customer-phone" placeholder="+60 12-345 6789">
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label for="customer-address">Delivery Address</label>
+        <textarea id="customer-address" placeholder="Street, city, postcode, state" required></textarea>
+      </div>
+
+      <button type="submit" class="submit-order-btn" id="submit-order-btn">Place Order</button>
+    </form>
+
+    <div class="checkout-summary">
+      <h3>Order Summary</h3>
+      <div id="checkout-items"><!-- filled by checkout.js --></div>
+      <div class="checkout-total-row">
+        <span>Total</span>
+        <span id="checkout-total">$0.00</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabaseClient.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/cart-drawer.js"></script>
+<script src="js/checkout.js"></script>
+</body>
+</html>

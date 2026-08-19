@@ -1,84 +1,132 @@
-// ---------- Shared cart logic (browser-side, using localStorage) ----------
-// This cart lives in the browser until checkout — it does NOT touch
-// Supabase yet. Only when an order is actually placed do we save
-// anything to the database (that comes in a later step).
+/**
+ * cart.js — core cart state engine
+ * ---------------------------------
+ * This is a self-contained, localStorage-backed cart store. It's a
+ * placeholder implementation written to unblock the new slide-out
+ * cart drawer (see cart-drawer.js) since the original cart.js /
+ * cart-page.js / shop.js / checkout.js files weren't available to
+ * merge against. If you already have Supabase-backed cart logic
+ * (stock checks, saved carts per user, etc.), swap the body of
+ * these functions for your real implementation — keep the same
+ * function names/shapes and the drawer keeps working unchanged.
+ *
+ * Item shape: { id, name, price (number), image (url, optional), qty }
+ */
+(function (window) {
+  const STORAGE_KEY = "nvm_cart";
+  const listeners = [];
 
-const CART_KEY = 'nexora_cart';
-
-function getCart() {
-  const raw = localStorage.getItem(CART_KEY);
-  return raw ? JSON.parse(raw) : [];
-}
-
-function saveCart(cart) {
-  localStorage.setItem(CART_KEY, JSON.stringify(cart));
-  updateCartCountDisplay();
-}
-
-function addToCart(product, qty = 1) {
-  const cart = getCart();
-  const existing = cart.find(item => item.id === product.id);
-
-  if (existing) {
-    existing.qty += qty;
-  } else {
-    cart.push({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image_url: product.image_url,
-      qty: qty
-    });
-  }
-
-  saveCart(cart);
-  flashAddedToCart(product.name);
-}
-
-function removeFromCart(productId) {
-  const cart = getCart().filter(item => item.id !== productId);
-  saveCart(cart);
-}
-
-function updateQty(productId, qty) {
-  const cart = getCart();
-  const item = cart.find(i => i.id === productId);
-  if (item) {
-    item.qty = qty;
-    if (item.qty <= 0) {
-      return removeFromCart(productId);
+  function load() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      console.error("Cart: failed to read localStorage", e);
+      return [];
     }
   }
-  saveCart(cart);
-}
 
-function getCartTotal() {
-  return getCart().reduce((sum, item) => sum + item.price * item.qty, 0);
-}
-
-function getCartItemCount() {
-  return getCart().reduce((sum, item) => sum + item.qty, 0);
-}
-
-// Updates the little "X items" label in the nav, if present on the page
-function updateCartCountDisplay() {
-  const el = document.getElementById('navCartCount');
-  if (el) {
-    const count = getCartItemCount();
-    el.textContent = `${count} item${count === 1 ? '' : 's'}`;
+  function save(items) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    } catch (e) {
+      console.error("Cart: failed to write localStorage", e);
+    }
   }
-}
 
-// Small temporary confirmation message when something is added
-function flashAddedToCart(productName) {
-  const el = document.getElementById('navCartCount');
-  if (!el) return;
-  const original = el.textContent;
-  el.textContent = 'Added ✓';
-  setTimeout(() => {
-    el.textContent = original;
-  }, 1200);
-}
+  let items = load();
 
-// Run on every page load so the nav count is always accurate
-document.addEventListener('DOMContentLoaded', updateCartCountDisplay);
+  function notify() {
+    save(items);
+    listeners.forEach((fn) => {
+      try {
+        fn(items);
+      } catch (e) {
+        console.error("Cart: listener error", e);
+      }
+    });
+    document.dispatchEvent(new CustomEvent("cart:change", { detail: { items } }));
+  }
+
+  const Cart = {
+    /** Subscribe to cart changes. Returns an unsubscribe function. */
+    subscribe(fn) {
+      listeners.push(fn);
+      fn(items);
+      return () => {
+        const i = listeners.indexOf(fn);
+        if (i > -1) listeners.splice(i, 1);
+      };
+    },
+
+    getItems() {
+      return items.slice();
+    },
+
+    getCount() {
+      return items.reduce((sum, it) => sum + it.qty, 0);
+    },
+
+    getSubtotal() {
+      return items.reduce((sum, it) => sum + it.price * it.qty, 0);
+    },
+
+    /** Add a product to the cart, or bump qty if it's already in there. */
+    add(product, qty = 1) {
+      const existing = items.find((it) => it.id === product.id);
+      if (existing) {
+        existing.qty += qty;
+      } else {
+        items.push({
+          id: product.id,
+          name: product.name,
+          price: Number(product.price) || 0,
+          image: product.image || product.image_url || null,
+          qty,
+        });
+      }
+      notify();
+    },
+
+    setQty(id, qty) {
+      const item = items.find((it) => it.id === id);
+      if (!item) return;
+      if (qty <= 0) {
+        this.remove(id);
+        return;
+      }
+      item.qty = qty;
+      notify();
+    },
+
+    increment(id) {
+      const item = items.find((it) => it.id === id);
+      if (item) this.setQty(id, item.qty + 1);
+    },
+
+    decrement(id) {
+      const item = items.find((it) => it.id === id);
+      if (item) this.setQty(id, item.qty - 1);
+    },
+
+    remove(id) {
+      items = items.filter((it) => it.id !== id);
+      notify();
+    },
+
+    clear() {
+      items = [];
+      notify();
+    },
+  };
+
+  window.Cart = Cart;
+
+  // Bridge for existing page code that calls a global addToCart(product)
+  // directly (e.g. shop.js's "Add to Cart" button handler) instead of
+  // Cart.add(product). Opens the drawer afterwards so the add is visible.
+  window.addToCart = function (product, qty = 1) {
+    Cart.add(product, qty);
+    if (window.CartDrawer) window.CartDrawer.open();
+  };
+})(window);
