@@ -1,105 +1,206 @@
-// ---------- Checkout: render order summary + save order to Supabase ----------
-
-const checkoutItemsEl = document.getElementById('checkout-items');
-const checkoutTotalEl = document.getElementById('checkout-total');
-const checkoutForm = document.getElementById('checkout-form');
-const submitBtn = document.getElementById('submit-order-btn');
-const formError = document.getElementById('form-error');
-
-function renderOrderSummary() {
-  const cart = getCart();
-
-  if (cart.length === 0) {
-    // Nothing in cart — send back to shop instead of letting them check out empty
-    window.location.href = 'shop.html';
-    return;
+/**
+ * checkout.js — order summary rendering + submission to Supabase
+ * -----------------------------------------------------------------
+ * Expects (all already loaded before this script):
+ *   - window.Cart                        (cart.js)
+ *   - window.getFulfillmentSelection()   (checkout-fulfillment.js)
+ *   - window.getPaymentSelection()       (checkout-payment.js)
+ *   - window.validatePaymentSelection()  (checkout-payment.js)
+ *   - supabaseClient                     (supabaseClient.js, global)
+ *
+ * We're not finalizing the Supabase table shape yet, but for
+ * reference this is the payload currently being sent to an "orders"
+ * table (adjust column names later once that's settled):
+ *   customer_name, customer_email, customer_phone,
+ *   fulfillment_mode, pickup_location,
+ *   delivery_address_line1, delivery_address_line2, delivery_city,
+ *   delivery_postcode, delivery_state,
+ *   payment_method,
+ *   items, subtotal, fulfillment_fee, total, status
+ *
+ * Receipt upload: the file is validated (JPEG/PDF) by
+ * checkout-payment.js, but it is NOT yet uploaded anywhere — actually
+ * storing it in Supabase Storage and attaching its URL to the order
+ * is left for later, same as the SQL table itself.
+ */
+(function () {
+  function money(n) {
+    return "RM" + (Math.round(n * 100) / 100).toFixed(2);
   }
 
-  checkoutItemsEl.innerHTML = cart.map(item => `
-    <div class="checkout-line">
-      <span>${item.name} × ${item.qty}</span>
-      <span>$${(item.price * item.qty).toFixed(2)}</span>
-    </div>
-  `).join('');
-
-  checkoutTotalEl.textContent = `$${getCartTotal().toFixed(2)}`;
-}
-
-function validateForm(formData) {
-  if (!formData.name.trim()) return 'Please enter your name.';
-  if (!formData.email.trim() || !formData.email.includes('@')) return 'Please enter a valid email.';
-  if (!formData.address.trim()) return 'Please enter your delivery address.';
-  return null;
-}
-
-checkoutForm.addEventListener('submit', async (event) => {
-  event.preventDefault();
-  formError.textContent = '';
-
-  const formData = {
-    name: document.getElementById('customer-name').value,
-    email: document.getElementById('customer-email').value,
-    phone: document.getElementById('customer-phone').value,
-    address: document.getElementById('customer-address').value,
-  };
-
-  const validationError = validateForm(formData);
-  if (validationError) {
-    formError.textContent = validationError;
-    return;
+  // Generates a short, human-readable order code, e.g. "NVM-7K2QXB".
+  // This is a stand-in for a real one: it works fine for now, but once
+  // the "orders" table exists, moving this generation server-side
+  // (a Postgres default/trigger) is the more bulletproof long-term
+  // approach, since it avoids any (very unlikely, but non-zero) chance
+  // of two orders landing on the same code.
+  function generateTrackingCode() {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no 0/O/1/I to avoid confusion
+    let code = "";
+    for (let i = 0; i < 6; i++) {
+      code += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return "NVM-" + code;
   }
 
-  const cart = getCart();
-  const total = getCartTotal();
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("checkout-form");
+    if (!form) return; // not on the checkout page
 
-  submitBtn.disabled = true;
-  submitBtn.textContent = 'Placing order...';
+    const itemsEl = document.getElementById("checkout-items");
+    const totalEl = document.getElementById("checkout-total");
+    const errorEl = document.getElementById("form-error");
+    const submitBtn = document.getElementById("submit-order-btn");
+    const checkoutWrap = document.querySelector(".checkout-wrap");
 
-  // 1. Insert the order itself
-  const { data: order, error: orderError } = await supabaseClient
-    .from('orders')
-    .insert({
-      customer_name: formData.name,
-      email: formData.email,
-      phone: formData.phone,
-      address: formData.address,
-      total: total
-    })
-    .select()
-    .single();
+    function renderItems() {
+      const items = window.Cart.getItems();
 
-  if (orderError) {
-    console.error('Order error:', orderError);
-    formError.textContent = 'Something went wrong placing your order. Please try again.';
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'Place Order';
-    return;
-  }
+      if (!items.length) {
+        itemsEl.innerHTML = `<div class="checkout-line">Your cart is empty.</div>`;
+        submitBtn.disabled = true;
+        return;
+      }
 
-  // 2. Insert each cart item, linked to that order
-  const orderItems = cart.map(item => ({
-    order_id: order.id,
-    product_id: item.id,
-    product_name: item.name,
-    qty: item.qty,
-    price_at_purchase: item.price
-  }));
+      submitBtn.disabled = false;
+      itemsEl.innerHTML = items
+        .map(
+          (it) => `
+        <div class="checkout-line">
+          <span>${it.name} × ${it.qty}</span>
+          <span>${money(it.price * it.qty)}</span>
+        </div>
+      `
+        )
+        .join("");
+    }
 
-  const { error: itemsError } = await supabaseClient
-    .from('order_items')
-    .insert(orderItems);
+    // checkout-fulfillment.js already updates #checkout-total, but we
+    // re-render it here too whenever the cart changes so it reflects
+    // the latest subtotal even before fulfillment.js's own listener runs.
+    function updateTotal() {
+      const subtotal = window.Cart.getSubtotal();
+      const fulfillment = window.getFulfillmentSelection
+        ? window.getFulfillmentSelection()
+        : { fee: 0 };
+      totalEl.textContent = money(subtotal + fulfillment.fee);
+    }
 
-  if (itemsError) {
-    console.error('Order items error:', itemsError);
-    formError.textContent = 'Order saved, but something went wrong recording your items. Please contact us.';
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'Place Order';
-    return;
-  }
+    function showError(message) {
+      errorEl.textContent = message;
+    }
 
-  // 3. Success — clear the cart and redirect to a confirmation page
-  localStorage.removeItem('nexora_cart');
-  window.location.href = `order-confirmation.html?order=${order.id}`;
-});
+    function clearError() {
+      errorEl.textContent = "";
+    }
 
-renderOrderSummary();
+    function showConfirmation(order) {
+      const fulfillment = window.getFulfillmentSelection();
+      const fulfillmentLine =
+        fulfillment.mode === "pickup"
+          ? `Pickup at ${fulfillment.location}`
+          : `Delivery to the address you provided`;
+
+      const email = document.getElementById("customer-email").value.trim();
+
+      // order.id is the raw Supabase row id for now — once payment_status /
+      // fulfillment_status / a short order_code column exist, swap this for
+      // that generated code instead. Kept here so the page is honest about
+      // what actually happens today: nothing is confirmed or emailed yet,
+      // it's just been received and is waiting on manual verification.
+      checkoutWrap.outerHTML = `
+        <div class="confirmation-wrap">
+          <div class="confirmation-icon">✓</div>
+          <h1>Thank You for Your Order!</h1>
+          <p>We're verifying your payment now. Once confirmed, we'll send your invoice to ${email}.</p>
+          <p>If there's an issue with your receipt, we'll email you with next steps instead.</p>
+          <p>${fulfillmentLine}</p>
+          <div class="confirmation-order-id">Order Code: ${order.id}</div>
+          <a href="shop.html" class="submit-order-btn" style="display:inline-block; text-decoration:none;">Continue Shopping</a>
+        </div>
+      `;
+    }
+
+    async function submitOrder(e) {
+      e.preventDefault();
+      clearError();
+
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      const items = window.Cart.getItems();
+      if (!items.length) {
+        showError("Your cart is empty.");
+        return;
+      }
+
+      if (window.validatePaymentSelection && !window.validatePaymentSelection()) {
+        return; // checkout-payment.js has already shown the specific error
+      }
+
+      const fulfillment = window.getFulfillmentSelection
+        ? window.getFulfillmentSelection()
+        : { mode: "pickup", location: null, fee: 0 };
+
+      const payment = window.getPaymentSelection
+        ? window.getPaymentSelection()
+        : { method: null, receiptFile: null };
+
+      const subtotal = window.Cart.getSubtotal();
+      const total = subtotal + fulfillment.fee;
+
+      const orderPayload = {
+        customer_name: document.getElementById("customer-name").value.trim(),
+        customer_email: document.getElementById("customer-email").value.trim(),
+        customer_phone: document.getElementById("customer-phone").value.trim(),
+        fulfillment_mode: fulfillment.mode,
+        pickup_location: fulfillment.mode === "pickup" ? fulfillment.location : null,
+        delivery_address_line1: fulfillment.mode === "delivery" ? fulfillment.address.line1 : null,
+        delivery_address_line2: fulfillment.mode === "delivery" ? fulfillment.address.line2 : null,
+        delivery_city: fulfillment.mode === "delivery" ? fulfillment.address.city : null,
+        delivery_postcode: fulfillment.mode === "delivery" ? fulfillment.address.postcode : null,
+        delivery_state: fulfillment.mode === "delivery" ? fulfillment.address.state : null,
+        payment_method: payment.method,
+        // TODO: once Supabase Storage is set up, upload payment.receiptFile
+        // there and store its URL instead of skipping it here.
+        items: items,
+        subtotal: subtotal,
+        fulfillment_fee: fulfillment.fee,
+        total: total,
+        status: "pending",
+      };
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Placing Order...";
+
+      const { data, error } = await supabaseClient
+        .from("orders")
+        .insert([orderPayload])
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Order submission failed:", error);
+        showError("Something went wrong placing your order. Please try again.");
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Place Order";
+        return;
+      }
+
+      window.Cart.clear();
+      showConfirmation(data);
+    }
+
+    renderItems();
+    updateTotal();
+
+    window.Cart.subscribe(() => {
+      renderItems();
+      updateTotal();
+    });
+
+    form.addEventListener("submit", submitOrder);
+  });
+})();

@@ -44,9 +44,11 @@ function renderProducts(products) {
 
     card.innerHTML = `
       <div class="featured-label">${outOfStock ? 'Out of Stock' : 'In Stock'}</div>
-      <div class="featured-thumb">${thumbContent}</div>
-      <h4>${product.name}</h4>
-      <div class="sub">${product.description || ''}</div>
+      <a class="card-link" href="product.html?id=${product.id}">
+        <div class="featured-thumb">${thumbContent}</div>
+        <h4>${product.name}</h4>
+        <div class="sub">${product.description || ''}</div>
+      </a>
       <button class="card-cta" ${outOfStock ? 'disabled' : ''} data-id="${product.id}">
         ${outOfStock ? 'Sold Out' : `$${Number(product.price).toFixed(2)}`}
       </button>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product — NVM Store</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="page-wrap">
+
+  <!-- PILL NAV -->
+<div class="pill-nav-wrap">
+
+  <a class="brand" href="index.html">NVM Store</a>
+
+  <!-- Centered navigation -->
+  <nav class="pill-nav">
+    <a href="index.html">Home</a>
+    <a href="shop.html">Shop</a>
+    <a href="shop.html">New Arrivals</a>
+    <a href="index.html#categories">Collections</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+  </nav>
+
+  <!-- Cart drawer trigger -->
+  <button type="button" class="cart-btn" id="cartToggleBtn" aria-label="Open cart" title="Cart">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
+      <path
+        d="M3 3h2l2.4 12.2a2 2 0 0 0 2 1.8h8.2a2 2 0 0 0 2-1.6L21 8H6"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+    </svg>
+    <span class="badge" id="navCartCount">0</span>
+  </button>
+
+</div>
+
+  <div class="product-crumb" id="productCrumb">
+    <a href="shop.html">Shop</a> <span>/</span> <span id="productCrumbName">Product</span>
+  </div>
+
+  <div class="product-wrap">
+
+    <!-- GALLERY: one display, sliding between the images of the selected colour -->
+    <div class="product-gallery">
+      <div class="gallery-slider" id="gallerySlider">
+        <div class="gallery-track" id="galleryTrack"></div>
+        <button type="button" class="gallery-arrow prev" id="galleryPrev" aria-label="Previous image">‹</button>
+        <button type="button" class="gallery-arrow next" id="galleryNext" aria-label="Next image">›</button>
+        <div class="gallery-dots" id="galleryDots"></div>
+      </div>
+    </div>
+
+    <!-- INFO / OPTIONS -->
+    <div class="product-info">
+      <span class="product-eyebrow" id="productCategory">Jerseys</span>
+      <h1 id="productName">Product Name</h1>
+      <div class="product-price" id="productPrice">RM0.00</div>
+      <p class="product-desc" id="productDesc"></p>
+      <ul class="product-details" id="productDetailsList"></ul>
+
+      <!-- Colour -->
+      <div class="option-group" id="colorGroup">
+        <label>Colour — <span id="selectedColorLabel"></span></label>
+        <div class="swatch-row" id="colorSwatches"></div>
+      </div>
+
+      <!-- Type (collar / material — optional, product-dependent) -->
+      <div class="option-group" id="typeGroup">
+        <label>Type</label>
+        <div class="pill-select" id="typeOptions"></div>
+      </div>
+
+      <!-- Size -->
+      <div class="option-group" id="sizeGroup">
+        <label>Size — <span id="selectedSizeLabel">Select a size</span></label>
+        <div class="pill-select" id="sizeOptions"></div>
+        <div class="option-error" id="sizeError"></div>
+      </div>
+
+      <!-- Sizing description dropdown -->
+      <div class="size-guide">
+        <button type="button" class="size-guide-toggle" id="sizeGuideToggle">
+          <span>Sizing Description</span>
+          <span class="chevron">⌄</span>
+        </button>
+        <div class="size-guide-panel" id="sizeGuidePanel">
+          <div>
+            <img src="" alt="Sizing description" id="sizeGuideImage">
+          </div>
+        </div>
+      </div>
+
+      <div class="product-actions">
+        <button type="button" class="btn-checkout-now" id="buyNowBtn">Proceed to Checkout</button>
+        <button type="button" class="btn-add-cart" id="addCartBtn">Add to Cart</button>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabaseClient.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/cart-drawer.js"></script>
+<script src="js/product.js"></script>
+</body>
+</html>

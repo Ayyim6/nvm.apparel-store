@@ -61,27 +61,156 @@
         <div class="form-field">
           <label for="customer-email">Email</label>
           <input type="email" id="customer-email" placeholder="jane@email.com" required>
+          <span class="field-hint">Used to send your invoice and let you track your order — please double-check it.</span>
         </div>
         <div class="form-field">
-          <label for="customer-phone">Phone (optional)</label>
-          <input type="tel" id="customer-phone" placeholder="+60 12-345 6789">
+          <label for="customer-phone">Phone</label>
+          <input type="tel" id="customer-phone" placeholder="+60 12-345 6789" required>
         </div>
       </div>
 
       <div class="form-field">
-        <label for="customer-address">Delivery Address</label>
-        <textarea id="customer-address" placeholder="Street, city, postcode, state" required></textarea>
+        <label>Fulfillment Method</label>
+        <div class="fulfillment-toggle" id="fulfillment-toggle">
+          <button type="button" class="fulfillment-option active" data-mode="pickup">Pickup</button>
+          <button type="button" class="fulfillment-option" data-mode="delivery">Delivery</button>
+        </div>
       </div>
 
-      <button type="submit" class="submit-order-btn" id="submit-order-btn">Place Order</button>
+      <div class="form-field" id="pickup-field">
+        <label>Pickup Location</label>
+        <div class="pickup-list" id="pickup-list">
+          <label class="pickup-option">
+            <input type="radio" name="pickup-location" value="UniKL MICET - Alor Gajah, Melaka" data-fee="0" checked>
+            <span class="pickup-option-name">UniKL MICET - Alor Gajah, Melaka</span>
+            <span class="pickup-option-fee">Free</span>
+          </label>
+          <label class="pickup-option">
+            <input type="radio" name="pickup-location" value="UniKL MITEC - Masai, Johor" data-fee="1">
+            <span class="pickup-option-name">UniKL MITEC - Masai, Johor</span>
+            <span class="pickup-option-fee">+RM1.00</span>
+          </label>
+          <label class="pickup-option">
+            <input type="radio" name="pickup-location" value="UniKL RCMP - Ipoh, Perak" data-fee="2">
+            <span class="pickup-option-name">UniKL RCMP - Ipoh, Perak</span>
+            <span class="pickup-option-fee">+RM2.00</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-field" id="delivery-field" style="display:none;">
+        <label for="address-line1">Address Line 1</label>
+        <input type="text" id="address-line1" placeholder="Unit / House no., street name">
+
+        <label for="address-line2" style="margin-top:14px;">Address Line 2 <span style="font-weight:400;">(optional)</span></label>
+        <input type="text" id="address-line2" placeholder="Apartment, building, unit (optional)">
+
+        <div class="form-row" style="margin-top:14px;">
+          <div class="form-field" style="margin-bottom:0;">
+            <label for="address-city">City</label>
+            <input type="text" id="address-city" placeholder="e.g. Banting">
+          </div>
+          <div class="form-field" style="margin-bottom:0;">
+            <label for="address-postcode">Postcode</label>
+            <input type="text" id="address-postcode" placeholder="e.g. 42700" inputmode="numeric">
+          </div>
+        </div>
+
+        <label for="address-state" style="margin-top:14px;">State</label>
+        <select id="address-state">
+          <option value="" disabled selected>Select a state</option>
+          <option>Johor</option>
+          <option>Kedah</option>
+          <option>Kelantan</option>
+          <option>Melaka</option>
+          <option>Negeri Sembilan</option>
+          <option>Pahang</option>
+          <option>Perak</option>
+          <option>Perlis</option>
+          <option>Pulau Pinang</option>
+          <option>Sabah</option>
+          <option>Sarawak</option>
+          <option>Selangor</option>
+          <option>Terengganu</option>
+          <option>W.P. Kuala Lumpur</option>
+          <option>W.P. Labuan</option>
+          <option>W.P. Putrajaya</option>
+        </select>
+
+        <span class="field-hint">Postage fee: RM7.00</span>
+      </div>
     </form>
 
-    <div class="checkout-summary">
-      <h3>Order Summary</h3>
-      <div id="checkout-items"><!-- filled by checkout.js --></div>
-      <div class="checkout-total-row">
-        <span>Total</span>
-        <span id="checkout-total">$0.00</span>
+    <div class="checkout-right">
+      <div class="checkout-summary">
+        <h3>Order Summary</h3>
+        <div id="checkout-items"><!-- filled by checkout.js --></div>
+        <div class="checkout-fee-row" id="fulfillment-fee-row">
+          <span id="fulfillment-fee-label">Pickup — UniKL MICET</span>
+          <span id="fulfillment-fee-value">Free</span>
+        </div>
+        <div class="checkout-total-row">
+          <span>Total</span>
+          <span id="checkout-total">RM0.00</span>
+        </div>
+      </div>
+
+      <div class="payment-card">
+        <h3>Payment Method</h3>
+
+        <div class="payment-method-list" id="payment-method-list">
+          <label class="payment-method-option" data-method="qr_bank">
+            <input type="radio" name="payment-method" value="qr_bank" checked>
+            <div class="payment-method-body">
+              <span class="payment-method-name">QR Code / Bank Transfer</span>
+              <span class="payment-method-desc">Scan our QR code or transfer to our bank account, then upload your receipt.</span>
+            </div>
+          </label>
+
+          <label class="payment-method-option" data-method="tng_spay">
+            <input type="radio" name="payment-method" value="tng_spay">
+            <div class="payment-method-body">
+              <span class="payment-method-name">TNG / SPay Later</span>
+              <span class="payment-method-desc">Pay via TnG eWallet or SPay Later using the QR code or link below, then upload your receipt.</span>
+            </div>
+          </label>
+
+          <label class="payment-method-option disabled" data-method="fpx">
+            <input type="radio" name="payment-method" value="fpx" disabled>
+            <div class="payment-method-body">
+              <span class="payment-method-name">FPX Online Banking <span class="badge-soon">Coming soon</span></span>
+              <span class="payment-method-desc">Pay directly via online banking. Additional charges apply.</span>
+            </div>
+          </label>
+        </div>
+
+        <div class="payment-method-details" id="payment-details-qr_bank">
+          <div class="qr-placeholder">Your QR code goes here</div>
+          <div class="bank-details">
+            <p><strong>Bank:</strong> [Your Bank Name]</p>
+            <p><strong>Account No:</strong> [Your Account Number]</p>
+            <p><strong>Account Name:</strong> [Your Account Name]</p>
+          </div>
+        </div>
+
+        <div class="payment-method-details" id="payment-details-tng_spay" style="display:none;">
+          <div class="qr-placeholder">Your QR code goes here</div>
+          <p class="field-hint">Or pay via link: <a href="#" id="tng-link">[Your TNG / SPay Later link]</a></p>
+        </div>
+
+        <div class="payment-method-details" id="payment-details-fpx" style="display:none;">
+          <p class="field-hint">FPX online banking isn't connected yet — additional charges will apply once it's available. Please choose another method for now.</p>
+        </div>
+
+        <div class="form-field" id="receipt-upload-field">
+          <label for="receipt-upload">Upload Payment Receipt</label>
+          <input type="file" id="receipt-upload" accept=".jpg,.jpeg,.pdf,image/jpeg,application/pdf">
+          <span class="field-hint">Accepted formats: JPEG or PDF only.</span>
+        </div>
+
+        <div class="form-error" id="payment-error"></div>
+
+        <button type="submit" class="submit-order-btn" id="submit-order-btn" form="checkout-form">Place Order</button>
       </div>
     </div>
   </div>
@@ -92,6 +221,8 @@
 <script src="js/supabaseClient.js"></script>
 <script src="js/cart.js"></script>
 <script src="js/cart-drawer.js"></script>
+<script src="js/checkout-fulfillment.js"></script>
+<script src="js/checkout-payment.js"></script>
 <script src="js/checkout.js"></script>
 </body>
 </html>
