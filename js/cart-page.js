@@ -12,7 +12,7 @@ function renderCartPage() {
     cartContainer.innerHTML = '';
     cartEmptyEl.style.display = 'block';
     checkoutBtn.disabled = true;
-    cartTotalEl.textContent = '$0.00';
+    cartTotalEl.textContent = 'RM 0.00';
     return;
   }
 
@@ -33,14 +33,14 @@ function renderCartPage() {
       <div class="cart-row-thumb">${thumb}</div>
       <div class="cart-row-info">
         <h4>${item.name}</h4>
-        <div class="cart-row-price">$${Number(item.price).toFixed(2)} each</div>
+        <div class="cart-row-price">RM ${Number(item.price || 0).toFixed(2)} /helai</div>
       </div>
       <div class="cart-row-qty">
         <button class="qty-btn" data-action="decrease" data-id="${item.id}">−</button>
-        <span>${item.qty}</span>
+        <span>${item.qty || 1}</span>
         <button class="qty-btn" data-action="increase" data-id="${item.id}">+</button>
       </div>
-      <div class="cart-row-subtotal">$${(item.price * item.qty).toFixed(2)}</div>
+      <div class="cart-row-subtotal">RM ${((item.price || 0) * (item.qty || 1)).toFixed(2)}</div>
       <button class="cart-row-remove" data-id="${item.id}" aria-label="Remove">✕</button>
     `;
 
@@ -69,9 +69,9 @@ function renderCartPage() {
     });
   });
 
-  cartTotalEl.textContent = `$${getCartTotal().toFixed(2)}`;
+  cartTotalEl.textContent = `RM ${getCartTotal().toFixed(2)}`;
   const total2 = document.getElementById('cart-total-2');
-  if (total2) total2.textContent = `$${getCartTotal().toFixed(2)}`;
+  if (total2) total2.textContent = `RM ${getCartTotal().toFixed(2)}`;
 }
 
 checkoutBtn.addEventListener('click', () => {

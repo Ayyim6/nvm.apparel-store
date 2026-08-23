@@ -10,7 +10,8 @@
  */
 (function () {
   function money(n) {
-    return "$" + (Math.round(n * 100) / 100).toFixed(2);
+    const val = Number(n) || 0;
+    return "RM " + (Math.round(val * 100) / 100).toFixed(2);
   }
 
   function buildDrawer() {
@@ -31,11 +32,11 @@
       <div class="cart-drawer-footer" id="cartDrawerFooter">
         <div class="cart-summary-row">
           <span>Subtotal</span>
-          <span id="cartDrawerSubtotal">$0.00</span>
+          <span id="cartDrawerSubtotal">RM 0.00</span>
         </div>
         <div class="cart-summary-total">
           <span>Total</span>
-          <span id="cartDrawerTotal">$0.00</span>
+          <span id="cartDrawerTotal">RM 0.00</span>
         </div>
         <button type="button" class="checkout-btn" id="cartDrawerCheckout">Proceed to Checkout</button>
       </div>
@@ -59,9 +60,9 @@
           <div class="drawer-item-price">${money(item.price)}</div>
           <div class="drawer-item-qty">
             <button type="button" class="qty-btn" data-action="decrement" aria-label="Decrease quantity">−</button>
-            <span>${item.qty}</span>
+            <span>${item.qty || 1}</span>
             <button type="button" class="qty-btn" data-action="increment" aria-label="Increase quantity">+</button>
-            <span class="drawer-item-subtotal">${money(item.price * item.qty)}</span>
+            <span class="drawer-item-subtotal">${money((item.price||0) * (item.qty||1))}</span>
           </div>
         </div>
         <button type="button" class="drawer-item-remove" data-action="remove" aria-label="Remove item">✕</button>

@@ -10,10 +10,17 @@
 </head>
 <body>
 
-<div class="page-wrap">
+<div class="page-wrap has-hero">
 
 <!-- PILL NAV -->
 <div class="pill-nav-wrap">
+
+  <!-- Mobile menu drawer trigger -->
+  <button type="button" class="menu-btn" id="menuToggleBtn" aria-label="Open menu" title="Menu">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+      <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  </button>
 
   <a class="brand" href="index.html">NVM Store</a>
 
@@ -21,10 +28,10 @@
   <nav class="pill-nav">
     <a href="index.html" class="active">Home</a>
     <a href="shop.html">Shop</a>
-    <a href="shop.html">New Arrivals</a>
-    <a href="index.html#categories">Collections</a>
-    <a href="#about">About</a>
-    <a href="#contact">Contact</a>
+    <a href="new-arrivals.html">New Arrivals</a>
+    <a href="collections.html">Collections</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
   </nav>
 
   <!-- Cart drawer trigger -->
@@ -44,28 +51,65 @@
 </div>
 
   <!-- HERO -->
-<section class="hero-v2">
-  <div class="hero-v2-container">
-    <div class="hero-v2-left">
-      <span class="eyebrow">New Season Collection</span>
-      <h1>Elevate Your<br>Everyday <em>Style.</em></h1>
-      <p>Match-ready jerseys. Premium fabrics. Made to move with you.</p>
-
-      <div class="hero-cta-row">
-        <a href="shop.html" class="btn-shop-now">
-          Shop Now
-          <span style="font-size:1.1rem;">→</span>
-        </a>
-        <a href="#categories" class="btn-lookbook">
-          <span class="play-circle">▶</span>
-          Browse Collections
-        </a>
+<!-- HERO SLIDESHOW -->
+<section class="hero-slider-section">
+  <div class="hero-slider-container">
+    <div class="hero-slide active">
+      <div class="hero-bg" style="background-image: url('images/headerbg.jpg');"></div>
+      <div class="hero-overlay"></div>
+      <div class="hero-v2-container slide-content">
+        <div class="hero-v2-left">
+          <span class="eyebrow">New Season Collection</span>
+          <h1>Elevate Your<br>Everyday <em>Style.</em></h1>
+          <p>Match-ready jerseys. Premium fabrics. Made to move with you.</p>
+          <div class="hero-cta-row">
+            <a href="shop.html" class="btn-shop-now">Shop Now <span style="font-size:1.1rem;">→</span></a>
+            <a href="#categories" class="btn-lookbook"><span class="play-circle">▶</span> Browse Collections</a>
+          </div>
+          <div class="trust-row">
+            <div class="trust-item"><span class="ticon">✓</span> Premium Quality</div>
+            <div class="trust-item"><span class="ticon">↺</span> Easy Returns, 7 Days</div>
+            <div class="trust-item"><span class="ticon">🚚</span> Free Shipping RM50+</div>
+          </div>
+        </div>
       </div>
-
-      <div class="trust-row">
-        <div class="trust-item"><span class="ticon">✓</span> Premium Quality</div>
-        <div class="trust-item"><span class="ticon">↺</span> Easy Returns, 7 Days</div>
-        <div class="trust-item"><span class="ticon">🚚</span> Free Shipping RM50+</div>
+    </div>
+    <div class="hero-slide">
+      <div class="hero-bg" style="background-image: url('images/black-2.jpg');"></div>
+      <div class="hero-overlay"></div>
+      <div class="hero-v2-container slide-content">
+        <div class="hero-v2-left">
+          <span class="eyebrow">Away Kit Edition</span>
+          <h1>Dominate The<br>Away <em>Game.</em></h1>
+          <p>Dark, sleek, and intimidating. Stand out wherever you play.</p>
+          <div class="hero-cta-row">
+            <a href="shop.html" class="btn-shop-now">Shop Away Kit <span style="font-size:1.1rem;">→</span></a>
+          </div>
+          <div class="trust-row">
+            <div class="trust-item"><span class="ticon">✓</span> Premium Quality</div>
+            <div class="trust-item"><span class="ticon">↺</span> Easy Returns, 7 Days</div>
+            <div class="trust-item"><span class="ticon">🚚</span> Free Shipping RM50+</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-slide">
+      <div class="hero-bg" style="background-image: url('images/retro-1.jpg');"></div>
+      <div class="hero-overlay"></div>
+      <div class="hero-v2-container slide-content">
+        <div class="hero-v2-left">
+          <span class="eyebrow">Retro Classic 90s</span>
+          <h1>Vintage Vibes<br>Modern <em>Fit.</em></h1>
+          <p>Relive the golden era of football with our exclusive retro drops.</p>
+          <div class="hero-cta-row">
+            <a href="shop.html" class="btn-shop-now">Shop Retro <span style="font-size:1.1rem;">→</span></a>
+          </div>
+          <div class="trust-row">
+            <div class="trust-item"><span class="ticon">✓</span> Premium Quality</div>
+            <div class="trust-item"><span class="ticon">↺</span> Easy Returns, 7 Days</div>
+            <div class="trust-item"><span class="ticon">🚚</span> Free Shipping RM50+</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -148,5 +192,21 @@
 <script src="js/supabaseClient.js"></script>
 <script src="js/cart.js"></script>
 <script src="js/cart-drawer.js"></script>
+<script src="js/nav-drawer.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const slides = document.querySelectorAll('.hero-slide');
+    if(slides.length > 0) {
+      let currentSlide = 0;
+      setInterval(() => {
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (currentSlide + 1) % slides.length;
+        slides[currentSlide].classList.add('active');
+      }, 4000);
+    }
+  });
+</script>
 </body>
+
 </html>

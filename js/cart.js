@@ -1,16 +1,5 @@
 /**
- * cart.js — core cart state engine
- * ---------------------------------
- * This is a self-contained, localStorage-backed cart store. It's a
- * placeholder implementation written to unblock the new slide-out
- * cart drawer (see cart-drawer.js) since the original cart.js /
- * cart-page.js / shop.js / checkout.js files weren't available to
- * merge against. If you already have Supabase-backed cart logic
- * (stock checks, saved carts per user, etc.), swap the body of
- * these functions for your real implementation — keep the same
- * function names/shapes and the drawer keeps working unchanged.
- *
- * Item shape: { id, name, price (number), image (url, optional), qty }
+ * cart.js — core cart state engine (With Auto-Cleaner)
  */
 (function (window) {
   const STORAGE_KEY = "nvm_cart";
@@ -19,7 +8,24 @@
   function load() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) : [];
+      let parsed = raw ? JSON.parse(raw) : [];
+      if (!Array.isArray(parsed)) return [];
+
+      // AUTO-CLEANER MAGIC: Buang data undefined / NaN secara paksa
+      let hasCorruptedData = false;
+      let cleanData = parsed.filter(item => {
+        if (!item || !item.id || String(item.id) === "undefined" || isNaN(item.price)) {
+          hasCorruptedData = true;
+          return false; // Jangan masukkan dalam troli
+        }
+        return true;
+      });
+
+      if (hasCorruptedData) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(cleanData));
+      }
+
+      return cleanData;
     } catch (e) {
       console.error("Cart: failed to read localStorage", e);
       return [];
@@ -39,17 +45,12 @@
   function notify() {
     save(items);
     listeners.forEach((fn) => {
-      try {
-        fn(items);
-      } catch (e) {
-        console.error("Cart: listener error", e);
-      }
+      try { fn(items); } catch (e) { console.error(e); }
     });
     document.dispatchEvent(new CustomEvent("cart:change", { detail: { items } }));
   }
 
   const Cart = {
-    /** Subscribe to cart changes. Returns an unsubscribe function. */
     subscribe(fn) {
       listeners.push(fn);
       fn(items);
@@ -58,22 +59,12 @@
         if (i > -1) listeners.splice(i, 1);
       };
     },
+    getItems() { return items.slice(); },
+    getCount() { return items.reduce((sum, it) => sum + (it.qty || 1), 0); },
+    getSubtotal() { return items.reduce((sum, it) => sum + ((it.price || 0) * (it.qty || 1)), 0); },
 
-    getItems() {
-      return items.slice();
-    },
-
-    getCount() {
-      return items.reduce((sum, it) => sum + it.qty, 0);
-    },
-
-    getSubtotal() {
-      return items.reduce((sum, it) => sum + it.price * it.qty, 0);
-    },
-
-    /** Add a product to the cart, or bump qty if it's already in there. */
     add(product, qty = 1) {
-      const existing = items.find((it) => it.id === product.id);
+      const existing = items.find((it) => String(it.id) === String(product.id));
       if (existing) {
         existing.qty += qty;
       } else {
@@ -82,14 +73,14 @@
           name: product.name,
           price: Number(product.price) || 0,
           image: product.image || product.image_url || null,
-          qty,
+          qty: qty,
         });
       }
       notify();
     },
 
     setQty(id, qty) {
-      const item = items.find((it) => it.id === id);
+      const item = items.find((it) => String(it.id) === String(id));
       if (!item) return;
       if (qty <= 0) {
         this.remove(id);
@@ -100,17 +91,17 @@
     },
 
     increment(id) {
-      const item = items.find((it) => it.id === id);
+      const item = items.find((it) => String(it.id) === String(id));
       if (item) this.setQty(id, item.qty + 1);
     },
 
     decrement(id) {
-      const item = items.find((it) => it.id === id);
+      const item = items.find((it) => String(it.id) === String(id));
       if (item) this.setQty(id, item.qty - 1);
     },
 
     remove(id) {
-      items = items.filter((it) => it.id !== id);
+      items = items.filter((it) => String(it.id) !== String(id));
       notify();
     },
 
@@ -122,9 +113,6 @@
 
   window.Cart = Cart;
 
-  // Bridge for existing page code that calls a global addToCart(product)
-  // directly (e.g. shop.js's "Add to Cart" button handler) instead of
-  // Cart.add(product). Opens the drawer afterwards so the add is visible.
   window.addToCart = function (product, qty = 1) {
     Cart.add(product, qty);
     if (window.CartDrawer) window.CartDrawer.open();

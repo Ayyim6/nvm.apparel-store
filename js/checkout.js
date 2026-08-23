@@ -116,7 +116,7 @@
           <p>If there's an issue with your receipt, we'll email you with next steps instead.</p>
           <p>${fulfillmentLine}</p>
           <div class="confirmation-order-id">Order Code: ${order.id}</div>
-          <a href="shop.html" class="submit-order-btn" style="display:inline-block; text-decoration:none;">Continue Shopping</a>
+          <a href="shop.html" class="confirmation-cta">Continue Shopping</a>
         </div>
       `;
     }
@@ -175,22 +175,52 @@
       submitBtn.disabled = true;
       submitBtn.textContent = "Placing Order...";
 
-      const { data, error } = await supabaseClient
-        .from("orders")
-        .insert([orderPayload])
-        .select()
-        .single();
 
-      if (error) {
-        console.error("Order submission failed:", error);
-        showError("Something went wrong placing your order. Please try again.");
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Place Order";
-        return;
-      }
+      const orderId = 'NVM-' + Math.floor(Math.random() * 1000000);
+      const date = new Date().toLocaleString();
 
-      window.Cart.clear();
-      showConfirmation(data);
+      let itemsHtml = '';
+      items.forEach(item => {
+          itemsHtml += `<tr>
+              <td>${item.name} <strong>(x${item.qty})</strong></td>
+              <td style="text-align: right;">RM ${parseFloat(item.price * item.qty).toFixed(2)}</td>
+          </tr>`;
+      });
+
+      document.getElementById('invoiceContentArea').innerHTML = `
+          <h2 style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 15px; margin-bottom: 20px; font-family:'Archivo Black', sans-serif;">NVM STORE - INVOIS</h2>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 0.95rem;">
+              <div>
+                  <p><strong>Order ID:</strong> ${orderId}</p>
+                  <p><strong>Tarikh:</strong> ${date}</p>
+                  <p><strong>Nama:</strong> ${orderPayload.customer_name}</p>
+                  <p><strong>No. Tel:</strong> ${orderPayload.customer_phone}</p>
+              </div>
+              <div style="text-align: right;">
+                  <p><strong>Fulfillment:</strong> ${orderPayload.fulfillment_mode.toUpperCase()}</p>
+                  <p><strong>Bayaran:</strong> ${orderPayload.payment_method}</p>
+              </div>
+          </div>
+          <table class="invoice-table">
+              <thead>
+                  <tr><th>Item</th><th style="text-align: right;">Harga</th></tr>
+              </thead>
+              <tbody>
+                  ${itemsHtml}
+                  <tr style="background: #fafafa;">
+                      <td><strong>Caj Tambahan</strong></td>
+                      <td style="text-align: right;"><strong>RM ${parseFloat(fulfillment.fee).toFixed(2)}</strong></td>
+                  </tr>
+              </tbody>
+          </table>
+          <h3 style="text-align: right; margin-top: 20px; font-size: 1.3rem;">Jumlah: RM ${parseFloat(total).toFixed(2)}</h3>
+      `;
+
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Place Order";
+      window.currentOrderData = { orderId, total, items, orderPayload, fulfillment };
+      document.getElementById('invoiceModal').classList.add('active');
+
     }
 
     renderItems();
@@ -204,3 +234,25 @@
     form.addEventListener("submit", submitOrder);
   });
 })();
+
+
+window.sendToWhatsApp = function() {
+    if (!window.currentOrderData) return;
+    const { orderId, total, items, orderPayload, fulfillment } = window.currentOrderData;
+    const adminPhone = "601111111111"; 
+    
+    let message = `Hi NVM Store! Saya ingin mengesahkan pesanan saya:%0A%0A*ORDER ID: ${orderId}*%0A%0A*Maklumat Pelanggan:*%0ANama: ${orderPayload.customer_name}%0ATel: ${orderPayload.customer_phone}%0AFulfillment: ${orderPayload.fulfillment_mode.toUpperCase()}%0A%0A*Senarai Item:*%0A`;
+    
+    items.forEach((item, index) => {
+        message += `${index + 1}. *${item.name}* (x${item.qty}) - RM ${parseFloat(item.price * item.qty).toFixed(2)}%0A`;
+    });
+    
+    message += `+ Caj Tambahan: RM ${parseFloat(fulfillment.fee).toFixed(2)}%0A`;
+    message += `%0A💰 *Total Keseluruhan: RM ${parseFloat(total).toFixed(2)}*%0A%0A`;
+    
+    window.open(`https://wa.me/${adminPhone}?text=${message}`, '_blank');
+    
+    window.Cart.clear();
+    document.getElementById('invoiceModal').classList.remove('active');
+    window.location.href = 'index.html';
+};

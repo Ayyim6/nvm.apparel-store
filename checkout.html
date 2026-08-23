@@ -15,16 +15,23 @@
   <!-- PILL NAV -->
 <div class="pill-nav-wrap">
 
+  <!-- Mobile menu drawer trigger -->
+  <button type="button" class="menu-btn" id="menuToggleBtn" aria-label="Open menu" title="Menu">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+      <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  </button>
+
   <a class="brand" href="index.html">NVM Store</a>
 
   <!-- Centered navigation -->
   <nav class="pill-nav">
     <a href="index.html">Home</a>
     <a href="shop.html">Shop</a>
-    <a href="shop.html">New Arrivals</a>
-    <a href="index.html#categories">Collections</a>
-    <a href="#about">About</a>
-    <a href="#contact">Contact</a>
+    <a href="new-arrivals.html">New Arrivals</a>
+    <a href="collections.html">Collections</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
   </nav>
 
   <!-- Cart drawer trigger -->
@@ -221,8 +228,23 @@
 <script src="js/supabaseClient.js"></script>
 <script src="js/cart.js"></script>
 <script src="js/cart-drawer.js"></script>
+<script src="js/nav-drawer.js"></script>
 <script src="js/checkout-fulfillment.js"></script>
 <script src="js/checkout-payment.js"></script>
 <script src="js/checkout.js"></script>
+
+<div id="invoiceModal" class="invoice-modal">
+    <div class="invoice-content">
+        <div class="no-print" style="text-align: right; margin-bottom: 10px;">
+            <button onclick="document.getElementById('invoiceModal').classList.remove('active')" style="border:none; background:none; font-size: 28px; cursor:pointer; color: #555;">&times;</button>
+        </div>
+        <div id="invoiceContentArea"></div>
+        <div class="no-print" style="margin-top: 30px; display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap;">
+            <button class="btn-invoice" onclick="window.print()">📄 Muat Turun PDF</button>
+            <button class="btn-wa" onclick="sendToWhatsApp()">Hantar ke WhatsApp ➔</button>
+        </div>
+    </div>
+</div>
 </body>
+
 </html>
