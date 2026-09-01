@@ -176,8 +176,23 @@
       submitBtn.textContent = "Placing Order...";
 
 
-      const orderId = 'NVM-' + Math.floor(Math.random() * 1000000);
+      // Generate custom Order ID: [SKU]-[4DIGIT]-[ACRONYM]
+      const firstItem = items[0];
+      const skuCode = firstItem && firstItem.id ? firstItem.id.toString().toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 8) : 'NVM';
+      const random4 = Math.floor(1000 + Math.random() * 9000);
+
+      let acronym = 'D'; // Default to Delivery
+      if (fulfillment.mode === 'pickup') {
+          // Attempt to extract acronym from location string based on admin-data.js logic
+          if (fulfillment.location && fulfillment.location.includes('MICET')) acronym = 'M';
+          else if (fulfillment.location && fulfillment.location.includes('MITEC')) acronym = 'J';
+          else if (fulfillment.location && fulfillment.location.includes('RCMP')) acronym = 'I';
+          else acronym = 'P'; // Generic pickup
+      }
+
+      const orderId = `${skuCode}-${random4}-${acronym}`;
       const date = new Date().toLocaleString();
+      const dateIso = new Date().toISOString().split('T')[0];
 
       let itemsHtml = '';
       items.forEach(item => {
@@ -250,6 +265,40 @@ window.sendToWhatsApp = function() {
     message += `+ Caj Tambahan: RM ${parseFloat(fulfillment.fee).toFixed(2)}%0A`;
     message += `%0A💰 *Total Keseluruhan: RM ${parseFloat(total).toFixed(2)}*%0A%0A`;
     
+    // Save to localStorage so admin-data.js and order-tracking.js can read it
+    const existingOrders = JSON.parse(localStorage.getItem('nvm_database_orders')) || [];
+
+    // Check if productId and category exist for admin tracking
+    const firstItem = items[0] || {};
+    let productId = firstItem.id || 'unknown';
+    let productLabel = firstItem.name || 'Unknown Product';
+
+    const newOrder = {
+        id: orderId,
+        date: new Date().toISOString().split('T')[0],
+        customerName: orderPayload.customer_name,
+        customerPhone: orderPayload.customer_phone,
+        customerEmail: orderPayload.customer_email,
+        productId: productId,
+        productLabel: productLabel,
+        category: "home-jerseys", // default category
+        variant: firstItem.selectedSize || "Standard",
+        qty: firstItem.qty || 1,
+        total: total,
+        fulfillmentMode: orderPayload.fulfillment_mode,
+        pickupLocation: orderPayload.pickup_location,
+        deliveryAddress: orderPayload.fulfillment_mode === 'delivery' ?
+            `${orderPayload.delivery_address_line1}, ${orderPayload.delivery_postcode} ${orderPayload.delivery_city}, ${orderPayload.delivery_state}` : null,
+        paymentMethod: orderPayload.payment_method,
+        status: "pending",
+        receiptUrl: "images/mock-receipt.png",
+        trackingNumber: null,
+        items: items
+    };
+
+    existingOrders.push(newOrder);
+    localStorage.setItem('nvm_database_orders', JSON.stringify(existingOrders));
+
     window.open(`https://wa.me/${adminPhone}?text=${message}`, '_blank');
     
     window.Cart.clear();

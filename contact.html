@@ -56,6 +56,25 @@
     <p>Got a question about sizing, orders, or custom drops? We're here to help.</p>
   </div>
 
+  <!-- ORDER TRACKING SECTION -->
+  <div class="contact-header" style="padding-top: 20px; padding-bottom: 20px;">
+    <h2>Track Your Order</h2>
+    <p>Enter your Order ID below to check its current status.</p>
+  </div>
+
+  <div class="tracking-section" style="max-width: 600px; margin: 0 auto 60px auto; padding: 0 20px;">
+    <form id="tracking-form" class="tracking-form" onsubmit="event.preventDefault();">
+      <div class="form-field" style="display: flex; gap: 10px;">
+        <input type="text" id="trackingCodeInput" class="tracking-input" placeholder="e.g. UNIKLHOME-1234-M" required style="flex: 1;">
+        <button type="submit" class="btn-send tracking-btn" style="width: auto; padding: 0 30px;">Track</button>
+      </div>
+    </form>
+
+    <div id="tracking-result-card" class="tracking-result" style="display: none; margin-top: 30px; background: var(--paper); border: 1px solid var(--panel-border); border-radius: var(--radius-sm); padding: 30px;">
+      <!-- Result will be injected here by JS -->
+    </div>
+  </div>
+
   <div class="contact-wrap">
     <div class="contact-info-card" data-aos="fade-right">
       <h3>Contact Information</h3>
@@ -105,6 +124,8 @@
 <script src="js/cart.js"></script>
 <script src="js/cart-drawer.js"></script>
 <script src="js/nav-drawer.js"></script>
+<script src="js/admin-data.js"></script>
+<script src="js/order-tracking.js"></script>
 
 </body>
 </html>

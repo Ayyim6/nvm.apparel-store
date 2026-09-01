@@ -150,9 +150,20 @@
   }
 
   async function loadOrders() {
-    // swap for a real supabaseClient.from('orders').select('*') once
-    // that table exists and checkout.js is actually writing to it
-    return ORDERS;
+    // Merge localStorage orders with mock ORDERS for the demo
+    const localOrdersRaw = localStorage.getItem('nvm_database_orders');
+    let localOrders = [];
+    if (localOrdersRaw) {
+      try {
+        localOrders = JSON.parse(localOrdersRaw);
+      } catch (e) {
+        console.error("Failed to parse local orders");
+      }
+    }
+
+    // In a real app we'd deduplicate or rely solely on a DB.
+    // Here we combine them so both new user orders and demo mock orders show.
+    return [...localOrders, ...ORDERS];
   }
 
   window.AdminData = {
