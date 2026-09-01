@@ -54,7 +54,7 @@
       const pickups = window.AdminData.DELIVERY_MODES.filter(m => m.type === "pickup");
       pickupListContainer.innerHTML = pickups.map((p, index) => `
         <label class="pickup-option">
-          <input type="radio" name="pickup-location" value="${p.label}" data-fee="${p.fee}" ${index === 0 ? 'checked' : ''}>
+          <input type="radio" name="pickup-location" value="${p.label}" data-fee="${p.fee}" data-code="${p.code}" ${index === 0 ? 'checked' : ''}>
           <span class="pickup-option-name">${p.label}</span>
           <span class="pickup-option-fee">${p.fee === 0 ? 'Free' : '+RM' + p.fee.toFixed(2)}</span>
         </label>
@@ -73,8 +73,8 @@
     function selectedPickup() {
       const checked = document.querySelector('input[name="pickup-location"]:checked');
       return checked
-        ? { name: checked.value, fee: Number(checked.dataset.fee) || 0 }
-        : { name: "", fee: 0 };
+        ? { name: checked.value, fee: Number(checked.dataset.fee) || 0, code: checked.dataset.code || "M" }
+        : { name: "", fee: 0, code: "M" };
     }
 
     function currentFee() {
@@ -140,12 +140,14 @@
     window.getFulfillmentSelection = function () {
       if (mode === "pickup") {
         const p = selectedPickup();
-        return { mode: "pickup", location: p.name, fee: p.fee };
+        return { mode: "pickup", location: p.name, fee: p.fee, code: p.code };
       }
+      const deliveryConfig = window.AdminData ? window.AdminData.DELIVERY_MODES.find(m => m.type === "delivery") : { code: "D" };
       return {
         mode: "delivery",
         location: null,
         fee: currentFee(),
+        code: deliveryConfig.code,
         address: {
           line1: document.getElementById("address-line1")?.value.trim() || "",
           line2: document.getElementById("address-line2")?.value.trim() || "",

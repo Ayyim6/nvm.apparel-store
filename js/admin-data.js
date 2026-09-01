@@ -174,14 +174,37 @@
     };
   }
 
-  async function loadOrders() {
-    // swap for a real supabaseClient.from('orders').select('*') once
-    // that table exists and checkout.js is actually writing to it
+  function getOrders() {
+    try {
+      const stored = localStorage.getItem('nvm_orders');
+      if (stored) {
+        return JSON.parse(stored);
+      }
+    } catch(e) {
+      console.error(e);
+    }
+    // initialize with mock orders
+    localStorage.setItem('nvm_orders', JSON.stringify(ORDERS));
     return ORDERS;
   }
 
+  function saveOrders(ordersList) {
+    try {
+      localStorage.setItem('nvm_orders', JSON.stringify(ordersList));
+    } catch(e) {
+      console.error(e);
+    }
+  }
+
+  async function loadOrders() {
+    return getOrders();
+  }
+
+
   window.AdminData = {
     loadOrders,
+    saveOrders,
+    getOrders,
     CATEGORY_LABELS,
     PAYMENT_LABELS,
     PRODUCT_LABELS,
