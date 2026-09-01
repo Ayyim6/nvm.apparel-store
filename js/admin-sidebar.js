@@ -20,8 +20,8 @@
       icon: `<path d="M12 5v14M5 12h14"/>`,
     },
     {
+      href: "admin-inventory.html",
       label: "Inventory",
-      soon: true,
       icon: `<path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/>`,
     },
     {
