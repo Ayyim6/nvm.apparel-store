@@ -241,7 +241,13 @@ window.sendToWhatsApp = function() {
     const { orderId, total, items, orderPayload, fulfillment } = window.currentOrderData;
     const adminPhone = "601111111111"; 
     
-    let message = `Hi NVM Store! Saya ingin mengesahkan pesanan saya:%0A%0A*ORDER ID: ${orderId}*%0A%0A*Maklumat Pelanggan:*%0ANama: ${orderPayload.customer_name}%0ATel: ${orderPayload.customer_phone}%0AFulfillment: ${orderPayload.fulfillment_mode.toUpperCase()}%0A%0A*Senarai Item:*%0A`;
+    let message = `Hi NVM Store! Saya ingin mengesahkan pesanan saya:%0A%0A*ORDER ID: ${orderId}*%0A%0A*Maklumat Pelanggan:*%0ANama: ${orderPayload.customer_name}%0ATel: ${orderPayload.customer_phone}%0AFulfillment: ${orderPayload.fulfillment_mode.toUpperCase()}%0A`;
+    if (orderPayload.fulfillment_mode === "delivery") {
+        message += `Alamat: ${orderPayload.delivery_address_line1}, ${orderPayload.delivery_address_line2 ? orderPayload.delivery_address_line2 + ', ' : ''}${orderPayload.delivery_postcode}, ${orderPayload.delivery_city}, ${orderPayload.delivery_state}%0A`;
+    } else {
+        message += `Lokasi: ${orderPayload.pickup_location}%0A`;
+    }
+    message += `%0A*Senarai Item:*%0A`;
     
     items.forEach((item, index) => {
         message += `${index + 1}. *${item.name}* (x${item.qty}) - RM ${parseFloat(item.price * item.qty).toFixed(2)}%0A`;

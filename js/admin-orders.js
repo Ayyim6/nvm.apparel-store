@@ -128,6 +128,7 @@
           <td class="cell-price">${money(o.total)}</td>
           <td>
             <span class="delivery-tag">${DELIVERY_ICON[o.fulfillmentMode]} ${deliveryLabel}</span>
+            ${o.fulfillmentMode === 'delivery' && o.deliveryAddress ? `<div class="cell-sub" style="margin-top: 6px; line-height: 1.4;">${o.deliveryAddress}</div>` : ''}
           </td>
           <td>${window.AdminData.PAYMENT_LABELS[o.paymentMethod]}</td>
           <td>
@@ -259,6 +260,7 @@
       "Total (RM)": o.total,
       Fulfillment:
         o.fulfillmentMode === "pickup" ? "Pickup — " + o.pickupLocation : "Delivery",
+      "Delivery Address": o.deliveryAddress || "",
       "Tracking Number": o.trackingNumber || "",
       "Payment Method": window.AdminData.PAYMENT_LABELS[o.paymentMethod],
       Status: window.AdminData.getStatusLabel(o, o.status),

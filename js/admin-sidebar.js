@@ -30,8 +30,8 @@
       icon: `<path d="M4 4h16v4H4z"/><path d="M4 8v12h16V8"/><path d="M9 12h6"/>`,
     },
     {
+      href: "admin-delivery.html",
       label: "Delivery Management",
-      soon: true,
       icon: `<rect x="1" y="7" width="14" height="10"/><path d="M15 10h4l3 3v4h-7z"/><circle cx="6" cy="19" r="1.6"/><circle cx="18" cy="19" r="1.6"/>`,
     },
     {
