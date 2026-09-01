@@ -12,7 +12,7 @@ createApp({
 
         // NEW: Slideshow Hero Images (Minimum 3 Gambar)
         const heroImages = ref([
-            'https://images.unsplash.com/photo-1556906781-9a412961c28c?w=1600&q=80',
+            'headerbg-2.png',
             'https://images.unsplash.com/photo-1523398002811-999aa8d9512e?w=1600&q=80',
             'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=1600&q=80'
         ]);

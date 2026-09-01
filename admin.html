@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — NVM Store Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<div class="admin-shell">
+
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar" id="adminSidebarMount"></aside>
+
+  <!-- MAIN -->
+  <main class="admin-main">
+
+    <div class="admin-header">
+      <h1>Dashboard</h1>
+      <p>Overview of verified orders, revenue, and recent activity.</p>
+    </div>
+
+    <!-- FILTER BAR -->
+    <div class="admin-filter-bar">
+      <select id="filterDateRange">
+        <option value="all">All Time</option>
+        <option value="today">Today</option>
+        <option value="7days">Last 7 Days</option>
+        <option value="30days" selected>Last 30 Days</option>
+      </select>
+      <select id="filterCategory">
+        <option value="all">All Categories</option>
+      </select>
+      <select id="filterProduct">
+        <option value="all">All Products</option>
+      </select>
+      <select id="filterDelivery">
+        <option value="all">All Delivery Types</option>
+      </select>
+      <div class="admin-filter-spacer"></div>
+      <button type="button" class="admin-export-btn" id="exportExcelBtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 21h16"/></svg>
+        Export to Excel
+      </button>
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="admin-cards">
+      <div class="admin-card">
+        <div class="admin-card-top">
+          <span class="admin-card-label">Total Revenue</span>
+          <span class="admin-card-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </span>
+        </div>
+        <div class="admin-card-value" id="cardRevenue">RM0.00</div>
+        <div class="admin-card-note">From confirmed, in-delivery, or success orders only</div>
+      </div>
+
+      <div class="admin-card">
+        <div class="admin-card-top">
+          <span class="admin-card-label">Total Orders</span>
+          <span class="admin-card-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h9l3 3v17H6z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>
+          </span>
+        </div>
+        <div class="admin-card-value" id="cardOrders">0</div>
+        <div class="admin-card-note">From confirmed, in-delivery, or success orders only</div>
+      </div>
+
+      <div class="admin-card">
+        <div class="admin-card-top">
+          <span class="admin-card-label">Total Profit</span>
+          <span class="admin-card-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>
+          </span>
+        </div>
+        <div class="admin-card-value" id="cardProfit">RM0.00</div>
+        <div class="admin-card-note">Estimated at 35% margin — placeholder until real product cost data exists</div>
+      </div>
+    </div>
+
+    <!-- CHART -->
+    <div class="admin-chart-card">
+      <div class="admin-chart-head">
+        <h3>Sales Over Time</h3>
+        <div class="admin-chart-toggles">
+          <div class="chart-toggle">
+            <button type="button" id="chartMetricRM" class="active">Sales (RM)</button>
+            <button type="button" id="chartMetricQty">Quantity</button>
+          </div>
+          <div class="chart-toggle">
+            <button type="button" id="chartDaily" class="active">Daily</button>
+            <button type="button" id="chartMonthly">Monthly</button>
+          </div>
+        </div>
+      </div>
+      <div class="admin-chart-wrap">
+        <canvas id="salesChart"></canvas>
+      </div>
+    </div>
+
+    <!-- ORDERS TABLE -->
+    <div class="admin-table-card">
+      <h3>Customer Orders</h3>
+      <div class="admin-table-scroll">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Customer</th>
+              <th>Product</th>
+              <th>Total</th>
+              <th>Delivery</th>
+              <th>Payment</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="ordersTableBody"></tbody>
+        </table>
+      </div>
+      <div id="ordersEmptyState">No orders match these filters.</div>
+    </div>
+
+  </main>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="js/admin-sidebar.js"></script>
+<script src="js/admin-data.js"></script>
+<script src="js/admin-dashboard.js"></script>
+</body>
+</html>

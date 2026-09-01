@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orders — NVM Store Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<div class="admin-shell">
+
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar" id="adminSidebarMount"></aside>
+
+  <!-- MAIN -->
+  <main class="admin-main">
+
+    <div class="admin-header">
+      <h1>Orders</h1>
+      <p>Every order, its full details, and where it stands right now.</p>
+    </div>
+
+    <!-- FILTER BAR -->
+    <div class="admin-filter-bar">
+      <select id="filterDateRange">
+        <option value="all" selected>All Time</option>
+        <option value="today">Today</option>
+        <option value="7days">Last 7 Days</option>
+        <option value="30days">Last 30 Days</option>
+      </select>
+      <select id="filterCategory">
+        <option value="all">All Categories</option>
+      </select>
+      <select id="filterProduct">
+        <option value="all">All Products</option>
+      </select>
+      <select id="filterDelivery">
+        <option value="all">All Delivery Types</option>
+      </select>
+      <select id="filterStatus">
+        <option value="all">All Statuses</option>
+        <option value="pending">Pending</option>
+        <option value="confirmed">Confirmed</option>
+        <option value="unsuccessful">Unsuccessful</option>
+        <option value="in-delivery">In Delivery / Ready for Pickup</option>
+        <option value="success">Success</option>
+      </select>
+      <div class="admin-filter-spacer"></div>
+      <button type="button" class="admin-export-btn" id="exportExcelBtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 21h16"/></svg>
+        Export to Excel
+      </button>
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="admin-cards">
+      <div class="admin-card">
+        <div class="admin-card-top">
+          <span class="admin-card-label">Total Orders</span>
+          <span class="admin-card-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h9l3 3v17H6z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>
+          </span>
+        </div>
+        <div class="admin-card-value" id="cardTotalOrders">0</div>
+        <div class="admin-card-note">Matches current filters, all statuses</div>
+      </div>
+
+      <div class="admin-card">
+        <div class="admin-card-top">
+          <span class="admin-card-label">Pickup Orders</span>
+          <span class="admin-card-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.5-7-11a7 7 0 0 1 14 0c0 4.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+          </span>
+        </div>
+        <div class="admin-card-value" id="cardPickupOrders">0</div>
+        <div class="admin-card-note">Fulfilled via pickup location</div>
+      </div>
+
+      <div class="admin-card">
+        <div class="admin-card-top">
+          <span class="admin-card-label">Delivery Orders</span>
+          <span class="admin-card-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="7" width="14" height="10"/><path d="M15 10h4l3 3v4h-7z"/><circle cx="6" cy="19" r="1.6"/><circle cx="18" cy="19" r="1.6"/></svg>
+          </span>
+        </div>
+        <div class="admin-card-value" id="cardDeliveryOrders">0</div>
+        <div class="admin-card-note">Fulfilled via postage</div>
+      </div>
+    </div>
+
+    <!-- ORDERS TABLE -->
+    <div class="admin-table-card">
+      <h3>All Orders</h3>
+      <div class="admin-table-scroll">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Customer / Code</th>
+              <th>Product</th>
+              <th>Total</th>
+              <th>Delivery</th>
+              <th>Payment</th>
+              <th>Receipt</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="ordersTableBody"></tbody>
+        </table>
+      </div>
+      <div id="ordersEmptyState">No orders match these filters.</div>
+    </div>
+
+  </main>
+
+</div>
+
+<!-- RECEIPT PREVIEW MODAL -->
+<div class="admin-modal-overlay" id="receiptModalOverlay">
+  <div class="admin-modal">
+    <div class="admin-modal-head">
+      <h3>Payment Receipt</h3>
+      <button type="button" class="admin-modal-close" id="receiptModalClose">✕</button>
+    </div>
+    <img id="receiptModalImage" src="" alt="Payment receipt" class="admin-modal-image">
+  </div>
+</div>
+
+<!-- TRACKING NUMBER MODAL -->
+<div class="admin-modal-overlay" id="trackingModalOverlay">
+  <div class="admin-modal">
+    <div class="admin-modal-head">
+      <h3>Assign Tracking Number</h3>
+      <button type="button" class="admin-modal-close" id="trackingModalClose">✕</button>
+    </div>
+    <p class="field-note" style="margin-bottom:14px;">Required to move this order to "In Delivery."</p>
+    <input type="text" id="trackingNumberInput" placeholder="e.g. JNT6620119284">
+    <button type="button" class="admin-export-btn" id="trackingModalConfirm" style="margin-top:14px; width:100%; justify-content:center;">Confirm</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="admin-toast" id="adminToast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="js/admin-sidebar.js"></script>
+<script src="js/admin-data.js"></script>
+<script src="js/admin-orders.js"></script>
+</body>
+</html>
