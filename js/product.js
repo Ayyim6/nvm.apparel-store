@@ -189,7 +189,12 @@
     }
 
     // ---------- state ----------
-    let selectedColor = product.colors[0] || null;
+    // ?color=<id> lets a card (e.g. New Arrivals showing Black/White as
+    // separate cards) deep-link straight into that colorway instead of
+    // always landing on the first one.
+    const requestedColor = params.get("color");
+    let selectedColor =
+      product.colors.find((c) => c.id === requestedColor) || product.colors[0] || null;
     let selectedType = product.types[0] || null; // may be undefined if none
     let selectedSize = null; // user must actively pick a size
     let slideIndex = 0;

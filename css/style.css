@@ -41,7 +41,7 @@ a{ text-decoration:none; color:inherit; }
 ul{ list-style:none; }
 
 /* ---------- interactive cursor rules ---------- */
-button, .card-cta, .featured-card{
+button, .featured-card{
   cursor:pointer;
 }
 input, textarea{ cursor:text; }
@@ -70,7 +70,7 @@ input, textarea{ cursor:text; }
   background:var(--paper);
   border-radius:var(--radius-md);
   padding:16px 16px 20px;
-  width:220px;
+  width:240px;
   color:var(--ink);
   box-shadow:0 22px 40px -16px rgba(30,15,60,0.5);
   transition:transform .25s ease, box-shadow .25s ease;
@@ -89,7 +89,7 @@ input, textarea{ cursor:text; }
 }
 .featured-thumb{
   width:100%;
-  aspect-ratio:1/0.95;
+  aspect-ratio:3/4;
   border-radius:14px;
   background:linear-gradient(160deg,#c9b6f2,#8a63e0);
   margin-bottom:12px;
@@ -102,20 +102,21 @@ input, textarea{ cursor:text; }
 .featured-card .sub{ font-size:0.78rem; color:var(--ink-soft); margin-bottom:12px; }
 .card-link{ display:block; color:inherit; text-decoration:none; }
 
-.card-cta{
-  display:flex; align-items:center; justify-content:center; gap:8px;
-  background:var(--shade-700);
-  color:var(--paper);
-  padding:11px;
-  border-radius:999px;
-  border:none;
-  font-weight:700;
-  font-size:0.88rem;
-  width:100%;
-  transition:background .2s ease, transform .2s ease;
+.card-bottom-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-top:4px;
 }
-.card-cta:hover{ background:var(--shade-900); transform:translateY(-2px); }
-.card-cta:active{ transform:translateY(0) scale(0.98); }
+.card-price{ font-weight:700; font-size:0.92rem; }
+.card-shopnow{
+  font-weight:700;
+  font-size:0.82rem;
+  color:var(--shade-700);
+  transition:color .2s ease, transform .2s ease;
+  display:inline-block;
+}
+.featured-card:hover .card-shopnow{ color:var(--shade-900); transform:translateX(3px); }
 
 /* ---------- SECOND SECTION preview strip ---------- */
 .lower-strip{
@@ -166,7 +167,8 @@ input, textarea{ cursor:text; }
 
 .product-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns:repeat(auto-fit, minmax(240px, 280px));
+  justify-content:center;
   gap:24px;
   padding:32px 48px 48px;
 }
@@ -175,6 +177,71 @@ input, textarea{ cursor:text; }
   padding:40px 48px;
   color:var(--ink-soft);
   text-align:center;
+}
+
+/* ---------- CATEGORY / NEW ARRIVALS PAGE (reusable template) ---------- */
+/* Header image is set inline per-category via JS (category.js) rather
+   than baked into the CSS, since it's admin-assignable per category. */
+.category-hero{
+  min-height:50vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background-position:center top;
+  background-size:cover;
+  background-repeat:no-repeat;
+  background-color:var(--ink); /* fallback while/if the image hasn't loaded */
+  position:relative;
+  color:#fff;
+  text-align:center;
+  border-radius:0 0 40px 40px;
+  margin-bottom:8px;
+}
+.category-hero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.75) 100%);
+  border-radius:0 0 40px 40px;
+}
+.category-hero-content{
+  position:relative;
+  z-index:2;
+  padding:80px 24px 40px;
+}
+.category-hero-content h1{ font-size:3rem; letter-spacing:-1px; margin-bottom:12px; line-height:1.1; }
+.category-hero-content p{ font-size:1.05rem; color:#e6e6e6; max-width:520px; margin:0 auto; }
+
+.category-section-title{
+  font-size:1.6rem;
+  letter-spacing:-0.5px;
+  text-align:center;
+  padding:36px 24px 0;
+}
+
+.category-gallery{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+  gap:16px;
+  padding:8px 48px 60px;
+}
+.category-gallery-item{
+  border-radius:var(--radius-md);
+  overflow:hidden;
+  aspect-ratio:4/5;
+}
+.category-gallery-item img{
+  width:100%; height:100%;
+  object-fit:cover;
+  transition:transform .4s ease;
+}
+.category-gallery-item:hover img{ transform:scale(1.04); }
+
+@media (max-width: 780px){
+  .category-hero{ min-height:40vh; border-radius:0 0 24px 24px; }
+  .category-hero::before{ border-radius:0 0 24px 24px; }
+  .category-hero-content h1{ font-size:2.1rem; }
+  .category-gallery{ padding:8px 24px 48px; }
 }
 
 /* ---------- PILL NAV (GLASS STYLE) ---------- */

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Add Product — NVM Store Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<div class="admin-shell">
+
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar" id="adminSidebarMount"></aside>
+
+  <!-- MAIN -->
+  <main class="admin-main">
+
+    <div class="admin-header">
+      <h1>Add Product</h1>
+      <p>Set up a new product — category, sizing, colour/type variants, delivery, and pricing.</p>
+    </div>
+
+    <!-- EDIT EXISTING -->
+    <div class="admin-form-card">
+      <h3>Load Existing Product</h3>
+      <p class="field-note">Pick one to edit it, or leave this on "Create New" to start fresh.</p>
+      <select id="loadExistingProduct">
+        <option value="">— Create New Product —</option>
+      </select>
+    </div>
+
+    <form id="productForm">
+
+      <!-- BASIC INFO -->
+      <div class="admin-form-card">
+        <h3>Basic Info</h3>
+        <p class="field-note">A Category is a group of products from the same edition/release — same or similar design, different colours (this is the same thing as the Collections page). Its name doubles as the product's base name, e.g. "Black &amp; White Edition."</p>
+        <div class="form-field-admin">
+          <label for="productCategory">Category / Collection</label>
+          <select id="productCategory" required></select>
+        </div>
+        <div class="form-field-admin conditional-field" id="newCategoryGroup" style="display:none;">
+          <label for="newCategoryName">New Category Name</label>
+          <input type="text" id="newCategoryName" placeholder="e.g. Black &amp; White Edition">
+        </div>
+      </div>
+
+      <!-- STOCK TYPE -->
+      <div class="admin-form-card">
+        <h3>Stock Type</h3>
+        <div class="radio-row">
+          <label class="radio-option">
+            <input type="radio" name="stockType" value="regular" checked>
+            <span><strong>Regular stock</strong><br><span class="field-note">Quantity is set later in Inventory</span></span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="stockType" value="preorder">
+            <span><strong>Pre-order</strong><br><span class="field-note">Unlimited stock until the deadline</span></span>
+          </label>
+        </div>
+        <div class="form-field-admin conditional-field" id="preorderDeadlineGroup" style="display:none;">
+          <label for="preorderDeadline">Pre-order Deadline</label>
+          <input type="date" id="preorderDeadline">
+        </div>
+      </div>
+
+      <!-- SIZING -->
+      <div class="admin-form-card">
+        <h3>Sizing</h3>
+        <div class="radio-row">
+          <label class="radio-option">
+            <input type="radio" name="hasSizing" value="yes" checked>
+            <span><strong>Yes</strong> — this product has sizes</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="hasSizing" value="no">
+            <span><strong>No</strong> — one size / not applicable</span>
+          </label>
+        </div>
+
+        <div id="sizingFieldsGroup">
+          <div class="form-field-admin">
+            <label>Available Sizes</label>
+            <div class="size-checkbox-row" id="sizeCheckboxRow"></div>
+          </div>
+          <div class="form-field-admin">
+            <label>Price Addition per Size <span class="field-note">(leave 0 for sizes priced the same as base)</span></label>
+            <div id="sizePriceInputs" class="size-price-grid"></div>
+          </div>
+          <div class="form-field-admin">
+            <label for="sizingChartSelect">Sizing Chart Image</label>
+            <select id="sizingChartSelect">
+              <option value="images/sizing-guide.png">Standard Tee Sizing Chart (images/sizing-guide.png)</option>
+              <option value="">+ Upload a new chart (not wired yet)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- COLOUR VARIANTS -->
+      <div class="admin-form-card">
+        <h3>Colour Variants</h3>
+        <p class="field-note">Same product, same category — each colour gets its own thumbnail and photo gallery.</p>
+        <div id="colorVariantsList"></div>
+        <button type="button" class="admin-add-btn" id="addColorBtn">+ Add Colour</button>
+      </div>
+
+      <!-- TYPE VARIANTS -->
+      <div class="admin-form-card">
+        <h3>Type Variants</h3>
+        <p class="field-note">Collar type, material, or anything else — add as many groups as this product needs, or none at all.</p>
+        <div id="typeGroupsList"></div>
+        <button type="button" class="admin-add-btn" id="addTypeGroupBtn">+ Add Variant Group</button>
+      </div>
+
+      <!-- ADD-ONS -->
+      <div class="admin-form-card">
+        <h3>Add-ons</h3>
+        <p class="field-note">Things the customer types in themselves — e.g. a custom name for jersey printing.</p>
+        <div id="addonsList"></div>
+        <button type="button" class="admin-add-btn" id="addAddonBtn">+ Add Add-on</button>
+      </div>
+
+      <!-- DELIVERY OPTIONS -->
+      <div class="admin-form-card">
+        <h3>Delivery Options</h3>
+        <p class="field-note">Which fulfillment options apply to this product, with any extra charge on top of the base fee. (This list will come from the Delivery Management tab once it's built — for now it mirrors what's live at checkout.)</p>
+        <div id="deliveryOptionsList"></div>
+      </div>
+
+      <!-- DESCRIPTION -->
+      <div class="admin-form-card">
+        <h3>Product Description</h3>
+        <textarea id="productDescription" rows="4" placeholder="Shown on the shop and product pages..."></textarea>
+      </div>
+
+      <!-- PROMOTIONS -->
+      <div class="admin-form-card">
+        <h3>Promotion Rules</h3>
+        <p class="field-note">Optional bundle discounts — e.g. buy 2 colours, or 2+ of this product.</p>
+        <div id="promotionsList"></div>
+        <button type="button" class="admin-add-btn" id="addPromotionBtn">+ Add Promotion Rule</button>
+      </div>
+
+      <!-- SKU -->
+      <div class="admin-form-card">
+        <h3>Product SKU</h3>
+        <p class="field-note">The customer's order-tracking code once payment is verified. Format: <code>PREFIX-1234X</code> — a random 4-digit number, then a letter for whichever delivery mode the customer picks.</p>
+        <div class="form-field-admin form-field-narrow">
+          <label for="skuPrefix">SKU Prefix <span class="field-note">(4 letters)</span></label>
+          <input type="text" id="skuPrefix" maxlength="4" placeholder="e.g. BLCK" style="text-transform:uppercase;">
+        </div>
+        <div class="sku-preview" id="skuPreview">Preview: ----‑1234X</div>
+      </div>
+
+      <div class="admin-form-actions">
+        <button type="submit" class="admin-export-btn" id="saveProductBtn">Save Product</button>
+      </div>
+
+    </form>
+
+    <!-- PREVIEW (shown after Save — not yet wired to Supabase) -->
+    <div class="admin-table-card" id="productPreviewPanel" style="display:none;">
+      <h3>Product Captured ✓</h3>
+      <p class="field-note" style="margin-bottom:14px;">This isn't saved to a database yet — once the products table supports all of this, this same captured data is what gets sent there.</p>
+      <pre id="productPreviewContent" class="preview-json"></pre>
+    </div>
+
+  </main>
+
+</div>
+
+<script src="js/admin-sidebar.js"></script>
+<script src="js/admin-data.js"></script>
+<script src="js/admin-product-form.js"></script>
+</body>
+</html>
