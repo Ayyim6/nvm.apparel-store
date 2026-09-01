@@ -1437,3 +1437,87 @@ body.cart-drawer-locked{ overflow:hidden; }
     .contact-header { padding: 40px 24px 20px; }
     .contact-header h1 { font-size: 2.2rem; }
 }
+
+/* ---------- ORDER TRACKING ---------- */
+.status-timeline {
+  display: flex;
+  justify-content: space-between;
+  margin: 30px 0;
+  position: relative;
+}
+
+.status-timeline::before {
+  content: "";
+  position: absolute;
+  top: 15px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--shade-600);
+  z-index: 1;
+}
+
+.status-step {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  flex: 1;
+}
+
+.status-step .step-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--shade-600);
+  color: var(--ink-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px auto;
+  font-weight: bold;
+  border: 2px solid var(--paper);
+  transition: all 0.3s ease;
+}
+
+.status-step.active .step-icon {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.status-step.completed .step-icon {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.status-step.completed ~ .status-step::before {
+  /* We handle the line progress differently below */
+}
+
+.status-step .step-label {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+
+.status-step.active .step-label,
+.status-step.completed .step-label {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.status-details {
+  background: var(--surface-alt);
+  padding: 20px;
+  border-radius: var(--radius-sm);
+  margin-top: 20px;
+}
+
+.status-details h4 {
+  margin-bottom: 10px;
+}
+
+.status-details p {
+  margin-bottom: 5px;
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+}

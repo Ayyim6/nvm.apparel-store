@@ -166,6 +166,23 @@
     });
   }
 
+  // ---------- persist order changes locally ----------
+  function saveOrderUpdateToLocal(updatedOrder) {
+    let localOrdersRaw = localStorage.getItem('nvm_database_orders');
+    if (!localOrdersRaw) return;
+
+    try {
+      let localOrders = JSON.parse(localOrdersRaw);
+      const index = localOrders.findIndex(o => o.id === updatedOrder.id);
+      if (index !== -1) {
+        localOrders[index] = updatedOrder;
+        localStorage.setItem('nvm_database_orders', JSON.stringify(localOrders));
+      }
+    } catch (e) {
+      console.error("Failed to update local order", e);
+    }
+  }
+
   // ---------- tracking number modal (gate for "in-delivery") ----------
   function wireTrackingModal() {
     const overlay = document.getElementById("trackingModalOverlay");
@@ -194,6 +211,9 @@
       const order = ALL_ORDERS.find((o) => o.id === pendingTrackingOrderId);
       order.trackingNumber = input.value.trim();
       order.status = "in-delivery";
+
+      saveOrderUpdateToLocal(order);
+
       showToast(`${order.customerName}'s order is now In Delivery — tracking ${order.trackingNumber}.`);
       overlay.classList.remove("open");
       pendingTrackingOrderId = null;
@@ -220,6 +240,7 @@
       }
 
       order.status = newStatus;
+      saveOrderUpdateToLocal(order);
 
       if (newStatus === "confirmed") {
         showToast(`Invoice generated for ${order.customerName} (${order.id}) — email would be sent once email delivery is wired up.`);
