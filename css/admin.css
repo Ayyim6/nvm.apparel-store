@@ -115,6 +115,17 @@ h1, h2, h3{ font-family:'Archivo Black', sans-serif; font-weight:400; }
   line-height:1.5;
 }
 
+
+.admin-nav-group { display: flex; flex-direction: column; }
+.admin-nav-group .admin-nav-item { cursor: pointer; }
+.admin-nav-item .chevron { margin-left: auto; transition: transform 0.2s ease; opacity: 0.5; }
+.admin-nav-item:hover .chevron { opacity: 1; }
+.admin-nav-sub { display: none; flex-direction: column; gap: 4px; margin-top: 2px; padding-left: 36px; }
+.admin-nav-sub.open { display: flex; }
+.admin-nav-subitem { color: var(--a-sidebar-text); font-size: 0.85rem; font-weight: 500; text-decoration: none; padding: 8px 12px; border-radius: 8px; transition: background .2s, color .2s; }
+.admin-nav-subitem:hover { background: rgba(255,255,255,0.06); color: #fff; }
+.admin-nav-subitem.active { background: rgba(255,255,255,0.12); color: #fff; font-weight: 700; }
+
 /* ---------- MAIN ---------- */
 .admin-main{ padding:32px 36px 60px; overflow-x:hidden; }
 .admin-header{ margin-bottom:22px; }
@@ -620,3 +631,7 @@ textarea{ resize:vertical; }
   .admin-sidebar-foot{ display:none; }
   .admin-main{ padding:22px 18px 48px; }
 }
+/* Swatch modifications */
+.color-swatch-picker::-webkit-color-swatch-wrapper { padding: 0; }
+.color-swatch-picker::-webkit-color-swatch { border: 2px solid var(--a-border); border-radius: 50%; }
+.color-swatch-picker:hover::-webkit-color-swatch { border-color: var(--a-accent); }

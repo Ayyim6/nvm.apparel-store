@@ -206,6 +206,22 @@
   }
 
   // ---------- Sizing ----------
+
+  function populateSizingCharts() {
+      const select = document.getElementById("sizingChartSelect");
+      if (!select) return;
+      try {
+          const stored = localStorage.getItem("nvm_gallery_settings");
+          if (stored) {
+              const settings = JSON.parse(stored);
+              select.innerHTML = '<option value="">-- No Sizing Chart --</option>' +
+                                 settings.sizingCharts.map(c => `<option value="${c.url}">${c.name}</option>`).join("");
+              return;
+          }
+      } catch (e) {}
+      select.innerHTML = '<option value="images/sizing-guide.png">Standard T-Shirt Fit</option><option value="">-- No Sizing Chart --</option>';
+  }
+
   function renderSizeCheckboxes() {
     const row = document.getElementById("sizeCheckboxRow");
     row.innerHTML = SIZE_LIST.map(
@@ -606,6 +622,8 @@
       typeGroups,
       addons,
       deliveryOptions,
+      isNewArrival,
+      collection,
       description: document.getElementById("productDescription").value,
       promotions,
       skuPrefix: document.getElementById("skuPrefix").value.toUpperCase(),
@@ -634,6 +652,7 @@
     populateCategories();
     populateExistingProducts();
     wireStockType();
+    populateSizingCharts();
     renderSizeCheckboxes();
     wireSizing();
     wireColorVariants();
