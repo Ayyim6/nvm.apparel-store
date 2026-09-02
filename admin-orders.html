@@ -49,7 +49,13 @@
         <option value="success">Success</option>
       </select>
       <div class="admin-filter-spacer"></div>
+
+      <button type="button" class="admin-export-btn" id="downloadReceiptsBtn" style="margin-right: 10px; background: var(--a-blue);">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download Receipts (ZIP)
+      </button>
       <button type="button" class="admin-export-btn" id="exportExcelBtn">
+
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 21h16"/></svg>
         Export to Excel
       </button>
@@ -145,6 +151,7 @@
 <div class="admin-toast" id="adminToast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="js/admin-sidebar.js"></script>
 <script src="js/admin-data.js"></script>
 <script src="js/admin-orders.js"></script>

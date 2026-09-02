@@ -1,118 +1,136 @@
-/**
- * checkout-payment.js — payment method selection on checkout
- * ---------------------------------------------------------------
- * Handles switching between the 3 payment methods, showing the right
- * detail panel (QR + bank details / QR + links / "coming soon"), and
- * validating the uploaded receipt file type (JPEG or PDF only).
- *
- * Written so a 4th/5th method — or limiting methods per product — is
- * easy to add later: PAYMENT_METHODS below is the single source of
- * truth. To restrict methods per product, filter this array (or swap
- * it) based on the cart contents before rendering, rather than
- * hardcoding logic elsewhere.
- */
+
 (function () {
-  const PAYMENT_METHODS = [
-    { id: "qr_bank", requiresReceipt: true, disabled: false },
-    { id: "tng_spay", requiresReceipt: true, disabled: false },
-    { id: "fpx", requiresReceipt: false, disabled: true },
-  ];
+    let payments = [];
 
-  const ACCEPTED_RECEIPT_TYPES = ["image/jpeg", "application/pdf"];
-  const ACCEPTED_RECEIPT_EXT = [".jpg", ".jpeg", ".pdf"];
-
-  document.addEventListener("DOMContentLoaded", function () {
-    const list = document.getElementById("payment-method-list");
-    if (!list) return; // not on the checkout page
-
-    const receiptField = document.getElementById("receipt-upload-field");
-    const receiptInput = document.getElementById("receipt-upload");
-    const paymentError = document.getElementById("payment-error");
-
-    let currentMethod = "qr_bank";
-    let receiptFile = null;
-
-    function methodConfig(id) {
-      return PAYMENT_METHODS.find((m) => m.id === id);
+    function loadPayments() {
+        try {
+            const stored = localStorage.getItem("nvm_payment_methods");
+            if (stored) {
+                payments = JSON.parse(stored);
+            } else {
+                payments = [
+                    { id: "qr_bank", title: "QR Code / Bank Transfer", description: "Scan our QR code or transfer to our bank account, then upload your receipt.", requireReceipt: true, isActive: true },
+                    { id: "tng_spay", title: "TNG / SPay Later", description: "Pay via TnG eWallet or SPay Later.", requireReceipt: true, isActive: true },
+                    { id: "fpx", title: "FPX Online Banking", description: "Pay directly via online banking.", requireReceipt: false, isActive: false, comingSoon: true }
+                ];
+            }
+        } catch(e) {}
+        renderPayments();
     }
 
-    function setMethod(id) {
-      currentMethod = id;
+    function renderPayments() {
+        const container = document.getElementById("dynamic-payment-container");
+        if (!container) return;
 
-      PAYMENT_METHODS.forEach((m) => {
-        const panel = document.getElementById("payment-details-" + m.id);
-        if (panel) panel.style.display = m.id === id ? "" : "none";
-      });
+        let allowedPayments = null;
+        if (window.Cart && window.AdminInventoryData) {
+            const items = window.Cart.getItems();
+            if (items.length > 0) {
+                 const product = window.AdminInventoryData.PRODUCTS.find(p => String(p.id) === String(items[0].id));
+                 if (product && product.allowedPayments) {
+                     allowedPayments = product.allowedPayments;
+                 }
+            }
+        }
 
-      const cfg = methodConfig(id);
-      if (cfg && cfg.requiresReceipt) {
-        receiptField.style.display = "";
-        receiptInput.required = true;
-      } else {
-        receiptField.style.display = "none";
-        receiptInput.required = false;
-        receiptInput.value = "";
-        receiptFile = null;
-      }
+        let html = '<div class="payment-method-list" id="payment-method-list">';
 
-      paymentError.textContent = "";
+        payments.forEach((p, idx) => {
+            const isAllowed = !allowedPayments || allowedPayments.includes(p.id);
+            const isDisabled = !p.isActive || p.comingSoon || !isAllowed;
+            const checked = (idx === 0 && !isDisabled) ? 'checked' : '';
+
+            html += `
+              <label class="payment-method-option ${isDisabled ? 'disabled' : ''}" data-method="${p.id}">
+                <input type="radio" name="payment-method" value="${p.id}" ${checked} ${isDisabled ? 'disabled' : ''}>
+                <div class="payment-method-body">
+                  <span class="payment-method-name">
+                    ${p.logo ? `<img src="${p.logo}" style="height:20px; vertical-align:middle; margin-right:8px; border-radius:4px;">` : ''}
+                    ${p.title}
+                    ${p.comingSoon ? '<span class="badge-soon">Coming soon</span>' : ''}
+                  </span>
+                  <span class="payment-method-desc">${p.description}</span>
+                </div>
+              </label>
+            `;
+        });
+
+        html += '</div>'; // End list
+
+        // Add detail sections
+        payments.forEach(p => {
+             html += `
+             <div class="payment-method-details" id="payment-details-${p.id}" style="display:none;">
+                 ${p.qrImage ? `<img src="${p.qrImage}" style="max-width:100%; max-height:200px; display:block; margin: 0 auto 14px; border-radius:8px; border:1px solid var(--border);">` : ''}
+                 ${p.requireReceipt ? `
+                 <div class="form-field receipt-upload-field">
+                    <label>Upload Payment Receipt</label>
+                    <input type="file" class="receipt-upload" accept=".jpg,.jpeg,.png,.pdf">
+                    <span class="field-hint">Accepted formats: JPEG, PNG or PDF.</span>
+                 </div>
+                 ` : ''}
+             </div>
+             `;
+        });
+
+        container.innerHTML = html;
+        bindPaymentEvents();
+
+        // Initialize display
+        const activeRadio = document.querySelector('input[name="payment-method"]:checked');
+        if (activeRadio) {
+            const method = activeRadio.value;
+            const details = document.getElementById("payment-details-" + method);
+            if (details) details.style.display = "block";
+        }
     }
 
-    list.querySelectorAll('input[name="payment-method"]').forEach((radio) => {
-      radio.addEventListener("change", () => {
-        if (radio.disabled) return;
-        setMethod(radio.value);
-      });
-    });
+    function bindPaymentEvents() {
+        const radios = document.querySelectorAll('input[name="payment-method"]');
+        radios.forEach(radio => {
+            radio.addEventListener("change", (e) => {
+                // Hide all
+                document.querySelectorAll('.payment-method-details').forEach(el => el.style.display = "none");
+                // Show active
+                const method = e.target.value;
+                const details = document.getElementById("payment-details-" + method);
+                if (details) details.style.display = "block";
+            });
+        });
+    }
 
-    receiptInput.addEventListener("change", () => {
-      paymentError.textContent = "";
-      const file = receiptInput.files[0];
-      if (!file) {
-        receiptFile = null;
-        return;
-      }
-
-      const extOk = ACCEPTED_RECEIPT_EXT.some((ext) =>
-        file.name.toLowerCase().endsWith(ext)
-      );
-      const typeOk = ACCEPTED_RECEIPT_TYPES.includes(file.type);
-
-      if (!extOk && !typeOk) {
-        paymentError.textContent = "Please upload a JPEG or PDF file only.";
-        receiptInput.value = "";
-        receiptFile = null;
-        return;
-      }
-
-      receiptFile = file;
-    });
-
-    // Exposed for checkout.js to read on submit.
-    window.getPaymentSelection = function () {
-      const cfg = methodConfig(currentMethod);
-      return {
-        method: currentMethod,
-        requiresReceipt: cfg ? cfg.requiresReceipt : false,
-        receiptFile: receiptFile,
-      };
-    };
-
-    // Validates the payment step before the order is allowed to submit.
-    // Returns true if OK, otherwise shows an error and returns false.
     window.validatePaymentSelection = function () {
-      const cfg = methodConfig(currentMethod);
-      if (cfg && cfg.disabled) {
-        paymentError.textContent = "That payment method isn't available yet — please choose another.";
+      const selected = document.querySelector('input[name="payment-method"]:checked');
+      if (!selected) {
+        showError("Please select a payment method.");
         return false;
       }
-      if (cfg && cfg.requiresReceipt && !receiptFile) {
-        paymentError.textContent = "Please upload your payment receipt (JPEG or PDF).";
-        return false;
+      const methodId = selected.value;
+      const details = document.getElementById("payment-details-" + methodId);
+
+      if (details) {
+          const fileInput = details.querySelector(".receipt-upload");
+          if (fileInput && !fileInput.files.length) {
+              showError("Please upload your payment receipt.");
+              return false;
+          }
       }
       return true;
     };
 
-    setMethod("qr_bank");
-  });
+    window.getPaymentSelection = function () {
+      const selected = document.querySelector('input[name="payment-method"]:checked');
+      return {
+        method: selected ? selected.value : null,
+        // Mock receipt data, normally we'd parse the file
+        receiptFile: "mock-receipt.png"
+      };
+    };
+
+    function showError(msg) {
+        const el = document.getElementById("payment-error");
+        if (el) el.textContent = msg;
+    }
+
+    document.addEventListener("DOMContentLoaded", loadPayments);
 })();

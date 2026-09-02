@@ -1,0 +1,430 @@
+npm warn exec The following package was not found and will be installed: serve@14.2.6
+ INFO  Accepting connections at http://localhost:3000
+ HTTP  9/1/2026 4:07:17 PM ::1 GET /admin-delivery.html
+ HTTP  9/1/2026 4:07:17 PM ::1 Returned 301 in 285 ms
+ HTTP  9/1/2026 4:08:18 PM ::1 GET /admin-delivery.html
+ HTTP  9/1/2026 4:08:18 PM ::1 Returned 301 in 2 ms
+ HTTP  9/1/2026 4:08:18 PM ::1 GET /admin-delivery
+ HTTP  9/1/2026 4:08:18 PM ::1 Returned 200 in 21 ms
+ HTTP  9/1/2026 4:08:18 PM ::1 GET /css/admin.css
+ HTTP  9/1/2026 4:08:18 PM ::1 GET /js/admin-sidebar.js
+ HTTP  9/1/2026 4:08:18 PM ::1 GET /js/admin-data.js
+ HTTP  9/1/2026 4:08:18 PM ::1 GET /js/admin-delivery.js
+ HTTP  9/1/2026 4:08:18 PM ::1 Returned 200 in 11 ms
+ HTTP  9/1/2026 4:08:18 PM ::1 Returned 200 in 10 ms
+ HTTP  9/1/2026 4:08:18 PM ::1 Returned 200 in 11 ms
+ HTTP  9/1/2026 4:08:18 PM ::1 Returned 200 in 11 ms
+ HTTP  9/1/2026 4:08:23 PM ::1 GET /shop.html
+ HTTP  9/1/2026 4:08:23 PM ::1 Returned 301 in 1 ms
+ HTTP  9/1/2026 4:08:23 PM ::1 GET /shop
+ HTTP  9/1/2026 4:08:23 PM ::1 Returned 200 in 9 ms
+ HTTP  9/1/2026 4:08:23 PM ::1 GET /css/style.css
+ HTTP  9/1/2026 4:08:23 PM ::1 GET /js/supabaseClient.js
+ HTTP  9/1/2026 4:08:23 PM ::1 GET /js/cart.js
+ HTTP  9/1/2026 4:08:23 PM ::1 GET /js/cart-drawer.js
+ HTTP  9/1/2026 4:08:23 PM ::1 GET /js/nav-drawer.js
+ HTTP  9/1/2026 4:08:23 PM ::1 GET /js/product-card.js
+ HTTP  9/1/2026 4:08:23 PM ::1 Returned 200 in 20 ms
+ HTTP  9/1/2026 4:08:23 PM ::1 Returned 200 in 17 ms
+ HTTP  9/1/2026 4:08:23 PM ::1 Returned 200 in 17 ms
+ HTTP  9/1/2026 4:08:23 PM ::1 Returned 200 in 18 ms
+ HTTP  9/1/2026 4:08:23 PM ::1 Returned 200 in 13 ms
+ HTTP  9/1/2026 4:08:23 PM ::1 Returned 200 in 14 ms
+ HTTP  9/1/2026 4:08:23 PM ::1 GET /js/shop.js
+ HTTP  9/1/2026 4:08:23 PM ::1 Returned 200 in 3 ms
+ HTTP  9/1/2026 4:08:26 PM ::1 GET /checkout.html
+ HTTP  9/1/2026 4:08:26 PM ::1 Returned 301 in 0 ms
+ HTTP  9/1/2026 4:08:26 PM ::1 GET /checkout
+ HTTP  9/1/2026 4:08:26 PM ::1 Returned 200 in 2 ms
+ HTTP  9/1/2026 4:08:26 PM ::1 GET /css/style.css
+ HTTP  9/1/2026 4:08:26 PM ::1 Returned 304 in 1 ms
+ HTTP  9/1/2026 4:08:26 PM ::1 GET /js/checkout-fulfillment.js
+ HTTP  9/1/2026 4:08:26 PM ::1 GET /js/supabaseClient.js
+ HTTP  9/1/2026 4:08:26 PM ::1 GET /js/checkout-payment.js
+ HTTP  9/1/2026 4:08:26 PM ::1 GET /js/checkout.js
+ HTTP  9/1/2026 4:08:26 PM ::1 GET /js/admin-data.js
+ HTTP  9/1/2026 4:08:26 PM ::1 Returned 304 in 1 ms
+ HTTP  9/1/2026 4:08:26 PM ::1 GET /js/cart.js
+ HTTP  9/1/2026 4:08:26 PM ::1 Returned 304 in 2 ms
+ HTTP  9/1/2026 4:08:26 PM ::1 Returned 304 in 1 ms
+ HTTP  9/1/2026 4:08:26 PM ::1 GET /js/cart-drawer.js
+ HTTP  9/1/2026 4:08:26 PM ::1 Returned 200 in 6 ms
+ HTTP  9/1/2026 4:08:26 PM ::1 Returned 304 in 1 ms
+ HTTP  9/1/2026 4:08:26 PM ::1 Returned 200 in 6 ms
+ HTTP  9/1/2026 4:08:26 PM ::1 GET /js/nav-drawer.js
+ HTTP  9/1/2026 4:08:26 PM ::1 Returned 200 in 7 ms
+ HTTP  9/1/2026 4:08:26 PM ::1 Returned 304 in 1 ms
+ HTTP  9/1/2026 4:32:48 PM ::1 GET /admin-inventory.html
+ HTTP  9/1/2026 4:32:48 PM ::1 Returned 301 in 30 ms
+ HTTP  9/1/2026 4:32:48 PM ::1 GET /admin-inventory
+ HTTP  9/1/2026 4:32:48 PM ::1 Returned 200 in 37 ms
+ HTTP  9/1/2026 4:32:48 PM ::1 GET /css/admin.css
+ HTTP  9/1/2026 4:32:48 PM ::1 Returned 200 in 11 ms
+ HTTP  9/1/2026 4:32:48 PM ::1 GET /js/admin-sidebar.js
+ HTTP  9/1/2026 4:32:48 PM ::1 GET /js/admin-data.js
+ HTTP  9/1/2026 4:32:48 PM ::1 GET /js/admin-inventory-data.js
+ HTTP  9/1/2026 4:32:48 PM ::1 Returned 200 in 7 ms
+ HTTP  9/1/2026 4:32:48 PM ::1 GET /js/admin-inventory.js
+ HTTP  9/1/2026 4:32:48 PM ::1 Returned 200 in 18 ms
+ HTTP  9/1/2026 4:32:48 PM ::1 Returned 200 in 18 ms
+ HTTP  9/1/2026 4:32:48 PM ::1 Returned 200 in 65 ms
+ HTTP  9/1/2026 4:32:48 PM ::1 GET /images/black-1.jpg
+ HTTP  9/1/2026 4:32:48 PM ::1 GET /images/retro-1.jpg
+ HTTP  9/1/2026 4:32:48 PM ::1 Returned 200 in 10 ms
+ HTTP  9/1/2026 4:32:48 PM ::1 Returned 200 in 11 ms
+ HTTP  9/1/2026 5:05:11 PM ::1 GET /
+ HTTP  9/1/2026 5:05:11 PM ::1 Returned 200 in 87 ms
+ HTTP  9/1/2026 5:05:11 PM ::1 GET /css/style.css
+ HTTP  9/1/2026 5:05:11 PM ::1 Returned 200 in 5 ms
+ HTTP  9/1/2026 5:05:11 PM ::1 GET /js/supabaseClient.js
+ HTTP  9/1/2026 5:05:11 PM ::1 Returned 200 in 3 ms
+ HTTP  9/1/2026 5:05:11 PM ::1 GET /js/cart.js
+ HTTP  9/1/2026 5:05:11 PM ::1 GET /js/cart-drawer.js
+ HTTP  9/1/2026 5:05:11 PM ::1 GET /js/nav-drawer.js
+ HTTP  9/1/2026 5:05:11 PM ::1 Returned 200 in 14 ms
+ HTTP  9/1/2026 5:05:11 PM ::1 Returned 200 in 13 ms
+ HTTP  9/1/2026 5:05:11 PM ::1 Returned 200 in 14 ms
+ HTTP  9/1/2026 5:05:11 PM ::1 GET /images/headerbg.jpg
+ HTTP  9/1/2026 5:05:11 PM ::1 GET /images/black-2.jpg
+ HTTP  9/1/2026 5:05:11 PM ::1 GET /images/retro-1.jpg
+ HTTP  9/1/2026 5:05:11 PM ::1 Returned 200 in 3 ms
+ HTTP  9/1/2026 5:05:11 PM ::1 Returned 200 in 87 ms
+ HTTP  9/1/2026 5:05:11 PM ::1 Returned 200 in 123 ms
+ HTTP  9/1/2026 5:05:13 PM ::1 GET /contact.html
+ HTTP  9/1/2026 5:05:13 PM ::1 Returned 301 in 1 ms
+ HTTP  9/1/2026 5:05:13 PM ::1 GET /contact
+ HTTP  9/1/2026 5:05:13 PM ::1 Returned 200 in 6 ms
+ HTTP  9/1/2026 5:05:13 PM ::1 GET /css/style.css
+ HTTP  9/1/2026 5:05:13 PM ::1 GET /js/admin-data.js
+ HTTP  9/1/2026 5:05:13 PM ::1 GET /js/tracking.js
+ HTTP  9/1/2026 5:05:13 PM ::1 GET /js/supabaseClient.js
+ HTTP  9/1/2026 5:05:13 PM ::1 GET /js/cart.js
+ HTTP  9/1/2026 5:05:13 PM ::1 Returned 304 in 12 ms
+ HTTP  9/1/2026 5:05:13 PM ::1 GET /js/cart-drawer.js
+ HTTP  9/1/2026 5:05:13 PM ::1 Returned 304 in 8 ms
+ HTTP  9/1/2026 5:05:13 PM ::1 Returned 304 in 7 ms
+ HTTP  9/1/2026 5:05:13 PM ::1 Returned 304 in 2 ms
+ HTTP  9/1/2026 5:05:13 PM ::1 GET /js/nav-drawer.js
+ HTTP  9/1/2026 5:05:13 PM ::1 Returned 304 in 2 ms
+ HTTP  9/1/2026 5:05:13 PM ::1 Returned 200 in 18 ms
+ HTTP  9/1/2026 5:05:13 PM ::1 Returned 200 in 21 ms
+ HTTP  9/1/2026 5:07:40 PM ::1 GET /
+ HTTP  9/1/2026 5:07:40 PM ::1 Returned 200 in 2 ms
+ HTTP  9/1/2026 5:07:40 PM ::1 GET /css/style.css
+ HTTP  9/1/2026 5:07:40 PM ::1 GET /js/supabaseClient.js
+ HTTP  9/1/2026 5:07:40 PM ::1 Returned 200 in 8 ms
+ HTTP  9/1/2026 5:07:40 PM ::1 Returned 200 in 7 ms
+ HTTP  9/1/2026 5:07:40 PM ::1 GET /js/cart.js
+ HTTP  9/1/2026 5:07:40 PM ::1 GET /js/cart-drawer.js
+ HTTP  9/1/2026 5:07:40 PM ::1 GET /js/nav-drawer.js
+ HTTP  9/1/2026 5:07:40 PM ::1 Returned 200 in 7 ms
+ HTTP  9/1/2026 5:07:40 PM ::1 Returned 200 in 6 ms
+ HTTP  9/1/2026 5:07:40 PM ::1 Returned 200 in 3 ms
+ HTTP  9/1/2026 5:07:40 PM ::1 GET /images/headerbg.jpg
+ HTTP  9/1/2026 5:07:40 PM ::1 Returned 200 in 3 ms
+ HTTP  9/1/2026 5:07:40 PM ::1 GET /images/black-2.jpg
+ HTTP  9/1/2026 5:07:40 PM ::1 GET /images/retro-1.jpg
+ HTTP  9/1/2026 5:07:40 PM ::1 Returned 200 in 1 ms
+ HTTP  9/1/2026 5:07:40 PM ::1 Returned 200 in 1 ms
+ HTTP  9/1/2026 5:07:41 PM ::1 GET /contact.html
+ HTTP  9/1/2026 5:07:41 PM ::1 Returned 301 in 1 ms
+ HTTP  9/1/2026 5:07:41 PM ::1 GET /contact
+ HTTP  9/1/2026 5:07:41 PM ::1 Returned 200 in 3 ms
+ HTTP  9/1/2026 5:07:41 PM ::1 GET /css/style.css
+ HTTP  9/1/2026 5:07:41 PM ::1 Returned 304 in 0 ms
+ HTTP  9/1/2026 5:07:41 PM ::1 GET /js/admin-data.js
+ HTTP  9/1/2026 5:07:41 PM ::1 GET /js/supabaseClient.js
+ HTTP  9/1/2026 5:07:41 PM ::1 Returned 200 in 2 ms
+ HTTP  9/1/2026 5:07:41 PM ::1 GET /js/tracking.js
+ HTTP  9/1/2026 5:07:41 PM ::1 Returned 304 in 4 ms
+ HTTP  9/1/2026 5:07:41 PM ::1 GET /js/cart.js
+ HTTP  9/1/2026 5:07:41 PM ::1 GET /js/cart-drawer.js
+ HTTP  9/1/2026 5:07:41 PM ::1 GET /js/nav-drawer.js
+ HTTP  9/1/2026 5:07:41 PM ::1 Returned 200 in 4 ms
+ HTTP  9/1/2026 5:07:41 PM ::1 Returned 304 in 2 ms
+ HTTP  9/1/2026 5:07:41 PM ::1 Returned 304 in 3 ms
+ HTTP  9/1/2026 5:07:41 PM ::1 Returned 304 in 3 ms
+ HTTP  9/2/2026 2:08:21 AM ::1 GET /admin-orders.html
+ HTTP  9/2/2026 2:08:21 AM ::1 Returned 301 in 45 ms
+ HTTP  9/2/2026 2:08:21 AM ::1 GET /admin-orders
+ HTTP  9/2/2026 2:08:21 AM ::1 Returned 200 in 42 ms
+ HTTP  9/2/2026 2:08:21 AM ::1 GET /css/admin.css
+ HTTP  9/2/2026 2:08:21 AM ::1 Returned 200 in 4 ms
+ HTTP  9/2/2026 2:08:21 AM ::1 GET /js/admin-sidebar.js
+ HTTP  9/2/2026 2:08:21 AM ::1 GET /js/admin-data.js
+ HTTP  9/2/2026 2:08:21 AM ::1 GET /js/admin-orders.js
+ HTTP  9/2/2026 2:08:21 AM ::1 Returned 200 in 19 ms
+ HTTP  9/2/2026 2:08:21 AM ::1 Returned 200 in 27 ms
+ HTTP  9/2/2026 2:08:21 AM ::1 Returned 200 in 33 ms
+ HTTP  9/2/2026 2:08:22 AM ::1 GET /images/mock-receipt.png
+ HTTP  9/2/2026 2:08:22 AM ::1 Returned 200 in 6 ms
+ HTTP  9/2/2026 2:47:25 AM ::1 GET /admin-product-addition.html
+ HTTP  9/2/2026 2:47:25 AM ::1 Returned 301 in 47 ms
+ HTTP  9/2/2026 2:47:25 AM ::1 GET /admin-product-addition
+ HTTP  9/2/2026 2:47:25 AM ::1 Returned 200 in 89 ms
+ HTTP  9/2/2026 2:47:25 AM ::1 GET /css/admin.css
+ HTTP  9/2/2026 2:47:25 AM ::1 Returned 200 in 8 ms
+ HTTP  9/2/2026 2:47:25 AM ::1 GET /js/admin-sidebar.js
+ HTTP  9/2/2026 2:47:25 AM ::1 GET /js/admin-data.js
+ HTTP  9/2/2026 2:47:25 AM ::1 GET /js/admin-product-form.js
+ HTTP  9/2/2026 2:47:25 AM ::1 Returned 200 in 5 ms
+ HTTP  9/2/2026 2:47:25 AM ::1 Returned 200 in 10 ms
+ HTTP  9/2/2026 2:47:25 AM ::1 Returned 200 in 11 ms
+ HTTP  9/2/2026 2:54:00 AM ::1 GET /admin-product-manage.html
+ HTTP  9/2/2026 2:54:00 AM ::1 Returned 301 in 2 ms
+ HTTP  9/2/2026 2:54:00 AM ::1 GET /admin-product-manage
+ HTTP  9/2/2026 2:54:00 AM ::1 Returned 200 in 4 ms
+ HTTP  9/2/2026 2:54:00 AM ::1 GET /css/admin.css
+ HTTP  9/2/2026 2:54:00 AM ::1 Returned 200 in 6 ms
+ HTTP  9/2/2026 2:54:00 AM ::1 GET /js/admin-sidebar.js
+ HTTP  9/2/2026 2:54:00 AM ::1 GET /js/admin-inventory-data.js
+ HTTP  9/2/2026 2:54:00 AM ::1 Returned 200 in 3 ms
+ HTTP  9/2/2026 2:54:00 AM ::1 GET /js/admin-product-manage.js
+ HTTP  9/2/2026 2:54:00 AM ::1 Returned 200 in 4 ms
+ HTTP  9/2/2026 2:54:00 AM ::1 Returned 200 in 9 ms
+ HTTP  9/2/2026 2:55:02 AM ::1 GET /admin-product-manage.html
+ HTTP  9/2/2026 2:55:02 AM ::1 Returned 301 in 1 ms
+ HTTP  9/2/2026 2:55:02 AM ::1 GET /admin-product-manage
+ HTTP  9/2/2026 2:55:02 AM ::1 Returned 200 in 7 ms
+ HTTP  9/2/2026 2:55:02 AM ::1 GET /css/admin.css
+ HTTP  9/2/2026 2:55:02 AM ::1 GET /js/admin-sidebar.js
+ HTTP  9/2/2026 2:55:02 AM ::1 Returned 200 in 5 ms
+ HTTP  9/2/2026 2:55:02 AM ::1 Returned 200 in 4 ms
+ HTTP  9/2/2026 2:55:02 AM ::1 GET /js/admin-inventory-data.js
+ HTTP  9/2/2026 2:55:02 AM ::1 Returned 200 in 1 ms
+ HTTP  9/2/2026 2:55:02 AM ::1 GET /js/admin-product-manage.js
+ HTTP  9/2/2026 2:55:02 AM ::1 Returned 200 in 1 ms
+ HTTP  9/2/2026 2:55:05 AM ::1 GET /admin-product-gallery.html
+ HTTP  9/2/2026 2:55:05 AM ::1 Returned 301 in 1 ms
+ HTTP  9/2/2026 2:55:05 AM ::1 GET /admin-product-gallery
+ HTTP  9/2/2026 2:55:05 AM ::1 Returned 200 in 5 ms
+ HTTP  9/2/2026 2:55:05 AM ::1 GET /css/admin.css
+ HTTP  9/2/2026 2:55:05 AM ::1 GET /js/admin-product-gallery.js
+ HTTP  9/2/2026 2:55:05 AM ::1 GET /js/admin-sidebar.js
+ HTTP  9/2/2026 2:55:05 AM ::1 GET /js/admin-inventory-data.js
+ HTTP  9/2/2026 2:55:05 AM ::1 Returned 304 in 3 ms
+ HTTP  9/2/2026 2:55:05 AM ::1 Returned 304 in 2 ms
+ HTTP  9/2/2026 2:55:05 AM ::1 Returned 304 in 8 ms
+ HTTP  9/2/2026 2:55:05 AM ::1 Returned 200 in 15 ms
+ HTTP  9/2/2026 2:55:05 AM ::1 GET /images/black-1.jpg
+ HTTP  9/2/2026 2:55:05 AM ::1 GET /images/white-1.jpg
+ HTTP  9/2/2026 2:55:05 AM ::1 GET /images/sizing-guide.png
+ HTTP  9/2/2026 2:55:05 AM ::1 Returned 200 in 7 ms
+ HTTP  9/2/2026 2:55:05 AM ::1 Returned 200 in 16 ms
+ HTTP  9/2/2026 2:55:05 AM ::1 Returned 200 in 23 ms
+ HTTP  9/2/2026 2:55:07 AM ::1 GET /admin-product-addition.html
+ HTTP  9/2/2026 2:55:07 AM ::1 Returned 301 in 0 ms
+ HTTP  9/2/2026 2:55:07 AM ::1 GET /admin-product-addition
+ HTTP  9/2/2026 2:55:07 AM ::1 Returned 200 in 5 ms
+ HTTP  9/2/2026 2:55:07 AM ::1 GET /css/admin.css
+ HTTP  9/2/2026 2:55:07 AM ::1 Returned 304 in 2 ms
+ HTTP  9/2/2026 2:55:07 AM ::1 GET /js/admin-data.js
+ HTTP  9/2/2026 2:55:07 AM ::1 Returned 200 in 3 ms
+ HTTP  9/2/2026 2:55:07 AM ::1 GET /js/admin-product-form.js
+ HTTP  9/2/2026 2:55:07 AM ::1 GET /js/admin-sidebar.js
+ HTTP  9/2/2026 2:55:07 AM ::1 Returned 304 in 2 ms
+ HTTP  9/2/2026 2:55:07 AM ::1 Returned 200 in 7 ms
+ HTTP  9/2/2026 2:55:36 AM ::1 GET /admin-product-manage.html
+ HTTP  9/2/2026 2:55:36 AM ::1 Returned 301 in 1 ms
+ HTTP  9/2/2026 2:55:36 AM ::1 GET /admin-product-manage
+ HTTP  9/2/2026 2:55:36 AM ::1 Returned 200 in 2 ms
+ HTTP  9/2/2026 2:55:36 AM ::1 GET /css/admin.css
+ HTTP  9/2/2026 2:55:36 AM ::1 GET /js/admin-sidebar.js
+ HTTP  9/2/2026 2:55:36 AM ::1 GET /js/admin-inventory-data.js
+ HTTP  9/2/2026 2:55:36 AM ::1 GET /js/admin-product-manage.js
+ HTTP  9/2/2026 2:55:36 AM ::1 Returned 200 in 2 ms
+ HTTP  9/2/2026 2:55:36 AM ::1 Returned 200 in 1 ms
+ HTTP  9/2/2026 2:55:36 AM ::1 Returned 200 in 4 ms
+ HTTP  9/2/2026 2:55:36 AM ::1 Returned 200 in 4 ms
+ HTTP  9/2/2026 2:55:39 AM ::1 GET /admin-product-gallery.html
+ HTTP  9/2/2026 2:55:39 AM ::1 Returned 301 in 0 ms
+ HTTP  9/2/2026 2:55:39 AM ::1 GET /admin-product-gallery
+ HTTP  9/2/2026 2:55:39 AM ::1 Returned 200 in 2 ms
+ HTTP  9/2/2026 2:55:39 AM ::1 GET /css/admin.css
+ HTTP  9/2/2026 2:55:39 AM ::1 Returned 304 in 1 ms
+ HTTP  9/2/2026 2:55:39 AM ::1 GET /js/admin-product-gallery.js
+ HTTP  9/2/2026 2:55:39 AM ::1 GET /js/admin-sidebar.js
+ HTTP  9/2/2026 2:55:39 AM ::1 GET /js/admin-inventory-data.js
+ HTTP  9/2/2026 2:55:39 AM ::1 Returned 200 in 2 ms
+ HTTP  9/2/2026 2:55:39 AM ::1 Returned 304 in 2 ms
+ HTTP  9/2/2026 2:55:39 AM ::1 Returned 304 in 1 ms
+ HTTP  9/2/2026 2:55:39 AM ::1 GET /images/black-1.jpg
+ HTTP  9/2/2026 2:55:39 AM ::1 GET /images/white-1.jpg
+ HTTP  9/2/2026 2:55:39 AM ::1 GET /images/sizing-guide.png
+ HTTP  9/2/2026 2:55:39 AM ::1 Returned 200 in 2 ms
+ HTTP  9/2/2026 2:55:39 AM ::1 Returned 200 in 2 ms
+ HTTP  9/2/2026 2:55:39 AM ::1 Returned 200 in 3 ms
+ HTTP  9/2/2026 2:55:41 AM ::1 GET /admin-product-addition.html
+ HTTP  9/2/2026 2:55:41 AM ::1 Returned 301 in 1 ms
+ HTTP  9/2/2026 2:55:41 AM ::1 GET /admin-product-addition
+ HTTP  9/2/2026 2:55:41 AM ::1 Returned 200 in 2 ms
+ HTTP  9/2/2026 2:55:41 AM ::1 GET /css/admin.css
+ HTTP  9/2/2026 2:55:41 AM ::1 Returned 304 in 1 ms
+ HTTP  9/2/2026 2:55:41 AM ::1 GET /js/admin-data.js
+ HTTP  9/2/2026 2:55:41 AM ::1 GET /js/admin-product-form.js
+ HTTP  9/2/2026 2:55:41 AM ::1 GET /js/admin-sidebar.js
+ HTTP  9/2/2026 2:55:41 AM ::1 Returned 200 in 1 ms
+ HTTP  9/2/2026 2:55:41 AM ::1 Returned 200 in 1 ms
+ HTTP  9/2/2026 2:55:41 AM ::1 Returned 304 in 4 ms
+ HTTP  9/2/2026 4:12:47 AM ::1 GET /admin-payment.html
+ HTTP  9/2/2026 4:12:47 AM ::1 Returned 301 in 46 ms
+ HTTP  9/2/2026 4:12:47 AM ::1 GET /admin-payment
+ HTTP  9/2/2026 4:12:47 AM ::1 Returned 200 in 43 ms
+ HTTP  9/2/2026 4:12:47 AM ::1 GET /css/admin.css
+ HTTP  9/2/2026 4:12:47 AM ::1 Returned 200 in 4 ms
+ HTTP  9/2/2026 4:12:47 AM ::1 GET /js/admin-sidebar.js
+ HTTP  9/2/2026 4:12:47 AM ::1 GET /js/admin-payment.js
+ HTTP  9/2/2026 4:12:47 AM ::1 Returned 200 in 19 ms
+ HTTP  9/2/2026 4:12:47 AM ::1 Returned 200 in 28 ms
+ HTTP  9/2/2026 4:12:48 AM ::1 GET /admin-product-manage.html
+ HTTP  9/2/2026 4:12:48 AM ::1 Returned 301 in 3 ms
+ HTTP  9/2/2026 4:12:48 AM ::1 GET /admin-product-manage
+ HTTP  9/2/2026 4:12:48 AM ::1 Returned 200 in 50 ms
+ HTTP  9/2/2026 4:12:48 AM ::1 GET /css/admin.css
+ HTTP  9/2/2026 4:12:48 AM ::1 GET /js/admin-inventory-data.js
+ HTTP  9/2/2026 4:12:48 AM ::1 GET /js/admin-product-manage.js
+ HTTP  9/2/2026 4:12:48 AM ::1 Returned 304 in 5 ms
+ HTTP  9/2/2026 4:12:48 AM ::1 GET /js/admin-sidebar.js
+ HTTP  9/2/2026 4:12:48 AM ::1 Returned 304 in 1 ms
+ HTTP  9/2/2026 4:12:48 AM ::1 Returned 200 in 5 ms
+ HTTP  9/2/2026 4:12:48 AM ::1 Returned 200 in 7 ms
+ HTTP  9/2/2026 4:12:49 AM ::1 GET /admin-product-addition.html
+ HTTP  9/2/2026 4:12:49 AM ::1 Returned 301 in 1 ms
+ HTTP  9/2/2026 4:12:49 AM ::1 GET /admin-product-addition
+ HTTP  9/2/2026 4:12:49 AM ::1 Returned 200 in 5 ms
+ HTTP  9/2/2026 4:12:49 AM ::1 GET /css/admin.css
+ HTTP  9/2/2026 4:12:49 AM ::1 GET /js/admin-data.js
+ HTTP  9/2/2026 4:12:49 AM ::1 GET /js/admin-product-form.js
+ HTTP  9/2/2026 4:12:49 AM ::1 GET /js/admin-sidebar.js
+ HTTP  9/2/2026 4:12:49 AM ::1 Returned 304 in 10 ms
+ HTTP  9/2/2026 4:12:49 AM ::1 Returned 200 in 9 ms
+ HTTP  9/2/2026 4:12:49 AM ::1 Returned 304 in 12 ms
+ HTTP  9/2/2026 4:12:49 AM ::1 Returned 200 in 24 ms
+ HTTP  9/2/2026 4:12:51 AM ::1 GET /shop.html
+ HTTP  9/2/2026 4:12:51 AM ::1 Returned 301 in 2 ms
+ HTTP  9/2/2026 4:12:51 AM ::1 GET /shop
+ HTTP  9/2/2026 4:12:51 AM ::1 Returned 200 in 2 ms
+ HTTP  9/2/2026 4:12:51 AM ::1 GET /css/style.css
+ HTTP  9/2/2026 4:12:51 AM ::1 Returned 200 in 2 ms
+ HTTP  9/2/2026 4:12:51 AM ::1 GET /js/supabaseClient.js
+ HTTP  9/2/2026 4:12:51 AM ::1 GET /js/cart.js
+ HTTP  9/2/2026 4:12:51 AM ::1 GET /js/cart-drawer.js
+ HTTP  9/2/2026 4:12:51 AM ::1 GET /js/nav-drawer.js
+ HTTP  9/2/2026 4:12:51 AM ::1 GET /js/product-card.js
+ HTTP  9/2/2026 4:12:51 AM ::1 Returned 200 in 7 ms
+ HTTP  9/2/2026 4:12:51 AM ::1 Returned 200 in 7 ms
+ HTTP  9/2/2026 4:12:51 AM ::1 Returned 200 in 8 ms
+ HTTP  9/2/2026 4:12:51 AM ::1 Returned 200 in 9 ms
+ HTTP  9/2/2026 4:12:51 AM ::1 Returned 200 in 23 ms
+ HTTP  9/2/2026 4:12:51 AM ::1 GET /js/shop.js
+ HTTP  9/2/2026 4:12:51 AM ::1 Returned 200 in 2 ms
+ HTTP  9/2/2026 4:12:51 AM ::1 GET /checkout.html
+ HTTP  9/2/2026 4:12:51 AM ::1 Returned 301 in 1 ms
+ HTTP  9/2/2026 4:12:51 AM ::1 GET /checkout
+ HTTP  9/2/2026 4:12:51 AM ::1 Returned 200 in 8 ms
+ HTTP  9/2/2026 4:12:51 AM ::1 GET /css/style.css
+ HTTP  9/2/2026 4:12:51 AM ::1 Returned 304 in 1 ms
+ HTTP  9/2/2026 4:12:51 AM ::1 GET /js/supabaseClient.js
+ HTTP  9/2/2026 4:12:51 AM ::1 GET /js/admin-data.js
+ HTTP  9/2/2026 4:12:51 AM ::1 Returned 304 in 1 ms
+ HTTP  9/2/2026 4:12:51 AM ::1 Returned 304 in 1 ms
+ HTTP  9/2/2026 4:12:51 AM ::1 GET /js/checkout-fulfillment.js
+ HTTP  9/2/2026 4:12:51 AM ::1 GET /js/checkout-payment.js
+ HTTP  9/2/2026 4:12:51 AM ::1 GET /js/admin-inventory-data.js
+ HTTP  9/2/2026 4:12:51 AM ::1 GET /js/checkout.js
+ HTTP  9/2/2026 4:12:51 AM ::1 GET /js/cart.js
+ HTTP  9/2/2026 4:12:51 AM ::1 GET /js/cart-drawer.js
+ HTTP  9/2/2026 4:12:51 AM ::1 Returned 304 in 6 ms
+ HTTP  9/2/2026 4:12:51 AM ::1 Returned 304 in 7 ms
+ HTTP  9/2/2026 4:12:51 AM ::1 Returned 304 in 7 ms
+ HTTP  9/2/2026 4:12:51 AM ::1 GET /js/nav-drawer.js
+ HTTP  9/2/2026 4:12:51 AM ::1 Returned 304 in 1 ms
+ HTTP  9/2/2026 4:12:51 AM ::1 Returned 200 in 13 ms
+ HTTP  9/2/2026 4:12:51 AM ::1 Returned 200 in 14 ms
+ HTTP  9/2/2026 4:12:51 AM ::1 Returned 200 in 14 ms
+ HTTP  9/2/2026 4:12:54 AM ::1 GET /admin-orders.html
+ HTTP  9/2/2026 4:12:54 AM ::1 Returned 301 in 1 ms
+ HTTP  9/2/2026 4:12:54 AM ::1 GET /admin-orders
+ HTTP  9/2/2026 4:12:54 AM ::1 Returned 200 in 3 ms
+ HTTP  9/2/2026 4:12:54 AM ::1 GET /css/admin.css
+ HTTP  9/2/2026 4:12:54 AM ::1 Returned 304 in 2 ms
+ HTTP  9/2/2026 4:12:54 AM ::1 GET /js/admin-orders.js
+ HTTP  9/2/2026 4:12:54 AM ::1 GET /js/admin-sidebar.js
+ HTTP  9/2/2026 4:12:54 AM ::1 GET /js/admin-data.js
+ HTTP  9/2/2026 4:12:54 AM ::1 Returned 304 in 3 ms
+ HTTP  9/2/2026 4:12:54 AM ::1 Returned 304 in 4 ms
+ HTTP  9/2/2026 4:12:54 AM ::1 Returned 200 in 12 ms
+ HTTP  9/2/2026 4:12:54 AM ::1 GET /images/mock-receipt.png
+ HTTP  9/2/2026 4:12:54 AM ::1 Returned 200 in 1 ms
+ HTTP  9/2/2026 4:40:55 AM ::1 GET /
+ HTTP  9/2/2026 4:40:55 AM ::1 Returned 200 in 63 ms
+ HTTP  9/2/2026 4:40:55 AM ::1 GET /css/style.css
+ HTTP  9/2/2026 4:40:55 AM ::1 Returned 200 in 6 ms
+ HTTP  9/2/2026 4:40:55 AM ::1 GET /js/supabaseClient.js
+ HTTP  9/2/2026 4:40:55 AM ::1 GET /js/cart.js
+ HTTP  9/2/2026 4:40:55 AM ::1 GET /js/cart-drawer.js
+ HTTP  9/2/2026 4:40:55 AM ::1 GET /js/nav-drawer.js
+ HTTP  9/2/2026 4:40:55 AM ::1 Returned 200 in 10 ms
+ HTTP  9/2/2026 4:40:55 AM ::1 Returned 200 in 12 ms
+ HTTP  9/2/2026 4:40:55 AM ::1 Returned 200 in 13 ms
+ HTTP  9/2/2026 4:40:55 AM ::1 Returned 200 in 20 ms
+ HTTP  9/2/2026 4:40:55 AM ::1 GET /images/headerbg.jpg
+ HTTP  9/2/2026 4:40:55 AM ::1 GET /images/black-2.jpg
+ HTTP  9/2/2026 4:40:55 AM ::1 GET /images/retro-1.jpg
+ HTTP  9/2/2026 4:40:55 AM ::1 Returned 200 in 3 ms
+ HTTP  9/2/2026 4:40:55 AM ::1 Returned 200 in 3 ms
+ HTTP  9/2/2026 4:40:55 AM ::1 Returned 200 in 3 ms
+ HTTP  9/2/2026 4:40:57 AM ::1 GET /contact.html
+ HTTP  9/2/2026 4:40:57 AM ::1 Returned 301 in 6 ms
+ HTTP  9/2/2026 4:40:57 AM ::1 GET /contact
+ HTTP  9/2/2026 4:40:57 AM ::1 Returned 200 in 10 ms
+ HTTP  9/2/2026 4:40:57 AM ::1 GET /css/style.css
+ HTTP  9/2/2026 4:40:57 AM ::1 Returned 304 in 7 ms
+ HTTP  9/2/2026 4:40:57 AM ::1 GET /js/admin-data.js
+ HTTP  9/2/2026 4:40:57 AM ::1 GET /js/supabaseClient.js
+ HTTP  9/2/2026 4:40:57 AM ::1 GET /js/tracking.js
+ HTTP  9/2/2026 4:40:57 AM ::1 GET /js/cart.js
+ HTTP  9/2/2026 4:40:57 AM ::1 Returned 200 in 4 ms
+ HTTP  9/2/2026 4:40:57 AM ::1 Returned 304 in 3 ms
+ HTTP  9/2/2026 4:40:57 AM ::1 GET /js/cart-drawer.js
+ HTTP  9/2/2026 4:40:57 AM ::1 Returned 304 in 5 ms
+ HTTP  9/2/2026 4:40:57 AM ::1 Returned 304 in 5 ms
+ HTTP  9/2/2026 4:40:57 AM ::1 GET /js/nav-drawer.js
+ HTTP  9/2/2026 4:40:57 AM ::1 Returned 304 in 7 ms
+ HTTP  9/2/2026 4:40:57 AM ::1 Returned 200 in 25 ms
+ HTTP  9/2/2026 4:44:50 AM ::1 GET /
+ HTTP  9/2/2026 4:44:50 AM ::1 Returned 200 in 3 ms
+ HTTP  9/2/2026 4:44:50 AM ::1 GET /css/style.css
+ HTTP  9/2/2026 4:44:50 AM ::1 Returned 200 in 1 ms
+ HTTP  9/2/2026 4:44:50 AM ::1 GET /js/supabaseClient.js
+ HTTP  9/2/2026 4:44:50 AM ::1 GET /js/cart.js
+ HTTP  9/2/2026 4:44:50 AM ::1 GET /js/cart-drawer.js
+ HTTP  9/2/2026 4:44:50 AM ::1 GET /js/nav-drawer.js
+ HTTP  9/2/2026 4:44:50 AM ::1 Returned 200 in 3 ms
+ HTTP  9/2/2026 4:44:50 AM ::1 Returned 200 in 3 ms
+ HTTP  9/2/2026 4:44:50 AM ::1 Returned 200 in 3 ms
+ HTTP  9/2/2026 4:44:50 AM ::1 Returned 200 in 4 ms
+ HTTP  9/2/2026 4:44:50 AM ::1 GET /images/headerbg.jpg
+ HTTP  9/2/2026 4:44:50 AM ::1 GET /images/black-2.jpg
+ HTTP  9/2/2026 4:44:50 AM ::1 GET /images/retro-1.jpg
+ HTTP  9/2/2026 4:44:50 AM ::1 Returned 200 in 2 ms
+ HTTP  9/2/2026 4:44:50 AM ::1 Returned 200 in 3 ms
+ HTTP  9/2/2026 4:44:50 AM ::1 Returned 200 in 4 ms
+ HTTP  9/2/2026 4:44:51 AM ::1 GET /contact.html
+ HTTP  9/2/2026 4:44:51 AM ::1 Returned 301 in 1 ms
+ HTTP  9/2/2026 4:44:51 AM ::1 GET /contact
+ HTTP  9/2/2026 4:44:51 AM ::1 Returned 200 in 2 ms
+ HTTP  9/2/2026 4:44:51 AM ::1 GET /css/style.css
+ HTTP  9/2/2026 4:44:51 AM ::1 GET /js/admin-data.js
+ HTTP  9/2/2026 4:44:51 AM ::1 Returned 304 in 1 ms
+ HTTP  9/2/2026 4:44:51 AM ::1 GET /js/tracking.js
+ HTTP  9/2/2026 4:44:51 AM ::1 Returned 200 in 1 ms
+ HTTP  9/2/2026 4:44:51 AM ::1 GET /js/supabaseClient.js
+ HTTP  9/2/2026 4:44:51 AM ::1 GET /js/cart.js
+ HTTP  9/2/2026 4:44:51 AM ::1 GET /js/cart-drawer.js
+ HTTP  9/2/2026 4:44:51 AM ::1 Returned 304 in 1 ms
+ HTTP  9/2/2026 4:44:51 AM ::1 Returned 304 in 2 ms
+ HTTP  9/2/2026 4:44:51 AM ::1 Returned 304 in 1 ms
+ HTTP  9/2/2026 4:44:51 AM ::1 GET /js/nav-drawer.js
+ HTTP  9/2/2026 4:44:51 AM ::1 Returned 304 in 1 ms
+ HTTP  9/2/2026 4:44:51 AM ::1 Returned 200 in 5 ms

@@ -34,13 +34,13 @@
   // (a Postgres default/trigger) is the more bulletproof long-term
   // approach, since it avoids any (very unlikely, but non-zero) chance
   // of two orders landing on the same code.
-  function generateTrackingCode() {
-    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no 0/O/1/I to avoid confusion
-    let code = "";
-    for (let i = 0; i < 6; i++) {
-      code += chars[Math.floor(Math.random() * chars.length)];
+  function generateTrackingCode(skuPrefix, deliveryCode) {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    let randomNum = "";
+    for (let i = 0; i < 4; i++) {
+      randomNum += Math.floor(Math.random() * 10).toString();
     }
-    return "NVM-" + code;
+    return `${skuPrefix || "NVM"}-${randomNum}${deliveryCode || "D"}`;
   }
 
   document.addEventListener("DOMContentLoaded", function () {
@@ -172,12 +172,45 @@
         status: "pending",
       };
 
+
       submitBtn.disabled = true;
       submitBtn.textContent = "Placing Order...";
 
+      // Determine SKU prefix
+      let skuPrefix = "NVM";
+      if (items.length > 0 && window.AdminInventoryData) {
+         const product = window.AdminInventoryData.PRODUCTS.find(p => String(p.id) === String(items[0].id));
+         if (product) skuPrefix = product.skuPrefix;
+      }
+      const orderId = generateTrackingCode(skuPrefix, fulfillment.code);
+      const date = new Date().toISOString().slice(0, 10);
 
-      const orderId = 'NVM-' + Math.floor(Math.random() * 1000000);
-      const date = new Date().toLocaleString();
+      // Save order to LocalStorage
+      if (window.AdminData && window.AdminData.getOrders && window.AdminData.saveOrders) {
+         const currentOrders = window.AdminData.getOrders();
+         const newOrder = {
+             id: orderId,
+             date: date,
+             customerName: orderPayload.customer_name,
+             productId: items[0].id,
+             productLabel: items[0].name,
+             category: "category",
+             variant: "Default",
+             total: total,
+             profit: Math.round(total * 0.35 * 100) / 100,
+             qty: items[0].qty,
+             fulfillmentMode: orderPayload.fulfillment_mode,
+             pickupLocation: orderPayload.pickup_location,
+             deliveryAddress: orderPayload.fulfillment_mode === "delivery" ? `${orderPayload.delivery_address_line1}, ${orderPayload.delivery_address_line2 ? orderPayload.delivery_address_line2 + ", " : ""}${orderPayload.delivery_postcode}, ${orderPayload.delivery_city}, ${orderPayload.delivery_state}` : null,
+             paymentMethod: orderPayload.payment_method,
+             status: "pending",
+             receiptUrl: "images/mock-receipt.png",
+             trackingNumber: null
+         };
+         currentOrders.push(newOrder);
+         window.AdminData.saveOrders(currentOrders);
+      }
+
 
       let itemsHtml = '';
       items.forEach(item => {
@@ -241,7 +274,13 @@ window.sendToWhatsApp = function() {
     const { orderId, total, items, orderPayload, fulfillment } = window.currentOrderData;
     const adminPhone = "601111111111"; 
     
-    let message = `Hi NVM Store! Saya ingin mengesahkan pesanan saya:%0A%0A*ORDER ID: ${orderId}*%0A%0A*Maklumat Pelanggan:*%0ANama: ${orderPayload.customer_name}%0ATel: ${orderPayload.customer_phone}%0AFulfillment: ${orderPayload.fulfillment_mode.toUpperCase()}%0A%0A*Senarai Item:*%0A`;
+    let message = `Hi NVM Store! Saya ingin mengesahkan pesanan saya:%0A%0A*ORDER ID: ${orderId}*%0A%0A*Maklumat Pelanggan:*%0ANama: ${orderPayload.customer_name}%0ATel: ${orderPayload.customer_phone}%0AFulfillment: ${orderPayload.fulfillment_mode.toUpperCase()}%0A`;
+    if (orderPayload.fulfillment_mode === "delivery") {
+        message += `Alamat: ${orderPayload.delivery_address_line1}, ${orderPayload.delivery_address_line2 ? orderPayload.delivery_address_line2 + ', ' : ''}${orderPayload.delivery_postcode}, ${orderPayload.delivery_city}, ${orderPayload.delivery_state}%0A`;
+    } else {
+        message += `Lokasi: ${orderPayload.pickup_location}%0A`;
+    }
+    message += `%0A*Senarai Item:*%0A`;
     
     items.forEach((item, index) => {
         message += `${index + 1}. *${item.name}* (x${item.qty}) - RM ${parseFloat(item.price * item.qty).toFixed(2)}%0A`;
