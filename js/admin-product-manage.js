@@ -46,6 +46,9 @@
                             <div class="slider"></div>
                         </label>
                     </td>
+                    <td style="text-align: center;">
+                        <button type="button" class="remove-btn delete-product" data-id="${p.id}" style="color: var(--a-red); font-size: 1.1rem; padding: 4px;" title="Delete Product">&times;</button>
+                    </td>
                 </tr>
             `;
         }).join("");
@@ -81,6 +84,25 @@
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => toast.classList.remove("show"), 2000);
     }
+
+
+    document.getElementById("productManageTableBody").addEventListener("click", e => {
+        if (e.target.classList.contains("delete-product")) {
+            const id = e.target.dataset.id;
+            if (confirm("Are you sure you want to permanently delete this product?")) {
+                let products = window.AdminInventoryData.getProducts();
+                products = products.filter(p => p.id !== id);
+                window.AdminInventoryData.saveProducts(products);
+
+                // Remove from settings override as well
+                delete settings.productOverrides[id];
+                localStorage.setItem("nvm_site_settings", JSON.stringify(settings));
+
+                renderProducts();
+                showToast("Product deleted successfully.");
+            }
+        }
+    });
 
     document.getElementById("saveManageSettings").addEventListener("click", saveSettings);
     document.addEventListener("DOMContentLoaded", loadSettings);

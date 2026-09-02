@@ -92,7 +92,7 @@
 
       if (mode === "pickup") {
         const p = selectedPickup();
-        feeLabel.textContent = "Pickup — " + (p.name.includes(" - ") ? p.name.split(" - ")[0] : p.name);
+        feeLabel.textContent = p.name;
         feeValue.textContent = fee === 0 ? "Free" : money(fee);
       } else {
         feeLabel.textContent = "Delivery — Postage";

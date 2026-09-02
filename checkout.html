@@ -162,63 +162,16 @@
         </div>
       </div>
 
+
       <div class="payment-card">
         <h3>Payment Method</h3>
-
-        <div class="payment-method-list" id="payment-method-list">
-          <label class="payment-method-option" data-method="qr_bank">
-            <input type="radio" name="payment-method" value="qr_bank" checked>
-            <div class="payment-method-body">
-              <span class="payment-method-name">QR Code / Bank Transfer</span>
-              <span class="payment-method-desc">Scan our QR code or transfer to our bank account, then upload your receipt.</span>
-            </div>
-          </label>
-
-          <label class="payment-method-option" data-method="tng_spay">
-            <input type="radio" name="payment-method" value="tng_spay">
-            <div class="payment-method-body">
-              <span class="payment-method-name">TNG / SPay Later</span>
-              <span class="payment-method-desc">Pay via TnG eWallet or SPay Later using the QR code or link below, then upload your receipt.</span>
-            </div>
-          </label>
-
-          <label class="payment-method-option disabled" data-method="fpx">
-            <input type="radio" name="payment-method" value="fpx" disabled>
-            <div class="payment-method-body">
-              <span class="payment-method-name">FPX Online Banking <span class="badge-soon">Coming soon</span></span>
-              <span class="payment-method-desc">Pay directly via online banking. Additional charges apply.</span>
-            </div>
-          </label>
+        <div id="dynamic-payment-container">
+            <!-- JS Rendered -->
         </div>
-
-        <div class="payment-method-details" id="payment-details-qr_bank">
-          <div class="qr-placeholder">Your QR code goes here</div>
-          <div class="bank-details">
-            <p><strong>Bank:</strong> [Your Bank Name]</p>
-            <p><strong>Account No:</strong> [Your Account Number]</p>
-            <p><strong>Account Name:</strong> [Your Account Name]</p>
-          </div>
-        </div>
-
-        <div class="payment-method-details" id="payment-details-tng_spay" style="display:none;">
-          <div class="qr-placeholder">Your QR code goes here</div>
-          <p class="field-hint">Or pay via link: <a href="#" id="tng-link">[Your TNG / SPay Later link]</a></p>
-        </div>
-
-        <div class="payment-method-details" id="payment-details-fpx" style="display:none;">
-          <p class="field-hint">FPX online banking isn't connected yet — additional charges will apply once it's available. Please choose another method for now.</p>
-        </div>
-
-        <div class="form-field" id="receipt-upload-field">
-          <label for="receipt-upload">Upload Payment Receipt</label>
-          <input type="file" id="receipt-upload" accept=".jpg,.jpeg,.pdf,image/jpeg,application/pdf">
-          <span class="field-hint">Accepted formats: JPEG or PDF only.</span>
-        </div>
-
         <div class="form-error" id="payment-error"></div>
-
         <button type="submit" class="submit-order-btn" id="submit-order-btn" form="checkout-form">Place Order</button>
       </div>
+
     </div>
   </div>
 

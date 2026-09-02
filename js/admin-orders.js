@@ -248,6 +248,53 @@
     toastTimer = setTimeout(() => toast.classList.remove("show"), 4000);
   }
 
+
+  // ---------- bulk download receipts ----------
+  async function downloadReceipts(filteredOrders) {
+    if (typeof JSZip === "undefined") {
+        showToast("JSZip library failed to load.");
+        return;
+    }
+
+    // Filter orders that actually have receipts uploaded (using our mock image)
+    const withReceipts = filteredOrders.filter(o => o.receiptUrl);
+
+    if (withReceipts.length === 0) {
+        showToast("No receipts found in the current filter.");
+        return;
+    }
+
+    showToast(`Gathering ${withReceipts.length} receipts for download...`);
+    const zip = new JSZip();
+    const folder = zip.folder("Customer_Receipts");
+
+    // In a real app we'd fetch the blob from Supabase Storage.
+    // For this mock we will fetch the local placeholder image as a blob
+    try {
+        // We will fetch the default mock image
+        const response = await fetch("images/mock-receipt.png");
+        const blob = await response.blob();
+
+        withReceipts.forEach(o => {
+             // Naming format: [Category]_[Product]_[OrderID].png
+             const safeCategory = o.category.replace(/[^a-z0-9]/gi, '_');
+             const safeProduct = o.productId.replace(/[^a-z0-9]/gi, '_');
+             const fileName = `${safeCategory}/${safeProduct}_${o.id}.png`;
+             folder.file(fileName, blob);
+        });
+
+        const content = await zip.generateAsync({type:"blob"});
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(content);
+        a.download = `nvm-receipts-${new Date().toISOString().slice(0, 10)}.zip`;
+        a.click();
+        showToast("Download complete!");
+    } catch(e) {
+        console.error("Failed to generate zip", e);
+        showToast("Failed to generate zip file.");
+    }
+  }
+
   // ---------- export to Excel ----------
   function exportToExcel(filteredOrders) {
     const rows = filteredOrders.map((o) => ({
@@ -310,6 +357,10 @@
       renderAll();
     });
     document.getElementById("filterProduct").addEventListener("change", renderAll);
+
+    document.getElementById("downloadReceiptsBtn").addEventListener("click", () => {
+      downloadReceipts(applyFilters(ALL_ORDERS, getFilters()));
+    });
 
     document.getElementById("exportExcelBtn").addEventListener("click", () => {
       exportToExcel(applyFilters(ALL_ORDERS, getFilters()));
