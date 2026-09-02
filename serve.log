@@ -144,3 +144,17 @@ npm warn exec The following package was not found and will be installed: serve@1
  HTTP  9/1/2026 5:07:41 PM ::1 Returned 304 in 2 ms
  HTTP  9/1/2026 5:07:41 PM ::1 Returned 304 in 3 ms
  HTTP  9/1/2026 5:07:41 PM ::1 Returned 304 in 3 ms
+ HTTP  9/2/2026 2:08:21 AM ::1 GET /admin-orders.html
+ HTTP  9/2/2026 2:08:21 AM ::1 Returned 301 in 45 ms
+ HTTP  9/2/2026 2:08:21 AM ::1 GET /admin-orders
+ HTTP  9/2/2026 2:08:21 AM ::1 Returned 200 in 42 ms
+ HTTP  9/2/2026 2:08:21 AM ::1 GET /css/admin.css
+ HTTP  9/2/2026 2:08:21 AM ::1 Returned 200 in 4 ms
+ HTTP  9/2/2026 2:08:21 AM ::1 GET /js/admin-sidebar.js
+ HTTP  9/2/2026 2:08:21 AM ::1 GET /js/admin-data.js
+ HTTP  9/2/2026 2:08:21 AM ::1 GET /js/admin-orders.js
+ HTTP  9/2/2026 2:08:21 AM ::1 Returned 200 in 19 ms
+ HTTP  9/2/2026 2:08:21 AM ::1 Returned 200 in 27 ms
+ HTTP  9/2/2026 2:08:21 AM ::1 Returned 200 in 33 ms
+ HTTP  9/2/2026 2:08:22 AM ::1 GET /images/mock-receipt.png
+ HTTP  9/2/2026 2:08:22 AM ::1 Returned 200 in 6 ms

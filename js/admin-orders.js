@@ -128,7 +128,7 @@
           <td class="cell-price">${money(o.total)}</td>
           <td>
             <span class="delivery-tag">${DELIVERY_ICON[o.fulfillmentMode]} ${deliveryLabel}</span>
-            ${o.fulfillmentMode === 'delivery' && o.deliveryAddress ? `<div class="cell-sub" style="margin-top: 6px; line-height: 1.4;">${o.deliveryAddress}</div>` : ''}
+            ${o.fulfillmentMode === 'delivery' && o.deliveryAddress ? `<div class="cell-sub" style="margin-top: 8px; line-height: 1.4; background: var(--a-bg); padding: 8px; border-radius: 8px; border: 1px solid var(--a-border);"><strong style="color: var(--a-ink); display:block; margin-bottom:2px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right:4px; margin-top:-2px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>Delivery Address:</strong>${o.deliveryAddress}</div>` : ''}
           </td>
           <td>${window.AdminData.PAYMENT_LABELS[o.paymentMethod]}</td>
           <td>

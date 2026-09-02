@@ -201,7 +201,7 @@
              qty: items[0].qty,
              fulfillmentMode: orderPayload.fulfillment_mode,
              pickupLocation: orderPayload.pickup_location,
-             deliveryAddress: orderPayload.fulfillment_mode === "delivery" ? `${orderPayload.delivery_address_line1}, ${orderPayload.delivery_postcode}, ${orderPayload.delivery_city}, ${orderPayload.delivery_state}` : null,
+             deliveryAddress: orderPayload.fulfillment_mode === "delivery" ? `${orderPayload.delivery_address_line1}, ${orderPayload.delivery_address_line2 ? orderPayload.delivery_address_line2 + ", " : ""}${orderPayload.delivery_postcode}, ${orderPayload.delivery_city}, ${orderPayload.delivery_state}` : null,
              paymentMethod: orderPayload.payment_method,
              status: "pending",
              receiptUrl: "images/mock-receipt.png",
