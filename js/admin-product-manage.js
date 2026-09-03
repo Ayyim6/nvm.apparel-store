@@ -21,11 +21,11 @@
         renderProducts();
     }
 
-    function renderProducts() {
+    async function renderProducts() {
         const tbody = document.getElementById("productManageTableBody");
         if (!window.AdminInventoryData) return;
 
-        const products = window.AdminInventoryData.PRODUCTS;
+        const products = await window.AdminInventoryData.getProducts();
 
         tbody.innerHTML = products.map(p => {
             const override = settings.productOverrides[p.id] || { isNewArrival: false, isVisible: true };
@@ -90,9 +90,7 @@
         if (e.target.classList.contains("delete-product")) {
             const id = e.target.dataset.id;
             if (confirm("Are you sure you want to permanently delete this product?")) {
-                let products = window.AdminInventoryData.getProducts();
-                products = products.filter(p => p.id !== id);
-                window.AdminInventoryData.saveProducts(products);
+                await window.AdminInventoryData.deleteProduct(id);
 
                 // Remove from settings override as well
                 delete settings.productOverrides[id];

@@ -178,10 +178,13 @@
 
       // Determine SKU prefix
       let skuPrefix = "NVM";
-      if (items.length > 0 && window.AdminInventoryData) {
-         const product = window.AdminInventoryData.PRODUCTS.find(p => String(p.id) === String(items[0].id));
-         if (product) skuPrefix = product.skuPrefix;
+      if (items.length > 0 && window.AdminInventoryData && window.AdminInventoryData.getProducts) {
+         // getProducts is now async
+         const products = await window.AdminInventoryData.getProducts();
+         const product = products.find(p => String(p.id) === String(items[0].id));
+         if (product && product.skuPrefix) skuPrefix = product.skuPrefix;
       }
+
       const orderId = generateTrackingCode(skuPrefix, fulfillment.code);
       const date = new Date().toISOString().slice(0, 10);
 

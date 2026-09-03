@@ -29,63 +29,50 @@
     }
   ];
 
-  function getProducts() {
-      try {
-          const stored = localStorage.getItem('nvm_products');
-          if (stored) return JSON.parse(stored);
-      } catch(e) {
-          console.error(e);
+
+  let PRODUCTS = [];
+
+  async function getProducts() {
+      if (typeof supabaseClient === "undefined") {
+          console.error("Supabase client not loaded");
+          return [];
       }
-      return DEFAULT_PRODUCTS;
+
+      const { data, error } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
+      if (error) {
+          console.error("Error fetching products from Supabase:", error);
+          return [];
+      }
+
+      // Map to internal format so rest of admin panel doesn't break
+      PRODUCTS = data.map(p => ({
+          id: p.id,
+          name: p.name,
+          category: "Catalog", // Fallback if missing
+          skuPrefix: "SKU",
+          images: p.image_url ? [p.image_url] : [],
+          colors: [],
+          types: [],
+          sizes: p.sizes && p.sizes.length > 0 ? p.sizes : ["Standard"],
+          allowedPayments: ["qr_bank", "tng_spay"],
+          price: p.price,
+          stock_qty: p.stock_qty,
+          description: p.description
+      }));
+
+      window.AdminInventoryData.PRODUCTS = PRODUCTS;
+      return PRODUCTS;
   }
 
-  function saveProducts(productsArray) {
-      try {
-          localStorage.setItem('nvm_products', JSON.stringify(productsArray));
-          // update the active array in memory
-          window.AdminInventoryData.PRODUCTS.length = 0;
-          window.AdminInventoryData.PRODUCTS.push(...productsArray);
-      } catch(e) {
-          console.error(e);
+  async function deleteProduct(id) {
+      if (typeof supabaseClient === "undefined") return;
+      const { error } = await supabaseClient.from('products').delete().eq('id', id);
+      if (error) {
+          console.error("Failed to delete from Supabase", error);
       }
   }
 
-  const PRODUCTS = getProducts();
-
-
-  // Helper to generate a unique variant key
-  function getVariantKey(productId, color, type, size) {
-    return [productId, color, type, size].filter(Boolean).join("::");
-  }
-
-  // Get current inventory state from localStorage
-  function getInventory() {
-    try {
-      const stored = localStorage.getItem('nvm_inventory');
-      if (stored) {
-        return JSON.parse(stored);
-      }
-    } catch(e) {
-      console.error("Failed to load inventory from local storage", e);
-    }
-    return {}; // Empty map means stock is undefined / assumed infinite or 0 depending on logic.
-               // For admin, we will treat undefined as 0 for simplicity.
-  }
-
-  function saveInventory(inventoryData) {
-    try {
-      localStorage.setItem('nvm_inventory', JSON.stringify(inventoryData));
-    } catch(e) {
-      console.error("Failed to save inventory to local storage", e);
-    }
-  }
-
-  window.AdminInventoryData = {
-    saveProducts,
-    getProducts,
-    PRODUCTS,
-    getVariantKey,
-    getInventory,
-    saveInventory
-  };
-})();
+  // Admin inventory updates stock manually via LocalStorage for now since we lack variant rows in Supabase,
+  // but if we were just updating the root product:
+  // supabaseClient.from('products').update({stock_qty: val}).eq('id', id)
+)();

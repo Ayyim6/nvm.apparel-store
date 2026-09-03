@@ -670,13 +670,47 @@
     panel.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  function wireSave() {
-    document.getElementById("productForm").addEventListener("submit", (e) => {
-      e.preventDefault();
+
+  async function wireSave() {
+    document.getElementById("saveProductBtn").addEventListener("click", async () => {
       const data = gatherFormData();
-      renderPreview(data);
+      if (!data) return; // validation failed
+
+      const submitBtn = document.getElementById("saveProductBtn");
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Saving to Database...";
+
+      if (typeof supabaseClient === "undefined") {
+          alert("Supabase client not connected.");
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Save Product";
+          return;
+      }
+
+      const payload = {
+          name: data.name,
+          description: data.description,
+          price: data.basePrice,
+          sizes: data.sizes.map(s => s.id),
+          stock_qty: data.stockType === "unlimited" || data.stockType === "preorder" ? 999 : 0
+      };
+
+      const { data: result, error } = await supabaseClient.from('products').insert([payload]);
+
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Save Product";
+
+      if (error) {
+          console.error("Failed to save to Supabase", error);
+          alert("Failed to save product to database.");
+      } else {
+          alert("Product saved successfully to Supabase!");
+          // Reload the page or clear form
+          window.location.reload();
+      }
     });
   }
+
 
   document.addEventListener("DOMContentLoaded", function () {
     populateCategories();
