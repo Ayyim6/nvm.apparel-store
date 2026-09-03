@@ -128,6 +128,7 @@
           <td class="cell-price">${money(o.total)}</td>
           <td>
             <span class="delivery-tag">${DELIVERY_ICON[o.fulfillmentMode]} ${deliveryLabel}</span>
+            ${o.fulfillmentMode === 'delivery' && o.deliveryAddress ? `<div class="cell-sub" style="margin-top: 8px; line-height: 1.4; background: var(--a-bg); padding: 8px; border-radius: 8px; border: 1px solid var(--a-border);"><strong style="color: var(--a-ink); display:block; margin-bottom:2px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right:4px; margin-top:-2px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>Delivery Address:</strong>${o.deliveryAddress}</div>` : ''}
           </td>
           <td>${window.AdminData.PAYMENT_LABELS[o.paymentMethod]}</td>
           <td>
@@ -247,6 +248,53 @@
     toastTimer = setTimeout(() => toast.classList.remove("show"), 4000);
   }
 
+  
+  // ---------- bulk download receipts ----------
+  async function downloadReceipts(filteredOrders) {
+    if (typeof JSZip === "undefined") {
+        showToast("JSZip library failed to load.");
+        return;
+    }
+    
+    // Filter orders that actually have receipts uploaded (using our mock image)
+    const withReceipts = filteredOrders.filter(o => o.receiptUrl);
+    
+    if (withReceipts.length === 0) {
+        showToast("No receipts found in the current filter.");
+        return;
+    }
+    
+    showToast(`Gathering ${withReceipts.length} receipts for download...`);
+    const zip = new JSZip();
+    const folder = zip.folder("Customer_Receipts");
+    
+    // In a real app we'd fetch the blob from Supabase Storage.
+    // For this mock we will fetch the local placeholder image as a blob
+    try {
+        // We will fetch the default mock image
+        const response = await fetch("images/mock-receipt.png");
+        const blob = await response.blob();
+        
+        withReceipts.forEach(o => {
+             // Naming format: [Category]_[Product]_[OrderID].png
+             const safeCategory = o.category.replace(/[^a-z0-9]/gi, '_');
+             const safeProduct = o.productId.replace(/[^a-z0-9]/gi, '_');
+             const fileName = `${safeCategory}/${safeProduct}_${o.id}.png`;
+             folder.file(fileName, blob);
+        });
+        
+        const content = await zip.generateAsync({type:"blob"});
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(content);
+        a.download = `nvm-receipts-${new Date().toISOString().slice(0, 10)}.zip`;
+        a.click();
+        showToast("Download complete!");
+    } catch(e) {
+        console.error("Failed to generate zip", e);
+        showToast("Failed to generate zip file.");
+    }
+  }
+
   // ---------- export to Excel ----------
   function exportToExcel(filteredOrders) {
     const rows = filteredOrders.map((o) => ({
@@ -259,6 +307,7 @@
       "Total (RM)": o.total,
       Fulfillment:
         o.fulfillmentMode === "pickup" ? "Pickup — " + o.pickupLocation : "Delivery",
+      "Delivery Address": o.deliveryAddress || "",
       "Tracking Number": o.trackingNumber || "",
       "Payment Method": window.AdminData.PAYMENT_LABELS[o.paymentMethod],
       Status: window.AdminData.getStatusLabel(o, o.status),
@@ -309,6 +358,10 @@
     });
     document.getElementById("filterProduct").addEventListener("change", renderAll);
 
+    document.getElementById("downloadReceiptsBtn").addEventListener("click", () => {
+      downloadReceipts(applyFilters(ALL_ORDERS, getFilters()));
+    });
+    
     document.getElementById("exportExcelBtn").addEventListener("click", () => {
       exportToExcel(applyFilters(ALL_ORDERS, getFilters()));
     });

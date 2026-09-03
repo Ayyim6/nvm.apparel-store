@@ -16,7 +16,16 @@
  * selected on the form.
  */
 (function () {
-  const DELIVERY_FEE = 7.0;
+  // Calculate dynamic delivery fee
+  function calculateDeliveryFee(deliveryConfig, totalQty) {
+    if (!deliveryConfig) return 7.0;
+    let fee = deliveryConfig.baseFee;
+    if (totalQty > deliveryConfig.maxQty) {
+      fee += (totalQty - deliveryConfig.maxQty) * deliveryConfig.extraFeePerQty;
+    }
+    return fee;
+  }
+
 
   // Delivery address fields that are only required when mode = 'delivery'.
   // address-line2 is intentionally excluded — it's always optional.
@@ -38,7 +47,21 @@
     const requiredDeliveryFields = REQUIRED_DELIVERY_FIELD_IDS.map((id) =>
       document.getElementById(id)
     ).filter(Boolean);
+    
+    // Dynamically render pickup locations
+    const pickupListContainer = document.getElementById("pickup-list");
+    if (pickupListContainer && window.AdminData) {
+      const pickups = window.AdminData.DELIVERY_MODES.filter(m => m.type === "pickup");
+      pickupListContainer.innerHTML = pickups.map((p, index) => `
+        <label class="pickup-option">
+          <input type="radio" name="pickup-location" value="${p.label}" data-fee="${p.fee}" data-code="${p.code}" ${index === 0 ? 'checked' : ''}>
+          <span class="pickup-option-name">${p.label}</span>
+          <span class="pickup-option-fee">${p.fee === 0 ? 'Free' : '+RM' + p.fee.toFixed(2)}</span>
+        </label>
+      `).join("");
+    }
     const pickupRadios = document.querySelectorAll('input[name="pickup-location"]');
+
     const feeLabel = document.getElementById("fulfillment-fee-label");
     const feeValue = document.getElementById("fulfillment-fee-value");
     const totalEl = document.getElementById("checkout-total");
@@ -50,12 +73,18 @@
     function selectedPickup() {
       const checked = document.querySelector('input[name="pickup-location"]:checked');
       return checked
-        ? { name: checked.value, fee: Number(checked.dataset.fee) || 0 }
-        : { name: "", fee: 0 };
+        ? { name: checked.value, fee: Number(checked.dataset.fee) || 0, code: checked.dataset.code || "M" }
+        : { name: "", fee: 0, code: "M" };
     }
 
     function currentFee() {
-      return mode === "pickup" ? selectedPickup().fee : DELIVERY_FEE;
+      if (mode === "pickup") {
+        return selectedPickup().fee;
+      } else {
+        const deliveryConfig = window.AdminData ? window.AdminData.DELIVERY_MODES.find(m => m.type === "delivery") : { baseFee: 7, maxQty: 10, extraFeePerQty: 1 };
+        const qty = window.Cart ? window.Cart.getCount() : 1;
+        return calculateDeliveryFee(deliveryConfig, qty);
+      }
     }
 
     function updateSummary() {
@@ -63,7 +92,7 @@
 
       if (mode === "pickup") {
         const p = selectedPickup();
-        feeLabel.textContent = "Pickup — " + p.name.split(" - ")[0];
+        feeLabel.textContent = p.name;
         feeValue.textContent = fee === 0 ? "Free" : money(fee);
       } else {
         feeLabel.textContent = "Delivery — Postage";
@@ -98,7 +127,7 @@
       btn.addEventListener("click", () => setMode(btn.dataset.mode));
     });
 
-    pickupRadios.forEach((radio) => {
+    document.querySelectorAll('input[name="pickup-location"]').forEach((radio) => {
       radio.addEventListener("change", updateSummary);
     });
 
@@ -111,12 +140,14 @@
     window.getFulfillmentSelection = function () {
       if (mode === "pickup") {
         const p = selectedPickup();
-        return { mode: "pickup", location: p.name, fee: p.fee };
+        return { mode: "pickup", location: p.name, fee: p.fee, code: p.code };
       }
+      const deliveryConfig = window.AdminData ? window.AdminData.DELIVERY_MODES.find(m => m.type === "delivery") : { code: "D" };
       return {
         mode: "delivery",
         location: null,
-        fee: DELIVERY_FEE,
+        fee: currentFee(),
+        code: deliveryConfig.code,
         address: {
           line1: document.getElementById("address-line1")?.value.trim() || "",
           line2: document.getElementById("address-line2")?.value.trim() || "",

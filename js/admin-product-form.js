@@ -206,6 +206,22 @@
   }
 
   // ---------- Sizing ----------
+  
+  function populateSizingCharts() {
+      const select = document.getElementById("sizingChartSelect");
+      if (!select) return;
+      try {
+          const stored = localStorage.getItem("nvm_gallery_settings");
+          if (stored) {
+              const settings = JSON.parse(stored);
+              select.innerHTML = '<option value="">-- No Sizing Chart --</option>' + 
+                                 settings.sizingCharts.map(c => `<option value="${c.url}">${c.name}</option>`).join("");
+              return;
+          }
+      } catch (e) {}
+      select.innerHTML = '<option value="images/sizing-guide.png">Standard T-Shirt Fit</option><option value="">-- No Sizing Chart --</option>';
+  }
+
   function renderSizeCheckboxes() {
     const row = document.getElementById("sizeCheckboxRow");
     row.innerHTML = SIZE_LIST.map(
@@ -439,6 +455,34 @@
   }
 
   // ---------- Delivery Options ----------
+  
+  function renderPaymentOptions() {
+      let payments = [];
+      try {
+          const stored = localStorage.getItem("nvm_payment_methods");
+          if (stored) {
+              payments = JSON.parse(stored);
+          } else {
+              // fallback mock
+              payments = [
+                  {id: "qr_bank", title: "QR Code / Bank Transfer", isActive: true},
+                  {id: "tng_spay", title: "TNG / SPay Later", isActive: true},
+                  {id: "fpx", title: "FPX Online Banking", isActive: false, comingSoon: true}
+              ];
+          }
+      } catch(e) {}
+      
+      const container = document.getElementById("productPaymentOptionsList");
+      if (!container) return;
+      
+      container.innerHTML = payments.map(p => `
+          <label class="size-chip" style="min-width: 150px; justify-content:center;">
+              <input type="checkbox" class="product-payment-checkbox" value="${p.id}" checked>
+              ${p.title} ${p.comingSoon ? '(Soon)' : ''}
+          </label>
+      `).join("");
+  }
+
   function renderDeliveryOptions() {
     const list = document.getElementById("deliveryOptionsList");
     list.innerHTML = DELIVERY_MODES.map(
@@ -568,6 +612,7 @@
       required: el.querySelector(".addon-required").checked,
     }));
 
+    const allowedPayments = Array.from(document.querySelectorAll(".product-payment-checkbox:checked")).map(cb => cb.value);
     const deliveryOptions = Array.from(document.querySelectorAll(".delivery-checkbox:checked")).map((cb) => ({
       id: cb.value,
       code: cb.dataset.code,
@@ -605,7 +650,10 @@
       colors,
       typeGroups,
       addons,
+      allowedPayments,
       deliveryOptions,
+      isNewArrival,
+      collection,
       description: document.getElementById("productDescription").value,
       promotions,
       skuPrefix: document.getElementById("skuPrefix").value.toUpperCase(),
@@ -634,11 +682,13 @@
     populateCategories();
     populateExistingProducts();
     wireStockType();
+    populateSizingCharts();
     renderSizeCheckboxes();
     wireSizing();
     wireColorVariants();
     wireTypeGroups();
     wireAddons();
+    renderPaymentOptions();
     renderDeliveryOptions();
     wirePromotions();
     wireSku();

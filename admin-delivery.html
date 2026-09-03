@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Delivery Management — NVM Store Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<div class="admin-shell">
+
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar" id="adminSidebarMount"></aside>
+
+  <!-- MAIN -->
+  <main class="admin-main">
+
+    <div class="admin-header">
+      <h1>Delivery Management</h1>
+      <p>Configure pickup locations and standard delivery (postage) settings.</p>
+    </div>
+
+    <!-- PICKUP OPTIONS -->
+    <div class="admin-form-card">
+      <h3>Pickup Options</h3>
+      <p class="field-note">Manage existing pickup locations, their acronym code, and Person-in-Charge details.</p>
+      <div id="pickupList"></div>
+      <button type="button" class="admin-add-btn" id="addPickupBtn">+ Add Pickup Option</button>
+    </div>
+
+    <!-- DELIVERY RULES -->
+    <div class="admin-form-card">
+      <h3>Delivery (Postage) Settings</h3>
+      <p class="field-note">Configure the base delivery fee, maximum quantity without extra charge, and extra fee per additional item.</p>
+      <div id="deliverySettings">
+         <div class="repeater-row" style="grid-template-columns: 1fr 1fr 1fr;">
+             <div>
+                <label>Base Fee (RM)</label>
+                <input type="number" id="delBaseFee" step="0.01" min="0" placeholder="e.g. 7.00">
+             </div>
+             <div>
+                <label>Max Quantity</label>
+                <input type="number" id="delMaxQty" min="1" placeholder="e.g. 10">
+             </div>
+             <div>
+                <label>Extra Fee Per Qty (RM)</label>
+                <input type="number" id="delExtraFee" step="0.01" min="0" placeholder="e.g. 1.00">
+             </div>
+         </div>
+      </div>
+    </div>
+    
+    <!-- TOAST -->
+    <div class="admin-toast" id="adminToast"></div>
+
+    <div class="admin-form-actions">
+      <button type="button" class="admin-export-btn" id="saveDeliverySettingsBtn">Save Delivery Settings</button>
+    </div>
+
+  </main>
+
+</div>
+
+<script src="js/admin-sidebar.js"></script>
+<script src="js/admin-data.js"></script>
+<script src="js/admin-delivery.js"></script>
+</body>
+</html>

@@ -66,12 +66,36 @@
   // "keyword" matches against an order's free-text pickupLocation
   // field; once Delivery Management exists, orders should carry this
   // id directly instead of a location string to match against.
-  const DELIVERY_MODES = [
-    { id: "pickup-micet", label: "Pickup — UniKL MICET, Alor Gajah, Melaka", keyword: "MICET", code: "M" },
-    { id: "pickup-mitec", label: "Pickup — UniKL MITEC, Masai, Johor", keyword: "MITEC", code: "J" },
-    { id: "pickup-rcmp", label: "Pickup — UniKL RCMP, Ipoh, Perak", keyword: "RCMP", code: "I" },
-    { id: "delivery", label: "Delivery (Postage)", keyword: null, code: "D" },
+  
+  const DEFAULT_DELIVERY_MODES = [
+    { id: "pickup-micet", type: "pickup", label: "Pickup — UniKL MICET, Alor Gajah, Melaka", title: "UniKL MICET", city: "Alor Gajah", state: "Melaka", keyword: "MICET", code: "M", picName: "", picContact: "", fee: 0 },
+    { id: "pickup-mitec", type: "pickup", label: "Pickup — UniKL MITEC, Masai, Johor", title: "UniKL MITEC", city: "Masai", state: "Johor", keyword: "MITEC", code: "J", picName: "", picContact: "", fee: 1 },
+    { id: "pickup-rcmp", type: "pickup", label: "Pickup — UniKL RCMP, Ipoh, Perak", title: "UniKL RCMP", city: "Ipoh", state: "Perak", keyword: "RCMP", code: "I", picName: "", picContact: "", fee: 2 },
+    { id: "delivery", type: "delivery", label: "Delivery (Postage)", keyword: null, code: "D", baseFee: 7, maxQty: 10, extraFeePerQty: 1 }
   ];
+
+  function getDeliveryModes() {
+    try {
+      const stored = localStorage.getItem('nvm_delivery_modes');
+      if (stored) {
+        return JSON.parse(stored);
+      }
+    } catch (e) {
+      console.error("Error reading delivery modes from localStorage", e);
+    }
+    return DEFAULT_DELIVERY_MODES;
+  }
+
+  function saveDeliveryModes(modes) {
+    try {
+      localStorage.setItem('nvm_delivery_modes', JSON.stringify(modes));
+    } catch (e) {
+      console.error("Error saving delivery modes", e);
+    }
+  }
+
+  const DELIVERY_MODES = getDeliveryModes();
+
 
   // Pickup orders are collected in person, verified against the PIC
   // contact managed in Delivery Management — so they never get a
@@ -103,32 +127,32 @@
   // location, payment method, status, [qty], [tracking number]
   const ORDERS = [
     o("NVM-100231", "2026-08-02", "Ahmad Faiz", "unikl-home", "Black Edition · Standard · M", 89, "pickup", "UniKL MICET - Alor Gajah, Melaka", "qr_bank", "success", 1, "JNT6620119284"),
-    o("NVM-100232", "2026-08-02", "Nur Aisyah", "unikl-retro", "Blue Edition · L", 99, "delivery", null, "tng_spay", "success", 1, "JNT6620119301"),
+    o("NVM-100232", "2026-08-02", "Nur Aisyah", "unikl-retro", "Blue Edition · L", 99, "delivery", null, "tng_spay", "success", 1, "JNT6620119301", "123 Jalan Contoh, Bandar Baru, 43000, Kajang, Selangor"),
     o("NVM-100233", "2026-08-03", "Muhammad Hakim", "unikl-home", "White Edition · Premium · L", 99, "pickup", "UniKL MITEC - Masai, Johor", "qr_bank", "success"),
-    o("NVM-100234", "2026-08-04", "Siti Zulaikha", "unikl-home", "Black Edition · Standard · S", 89, "delivery", null, "qr_bank", "pending"),
+    o("NVM-100234", "2026-08-04", "Siti Zulaikha", "unikl-home", "Black Edition · Standard · S", 89, "delivery", null, "qr_bank", "pending", "123 Jalan Contoh, Bandar Baru, 43000, Kajang, Selangor"),
     o("NVM-100235", "2026-08-05", "Farid Iskandar", "unikl-retro", "Blue Edition · M", 99, "pickup", "UniKL MICET - Alor Gajah, Melaka", "tng_spay", "success"),
-    o("NVM-100236", "2026-08-06", "Nurul Huda", "unikl-home", "White Edition · Standard · XL", 89, "delivery", null, "qr_bank", "success", 2, "JNT6620119355"),
+    o("NVM-100236", "2026-08-06", "Nurul Huda", "unikl-home", "White Edition · Standard · XL", 89, "delivery", null, "qr_bank", "success", 2, "JNT6620119355", "123 Jalan Contoh, Bandar Baru, 43000, Kajang, Selangor"),
     o("NVM-100237", "2026-08-08", "Amirul Danish", "unikl-home", "Black Edition · Premium · XXL", 99, "pickup", "UniKL RCMP - Ipoh, Perak", "qr_bank", "success"),
-    o("NVM-100238", "2026-08-09", "Wan Nabila", "unikl-retro", "Blue Edition · S", 99, "delivery", null, "tng_spay", "unsuccessful"),
+    o("NVM-100238", "2026-08-09", "Wan Nabila", "unikl-retro", "Blue Edition · S", 99, "delivery", null, "tng_spay", "unsuccessful", "123 Jalan Contoh, Bandar Baru, 43000, Kajang, Selangor"),
     o("NVM-100239", "2026-08-10", "Haziq Rayyan", "unikl-home", "Black Edition · Standard · M", 89, "pickup", "UniKL MICET - Alor Gajah, Melaka", "qr_bank", "success"),
-    o("NVM-100240", "2026-08-11", "Aina Sofea", "unikl-home", "White Edition · Standard · M", 89, "delivery", null, "qr_bank", "in-delivery", 1, "JNT6620119402"),
+    o("NVM-100240", "2026-08-11", "Aina Sofea", "unikl-home", "White Edition · Standard · M", 89, "delivery", null, "qr_bank", "in-delivery", 1, "JNT6620119402", "123 Jalan Contoh, Bandar Baru, 43000, Kajang, Selangor"),
     o("NVM-100241", "2026-08-13", "Danish Adam", "unikl-retro", "Blue Edition · XL", 99, "pickup", "UniKL MITEC - Masai, Johor", "tng_spay", "success", 3),
-    o("NVM-100242", "2026-08-14", "Puteri Alya", "unikl-home", "Black Edition · Premium · L", 99, "delivery", null, "qr_bank", "pending"),
+    o("NVM-100242", "2026-08-14", "Puteri Alya", "unikl-home", "Black Edition · Premium · L", 99, "delivery", null, "qr_bank", "pending", "123 Jalan Contoh, Bandar Baru, 43000, Kajang, Selangor"),
     o("NVM-100243", "2026-08-15", "Irfan Hadi", "unikl-home", "White Edition · Standard · S", 89, "pickup", "UniKL RCMP - Ipoh, Perak", "qr_bank", "confirmed"),
-    o("NVM-100244", "2026-08-16", "Nabila Iman", "unikl-retro", "Blue Edition · M", 99, "delivery", null, "tng_spay", "in-delivery", 1, "JNT6620119458"),
+    o("NVM-100244", "2026-08-16", "Nabila Iman", "unikl-retro", "Blue Edition · M", 99, "delivery", null, "tng_spay", "in-delivery", 1, "JNT6620119458", "123 Jalan Contoh, Bandar Baru, 43000, Kajang, Selangor"),
     o("NVM-100245", "2026-08-18", "Zulkarnain Haziq", "unikl-home", "Black Edition · Standard · XL", 89, "pickup", "UniKL MICET - Alor Gajah, Melaka", "qr_bank", "confirmed", 2),
-    o("NVM-100246", "2026-08-19", "Farah Diyana", "unikl-home", "White Edition · Premium · M", 99, "delivery", null, "qr_bank", "confirmed"),
+    o("NVM-100246", "2026-08-19", "Farah Diyana", "unikl-home", "White Edition · Premium · M", 99, "delivery", null, "qr_bank", "confirmed", "123 Jalan Contoh, Bandar Baru, 43000, Kajang, Selangor"),
     o("NVM-100247", "2026-08-21", "Idris Firdaus", "unikl-retro", "Blue Edition · L", 99, "pickup", "UniKL MITEC - Masai, Johor", "tng_spay", "unsuccessful"),
-    o("NVM-100248", "2026-08-22", "Batrisyia Rania", "unikl-home", "Black Edition · Standard · M", 89, "delivery", null, "qr_bank", "confirmed", 2),
+    o("NVM-100248", "2026-08-22", "Batrisyia Rania", "unikl-home", "Black Edition · Standard · M", 89, "delivery", null, "qr_bank", "confirmed", 2, "123 Jalan Contoh, Bandar Baru, 43000, Kajang, Selangor"),
     o("NVM-100249", "2026-08-24", "Adam Haziq", "unikl-home", "White Edition · Standard · L", 89, "pickup", "UniKL RCMP - Ipoh, Perak", "qr_bank", "pending"),
-    o("NVM-100250", "2026-08-25", "Sofia Mikhayla", "unikl-retro", "Blue Edition · S", 99, "delivery", null, "tng_spay", "confirmed"),
+    o("NVM-100250", "2026-08-25", "Sofia Mikhayla", "unikl-retro", "Blue Edition · S", 99, "delivery", null, "tng_spay", "confirmed", "123 Jalan Contoh, Bandar Baru, 43000, Kajang, Selangor"),
     o("NVM-100251", "2026-08-26", "Rayyan Zafri", "unikl-home", "Black Edition · Premium · XL", 99, "pickup", "UniKL MICET - Alor Gajah, Melaka", "qr_bank", "confirmed", 3),
-    o("NVM-100252", "2026-08-27", "Qistina Aleesya", "unikl-home", "White Edition · Standard · M", 89, "delivery", null, "qr_bank", "pending"),
+    o("NVM-100252", "2026-08-27", "Qistina Aleesya", "unikl-home", "White Edition · Standard · M", 89, "delivery", null, "qr_bank", "pending", "123 Jalan Contoh, Bandar Baru, 43000, Kajang, Selangor"),
     o("NVM-100253", "2026-08-28", "Haiqal Rusydi", "unikl-retro", "Blue Edition · M", 99, "pickup", "UniKL MITEC - Masai, Johor", "tng_spay", "confirmed", 2),
-    o("NVM-100254", "2026-08-29", "Nur Ellisya", "unikl-home", "Black Edition · Standard · S", 89, "delivery", null, "qr_bank", "pending"),
+    o("NVM-100254", "2026-08-29", "Nur Ellisya", "unikl-home", "Black Edition · Standard · S", 89, "delivery", null, "qr_bank", "pending", "123 Jalan Contoh, Bandar Baru, 43000, Kajang, Selangor"),
   ];
 
-  function o(id, date, customerName, productId, variant, total, fulfillmentMode, pickupLocation, paymentMethod, status, qty, trackingNumber) {
+  function o(id, date, customerName, productId, variant, total, fulfillmentMode, pickupLocation, paymentMethod, status, qty, trackingNumber, deliveryAddress) {
     return {
       id,
       date,
@@ -146,17 +170,41 @@
       status,
       receiptUrl: MOCK_RECEIPT,
       trackingNumber: trackingNumber || null,
+      deliveryAddress: deliveryAddress || null,
     };
   }
 
-  async function loadOrders() {
-    // swap for a real supabaseClient.from('orders').select('*') once
-    // that table exists and checkout.js is actually writing to it
+  function getOrders() {
+    try {
+      const stored = localStorage.getItem('nvm_orders');
+      if (stored) {
+        return JSON.parse(stored);
+      }
+    } catch(e) {
+      console.error(e);
+    }
+    // initialize with mock orders
+    localStorage.setItem('nvm_orders', JSON.stringify(ORDERS));
     return ORDERS;
   }
 
+  function saveOrders(ordersList) {
+    try {
+      localStorage.setItem('nvm_orders', JSON.stringify(ordersList));
+    } catch(e) {
+      console.error(e);
+    }
+  }
+
+  async function loadOrders() {
+    return getOrders();
+  }
+
+
   window.AdminData = {
     loadOrders,
+    saveOrders,
+    getOrders,
     CATEGORY_LABELS,
     PAYMENT_LABELS,
     PRODUCT_LABELS,

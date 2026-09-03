@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manage Products — NVM Store Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/admin.css">
+<style>
+  .manage-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+  .manage-table th { text-align: left; padding-bottom: 10px; border-bottom: 1px solid var(--a-border); font-size: 0.8rem; color: var(--a-ink-soft); }
+  .manage-table td { padding: 14px 0; border-bottom: 1px solid var(--a-border); vertical-align: middle; }
+  .toggle-switch { display: inline-flex; align-items: center; cursor: pointer; gap: 8px; }
+  .toggle-switch input { display: none; }
+  .slider { width: 44px; height: 24px; background: #ccc; border-radius: 34px; position: relative; transition: .4s; }
+  .slider:before { content: ""; position: absolute; width: 18px; height: 18px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .4s; }
+  .toggle-switch input:checked + .slider { background: var(--a-green); }
+  .toggle-switch input:checked + .slider:before { transform: translateX(20px); }
+  
+  .section-toggle-card { display: flex; align-items: center; justify-content: space-between; background: var(--a-paper); border: 1px solid var(--a-border); padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+  .section-toggle-info h4 { font-family: 'Archivo Black', sans-serif; font-size: 1.1rem; margin-bottom: 4px; }
+  .section-toggle-info p { font-size: 0.85rem; color: var(--a-ink-soft); }
+</style>
+</head>
+<body>
+
+<div class="admin-shell">
+  <aside class="admin-sidebar" id="adminSidebarMount"></aside>
+
+  <main class="admin-main">
+    <div class="admin-header">
+      <h1>Manage Products</h1>
+      <p>Control visibility of product sections and individual products on the storefront.</p>
+    </div>
+
+    <!-- GLOBAL SECTION SETTINGS -->
+    <div class="admin-form-card">
+      <h3>Storefront Sections Visibility</h3>
+      
+      <label class="section-toggle-card">
+        <div class="section-toggle-info">
+          <h4>New Arrivals Tab</h4>
+          <p>Show or hide the "New Arrivals" tab in the main navigation and homepage section.</p>
+        </div>
+        <div class="toggle-switch">
+          <input type="checkbox" id="toggleNewArrivals" checked>
+          <div class="slider"></div>
+        </div>
+      </label>
+
+      <label class="section-toggle-card">
+        <div class="section-toggle-info">
+          <h4>Collections Tab</h4>
+          <p>Show or hide the "Collections" tab and grouping features.</p>
+        </div>
+        <div class="toggle-switch">
+          <input type="checkbox" id="toggleCollections" checked>
+          <div class="slider"></div>
+        </div>
+      </label>
+    </div>
+
+    <!-- PRODUCT LIST MANAGEMENT -->
+    <div class="admin-form-card">
+      <h3>Individual Product Settings</h3>
+      <table class="manage-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Category</th>
+            <th>Is New Arrival?</th>
+            <th>Visible on Site?</th>
+            <th style="width: 80px; text-align: center;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="productManageTableBody">
+          <!-- JS Rendered -->
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="admin-form-actions">
+        <button id="saveManageSettings" class="admin-export-btn">Save Changes</button>
+    </div>
+    
+    <div class="admin-toast" id="adminToast"></div>
+
+  </main>
+</div>
+
+<script src="js/admin-sidebar.js"></script>
+<script src="js/admin-inventory-data.js"></script>
+<script src="js/admin-product-manage.js"></script>
+</body>
+</html>

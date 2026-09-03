@@ -14,6 +14,20 @@
  */
 (function () {
   document.addEventListener("DOMContentLoaded", function () {
+    // Apply visibility settings from admin manage product
+    try {
+        const stored = localStorage.getItem("nvm_site_settings");
+        if (stored) {
+            const settings = JSON.parse(stored);
+            if (settings.newArrivalsVisible === false) {
+                document.querySelectorAll('a[href="new-arrivals.html"]').forEach(el => el.style.display = 'none');
+            }
+            if (settings.collectionsVisible === false) {
+                document.querySelectorAll('a[href="collections.html"]').forEach(el => el.style.display = 'none');
+            }
+        }
+    } catch(e) {}
+
     const menuBtn = document.getElementById("menuToggleBtn");
     const pillNav = document.querySelector(".pill-nav-wrap .pill-nav");
     if (!menuBtn || !pillNav) return;

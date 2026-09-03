@@ -124,11 +124,45 @@
         <button type="button" class="admin-add-btn" id="addAddonBtn">+ Add Add-on</button>
       </div>
 
+      
+      <!-- PAYMENT OPTIONS -->
+      <div class="admin-form-card">
+        <h3>Allowed Payment Methods</h3>
+        <p class="field-note">Select which payment methods are accepted for this product.</p>
+        <div id="productPaymentOptionsList" style="display:flex; gap:14px; flex-wrap:wrap; margin-top:10px;">
+            <!-- JS Rendered -->
+        </div>
+      </div>
+
       <!-- DELIVERY OPTIONS -->
       <div class="admin-form-card">
         <h3>Delivery Options</h3>
         <p class="field-note">Which fulfillment options apply to this product, with any extra charge on top of the base fee. (This list will come from the Delivery Management tab once it's built — for now it mirrors what's live at checkout.)</p>
         <div id="deliveryOptionsList"></div>
+      </div>
+
+      
+      <!-- PRODUCT SETTINGS -->
+      <div class="admin-form-card">
+        <h3>Product Display Settings</h3>
+        <p class="field-note">Configure visibility and categorization for the storefront.</p>
+        <div class="form-row-2">
+            <div>
+                <label>New Arrival?</label>
+                <div style="display:flex; align-items:center; gap: 10px; margin-top:10px;">
+                    <input type="checkbox" id="isNewArrival" style="width: 20px; height: 20px;">
+                    <span style="font-size:0.9rem;">Mark as a New Arrival</span>
+                </div>
+            </div>
+            <div>
+                <label>Assign to Collection</label>
+                <select id="productCollection">
+                    <option value="">-- No Collection --</option>
+                    <option value="campus-essentials">Campus Essentials</option>
+                    <option value="sports-performance">Sports Performance</option>
+                </select>
+            </div>
+        </div>
       </div>
 
       <!-- DESCRIPTION -->
