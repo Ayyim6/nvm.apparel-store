@@ -1,158 +1,58 @@
 /**
  * product.js — product detail page
  * -----------------------------------------------------------------
- * PRODUCTS below is example/mock data standing in for a future
- * Supabase table (something like: products, product_colors,
- * product_types, product_sizes — each color/type/size row belonging
- * to a product, each with its own images/price_delta). None of that
- * is wired yet — this file just demonstrates the shape so the UI is
- * ready to swap onto real data later without a rewrite:
- *
- *   - "colors" = same garment, different colourway. Swapping colour
- *     swaps the gallery images. A product can have 1 colour (the
- *     swatch row then just doesn't render) or several.
- *   - "types" = collar/material variants — optional per product.
- *     Leave the array empty and the whole Type section disappears
- *     ("it also can be no assign"). Each type can carry a
- *     priceDelta.
- *   - "sizes" = required. Each size can also carry its own
- *     priceDelta (e.g. XXL costing more fabric).
- *
- * The page reads ?id=<product id> from the URL (e.g.
- * product.html?id=unikl-retro) and falls back to the first product
- * if missing/unknown — this is how it'll eventually be linked from
- * shop.js product cards once that's wired to real product IDs.
  */
 (function () {
-  const PRODUCTS = {
-    "unikl-home": {
-      id: "unikl-home",
-      name: "UniKL Home Jersey",
-      category: "Jerseys",
-      description:
-        "The official University Kuala Lumpur home jersey — an oversized, relaxed-fit tee in a soft knit built for campus days and match days alike. Raglan sleeves, contrast side panel, and an all-over wordmark print.",
-      details: [
-        "Relaxed, oversized fit",
-        "Raglan sleeve construction",
-        "Machine washable, cold",
-      ],
-      basePrice: 89,
-      colors: [
-        {
-          id: "black",
-          label: "Black Edition",
-          swatch: "#0b0b0c",
-          images: ["images/black-1.jpg", "images/black-2.jpg", "images/black-3.jpg"],
-        },
-        {
-          id: "white",
-          label: "White Edition",
-          swatch: "#f4f4f1",
-          border: true,
-          images: ["images/white-1.jpg", "images/white-2.jpg", "images/white-3.jpg"],
-        },
-      ],
-      types: [
-        { id: "standard", label: "Standard", note: "Crew neck · Polyester", priceDelta: 0 },
-        { id: "premium", label: "Premium", note: "Crew neck · Cotton blend", priceDelta: 10 },
-      ],
-      sizes: [
-        { id: "S", label: "S", priceDelta: 0 },
-        { id: "M", label: "M", priceDelta: 0 },
-        { id: "L", label: "L", priceDelta: 0 },
-        { id: "XL", label: "XL", priceDelta: 0 },
-        { id: "XXL", label: "XXL", priceDelta: 5 },
-      ],
-      sizeGuideImage: "images/sizing-guide.png",
-    },
-
-    "unikl-retro": {
-      id: "unikl-retro",
-      name: "UniKL Retro Jersey",
-      category: "Jerseys — Retro Collection",
-      description:
-        "A retro-inspired take on the UniKL jersey with a sport polo collar and a subtle tonal geometric print. Slightly heavier premium cotton feel, finished with contrast trims.",
-      details: [
-        "Sport polo collar",
-        "Premium cotton-blend fabric",
-        "Contrast cuff and hem trim",
-      ],
-      basePrice: 99,
-      colors: [
-        {
-          id: "blue",
-          label: "Blue Edition",
-          swatch: "#2fb8c9",
-          images: ["images/retro-1.jpg"],
-        },
-      ],
-      types: [], // none assigned for this product — Type section won't render
-      sizes: [
-        { id: "S", label: "S", priceDelta: 0 },
-        { id: "M", label: "M", priceDelta: 0 },
-        { id: "L", label: "L", priceDelta: 0 },
-        { id: "XL", label: "XL", priceDelta: 0 },
-      ],
-      sizeGuideImage: "images/sizing-guide.png",
-    },
-  };
-
-  const DEFAULT_SIZES = [
-    { id: "S", label: "S", priceDelta: 0 },
-    { id: "M", label: "M", priceDelta: 0 },
-    { id: "L", label: "L", priceDelta: 0 },
-    { id: "XL", label: "XL", priceDelta: 0 },
-  ];
+  const PRODUCTS = {}; // Mock fallback
 
   function money(n) {
     return "RM" + (Math.round(n * 100) / 100).toFixed(2);
   }
 
-  // Turns a row from Supabase's "products" table into the shape the
-  // render code below expects. Reads optional jsonb columns — colors,
-  // types, sizes, size_guide_image — if they exist on the row; falls
-  // back to the current single-image / generic-size behavior for any
-  // product that doesn't have them set yet, so this keeps working
-  // exactly as before until you start filling those columns in.
   function normalizeSupabaseProduct(row) {
-    const colors =
-      Array.isArray(row.colors) && row.colors.length
-        ? row.colors
-        : [
-            {
-              id: "default",
-              label: null,
-              swatch: null,
-              images: row.image_url ? [row.image_url] : [],
-            },
-          ];
+    const colors = Array.isArray(row.colors) && row.colors.length > 0
+      ? row.colors.map(c => ({
+          id: c.name,
+          label: c.name,
+          swatch: c.swatch || '#000',
+          images: c.images || []
+        }))
+      : [{ id: "default", label: "Default", swatch: "#000", images: [] }];
 
-    const types = Array.isArray(row.types) ? row.types : [];
+    let types = [];
+    if (Array.isArray(row.type_groups) && row.type_groups.length > 0) {
+       types = row.type_groups[0].options.map(opt => ({
+           id: opt.name,
+           label: opt.name,
+           note: row.type_groups[0].name,
+           priceDelta: Number(opt.priceAddition) || 0
+       }));
+    }
 
-    const sizes =
-      Array.isArray(row.sizes) && row.sizes.length ? row.sizes : DEFAULT_SIZES;
+    const sizes = Array.isArray(row.sizes) && row.sizes.length > 0
+      ? row.sizes.map(s => ({
+          id: s.id,
+          label: s.id,
+          priceDelta: Number(s.priceAddition) || 0
+      }))
+      : [];
 
     return {
       id: row.id,
       name: row.name,
-      category: "NVM Store",
+      category: row.category,
       description: row.description || "",
       details: [],
-      basePrice: Number(row.price) || 0,
+      basePrice: Number(row.base_price) || 0,
       colors,
       types,
       sizes,
       sizeGuideImage: row.size_guide_image || "images/sizing-guide.png",
-      outOfStock: Number(row.stock_qty) <= 0,
+      outOfStock: Number(row.stock_qty) <= 0
     };
   }
 
-  // Mock ids (unikl-home / unikl-retro) resolve locally; anything else is
-  // looked up in Supabase by its real product id.
   async function loadProduct(requestedId) {
-    if (!requestedId) return PRODUCTS["unikl-home"];
-    if (PRODUCTS[requestedId]) return PRODUCTS[requestedId];
-
     if (typeof supabaseClient === "undefined") return null;
 
     const { data, error } = await supabaseClient
@@ -188,22 +88,15 @@
       return;
     }
 
-    // ---------- state ----------
-    // ?color=<id> lets a card (e.g. New Arrivals showing Black/White as
-    // separate cards) deep-link straight into that colorway instead of
-    // always landing on the first one.
     const requestedColor = params.get("color");
-    let selectedColor =
-      product.colors.find((c) => c.id === requestedColor) || product.colors[0] || null;
-    let selectedType = product.types[0] || null; // may be undefined if none
-    let selectedSize = null; // user must actively pick a size
+    let selectedColor = product.colors.find((c) => c.id === requestedColor) || product.colors[0] || null;
+    let selectedType = product.types[0] || null; 
+    let selectedSize = null; 
     let slideIndex = 0;
 
     // ---------- static text ----------
-    document.getElementById("productCategory").textContent = product.category;
     document.getElementById("productName").textContent = product.name;
     document.getElementById("productDesc").textContent = product.description;
-    document.getElementById("productCrumbName").textContent = product.name;
     document.title = product.name + " — NVM Store";
 
     const detailsList = document.getElementById("productDetailsList");
@@ -213,57 +106,56 @@
 
     // ---------- gallery ----------
     const track = document.getElementById("galleryTrack");
-    const dotsWrap = document.getElementById("galleryDots");
-    const prevBtn = document.getElementById("galleryPrev");
-    const nextBtn = document.getElementById("galleryNext");
+    const floatingThumbnails = document.getElementById("floatingThumbnails");
+
+    function getGalleryImages() {
+      const allImages = selectedColor.images || [];
+      // SEPARATE THUMBNAIL: If more than 1 image, skip index 0. Otherwise, use what is available.
+      return allImages.length > 1 ? allImages.slice(1) : allImages;
+    }
 
     function renderGallery() {
-      const images = selectedColor.images && selectedColor.images.length
-        ? selectedColor.images
-        : null;
+      const galleryImages = getGalleryImages();
       slideIndex = 0;
 
-      if (!images) {
+      if (!galleryImages || galleryImages.length === 0) {
         track.innerHTML = `<div class="gallery-slide gallery-slide-empty">No image yet</div>`;
-        dotsWrap.innerHTML = "";
-        prevBtn.style.display = "none";
-        nextBtn.style.display = "none";
-        dotsWrap.style.display = "none";
+        floatingThumbnails.innerHTML = "";
+        floatingThumbnails.style.display = "none";
         track.style.transform = "translateX(0)";
         return;
       }
 
-      track.innerHTML = images
-        .map((src) => `<img class="gallery-slide" src="${src}" alt="${product.name}${selectedColor.label ? " — " + selectedColor.label : ""}">`)
+      track.innerHTML = galleryImages
+        .map((src) => `<img class="gallery-slide" src="${src}" alt="${product.name}">`)
         .join("");
-      dotsWrap.innerHTML = images
-        .map((_, i) => `<button type="button" class="gallery-dot${i === 0 ? " active" : ""}" data-index="${i}" aria-label="Image ${i + 1}"></button>`)
+        
+      floatingThumbnails.innerHTML = galleryImages
+        .map((src, i) => `<img src="${src}" class="thumb-pill-img${i === 0 ? " active" : ""}" data-index="${i}" alt="Thumb ${i}">`)
         .join("");
-      const multi = images.length > 1;
-      prevBtn.style.display = multi ? "" : "none";
-      nextBtn.style.display = multi ? "" : "none";
-      dotsWrap.style.display = multi ? "" : "none";
+        
+      const multi = galleryImages.length > 1;
+      floatingThumbnails.style.display = multi ? "flex" : "none";
       goToSlide(0);
     }
 
     function goToSlide(i) {
-      const images = selectedColor.images;
-      if (!images || !images.length) return;
-      slideIndex = (i + images.length) % images.length;
+      const galleryImages = getGalleryImages();
+      if (!galleryImages || !galleryImages.length) return;
+      
+      slideIndex = (i + galleryImages.length) % galleryImages.length;
       track.style.transform = `translateX(-${slideIndex * 100}%)`;
-      dotsWrap.querySelectorAll(".gallery-dot").forEach((dot, idx) => {
-        dot.classList.toggle("active", idx === slideIndex);
+      
+      floatingThumbnails.querySelectorAll(".thumb-pill-img").forEach((thumb, idx) => {
+        thumb.classList.toggle("active", idx === slideIndex);
       });
     }
 
-    prevBtn.addEventListener("click", () => goToSlide(slideIndex - 1));
-    nextBtn.addEventListener("click", () => goToSlide(slideIndex + 1));
-    dotsWrap.addEventListener("click", (e) => {
-      const dot = e.target.closest(".gallery-dot");
-      if (dot) goToSlide(Number(dot.dataset.index));
+    floatingThumbnails.addEventListener("click", (e) => {
+      const thumb = e.target.closest(".thumb-pill-img");
+      if (thumb) goToSlide(Number(thumb.dataset.index));
     });
 
-    // basic swipe support
     let touchStartX = null;
     track.addEventListener("touchstart", (e) => (touchStartX = e.touches[0].clientX));
     track.addEventListener("touchend", (e) => {
@@ -380,7 +272,7 @@
     // ---------- add to cart / checkout ----------
     function buildCartItem() {
       const parts = [product.name];
-      if (selectedColor) parts.push(selectedColor.label);
+      if (selectedColor && selectedColor.label !== "Default") parts.push(selectedColor.label);
       if (selectedType) parts.push(selectedType.label);
       if (selectedSize) parts.push("Size " + selectedSize.label);
 
@@ -389,18 +281,23 @@
         selectedColor && selectedColor.id,
         selectedType && selectedType.id,
         selectedSize && selectedSize.id,
-      ]
-        .filter(Boolean)
-        .join("-");
+      ].filter(Boolean).join("-");
 
       const typeDelta = selectedType ? selectedType.priceDelta : 0;
       const sizeDelta = selectedSize ? selectedSize.priceDelta : 0;
 
+      // Always pass the thumbnail (images[0]) to the cart, not the gallery images
+      const thumbImage = selectedColor && selectedColor.images && selectedColor.images.length > 0 
+          ? selectedColor.images[0] 
+          : null;
+
       return {
         id: variantId,
+        productId: product.id,
         name: parts.join(" · "),
         price: product.basePrice + typeDelta + sizeDelta,
-        image: selectedColor ? selectedColor.images[0] : null,
+        image: thumbImage,
+        qty: 1
       };
     }
 
@@ -415,13 +312,29 @@
 
     document.getElementById("addCartBtn").addEventListener("click", () => {
       if (!validateSelection()) return;
-      window.addToCart(buildCartItem());
+      
+      const item = buildCartItem();
+      let cart = [];
+      try { cart = JSON.parse(localStorage.getItem('nvm_cart')) || []; } catch(e){}
+
+      const existingIndex = cart.findIndex(i => i.id === item.id);
+      if (existingIndex > -1) {
+          cart[existingIndex].qty += 1;
+      } else {
+          cart.push(item);
+      }
+
+      localStorage.setItem('nvm_cart', JSON.stringify(cart));
+      window.dispatchEvent(new Event('cartUpdated'));
+      
+      if (typeof openCartDrawer === 'function') openCartDrawer();
+      else alert("Added to cart!");
     });
 
     document.getElementById("buyNowBtn").addEventListener("click", () => {
       if (!validateSelection()) return;
-      window.Cart.add(buildCartItem());
-      window.location.href = "checkout.html";
+      // Handle Buy Now logic (you can route to checkout.html here)
+      alert("Proceeding to checkout..."); 
     });
 
     if (product.outOfStock) {

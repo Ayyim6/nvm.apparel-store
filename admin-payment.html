@@ -7,29 +7,17 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/admin.css">
-<style>
-  .payment-item { background: var(--a-paper); border: 1px solid var(--a-border); padding: 20px; border-radius: 12px; margin-bottom: 20px; }
-  .payment-item-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px dashed var(--a-border); }
-  .toggle-switch { display: inline-flex; align-items: center; cursor: pointer; gap: 8px; }
-  .toggle-switch input { display: none; }
-  .slider { width: 44px; height: 24px; background: #ccc; border-radius: 34px; position: relative; transition: .4s; }
-  .slider:before { content: ""; position: absolute; width: 18px; height: 18px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .4s; }
-  .toggle-switch input:checked + .slider { background: var(--a-green); }
-  .toggle-switch input:checked + .slider:before { transform: translateX(20px); }
-  .img-upload-box { border: 1px dashed var(--a-border); border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; background: var(--a-bg); }
-  .img-preview { max-height: 80px; object-fit: contain; margin-top: 10px; display: block; }
-</style>
 </head>
 <body>
 <div class="admin-shell">
   <aside class="admin-sidebar" id="adminSidebarMount"></aside>
-  <main class="admin-main">
+<main class="admin-main">
     <div class="admin-header">
       <h1>Payment Methods</h1>
       <p>Manage payment options available to customers during checkout.</p>
     </div>
     
-    <div class="admin-form-card" id="paymentListContainer">
+    <div id="paymentListContainer">
        <!-- JS RENDERED -->
     </div>
     <button class="admin-add-btn" id="addPaymentBtn">+ Add New Payment Method</button>

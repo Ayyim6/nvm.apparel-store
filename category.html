@@ -49,14 +49,38 @@
 
 </div>
 
-  <!-- CATEGORY HEADER (image/title/description filled in by category.js) -->
-  <div class="category-hero" id="categoryHero">
-    <div class="category-hero-content">
-      <h1 id="categoryTitle">Category</h1>
-      <p id="categoryDescription"></p>
-    </div>
+<!-- CATEGORY HERO -->
+  <div id="categoryHero" style="
+      position: relative;
+      width: 100%;
+      height: 450px; /* You can adjust this height if you want the image taller/shorter */
+      background-color: #111;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: flex-end; /* Pushes the text down towards the bottom */
+      justify-content: center; /* Centers the text horizontally */
+      padding-bottom: 50px; /* Creates a little breathing room from the bottom edge */
+  ">
+      <!-- Dark gradient overlay so the white text always pops against bright images -->
+      <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 60%); z-index: 1;"></div>
+      
+      <!-- The Category Title -->
+      <h1 id="categoryTitle" style="
+          position: relative; 
+          z-index: 2; 
+          color: #ffffff; 
+          font-family: 'Archivo Black', sans-serif; 
+          font-size: 2.2rem; /* Made the font smaller (was likely 3rem+) */
+          text-align: center;
+          margin: 0;
+          text-shadow: 0 4px 12px rgba(0,0,0,0.8);
+          letter-spacing: 1px;
+      ">
+          Collection Title
+      </h1>
   </div>
-
+  
   <!-- PRODUCT GRID (filled in by category.js) -->
   <h2 class="category-section-title" id="categoryGridTitle">Shop the Collection</h2>
   <div class="product-grid" id="categoryProductGrid">

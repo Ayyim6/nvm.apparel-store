@@ -1,82 +1,11 @@
 /**
  * admin-product-form.js — Add Product form logic
- * -----------------------------------------------------------------
- * Not wired to Supabase yet — there's no products schema that
- * supports colours/types/sizes/add-ons/promotions/SKU/delivery
- * assignment yet (categories alone would need real columns; this
- * needs quite a few more). Submitting the form gathers everything
- * into one structured object and shows it back as a preview, so the
- * capture logic is provably correct — swapping the preview step for
- * a real supabaseClient insert is the only change needed once that
- * schema exists.
- *
- * Delivery Options mirrors what's actually live at checkout right
- * now (checkout-fulfillment.js's 3 pickup spots + delivery) with a
- * placeholder single-letter SKU code per mode. Once Delivery
- * Management is built, this list (and its codes) should be read
- * from there instead of hardcoded here. For now it reads the same
- * shared list admin-data.js exposes, so it can't drift from what
- * the Dashboard/Orders filters use.
  */
 (function () {
-  const DELIVERY_MODES = window.AdminData.DELIVERY_MODES;
-
+  const DELIVERY_MODES = (window.AdminData && window.AdminData.DELIVERY_MODES) ? window.AdminData.DELIVERY_MODES : [];
   const SIZE_LIST = ["XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL", "5XL"];
 
-  const NEW_CATEGORY_VALUE = "__new__";
-
-  // Same mock catalog product.js uses for the live site — kept as its own
-  // small copy here (rather than reaching into product.js's private
-  // PRODUCTS object) purely so "Load Existing Product" has something real
-  // to pre-fill from. Swap for a real Supabase products query once that
-  // table exists; "Update Product" on Save would then write back to it
-  // instead of just re-showing the preview.
-  const EXISTING_PRODUCTS = {
-    "unikl-home": {
-      category: "home-jerseys",
-      categoryLabel: "Home Jerseys",
-      hasSizing: true,
-      sizes: [
-        { id: "S", priceAddition: 0 },
-        { id: "M", priceAddition: 0 },
-        { id: "L", priceAddition: 0 },
-        { id: "XL", priceAddition: 0 },
-        { id: "XXL", priceAddition: 5 },
-      ],
-      colors: [
-        { name: "Black", swatch: "#0b0b0c" },
-        { name: "White", swatch: "#f4f4f1" },
-      ],
-      typeGroups: [
-        {
-          name: "Type",
-          category: "material",
-          options: [
-            { name: "Standard", priceAddition: 0 },
-            { name: "Premium", priceAddition: 10 },
-          ],
-        },
-      ],
-      description:
-        "Relaxed-fit jersey in a soft knit, built for campus days and match days alike.",
-    },
-    "unikl-retro": {
-      category: "retro-kits",
-      categoryLabel: "Retro Kits",
-      hasSizing: true,
-      sizes: [
-        { id: "S", priceAddition: 0 },
-        { id: "M", priceAddition: 0 },
-        { id: "L", priceAddition: 0 },
-        { id: "XL", priceAddition: 0 },
-      ],
-      colors: [{ name: "Blue", swatch: "#2fb8c9" }],
-      typeGroups: [],
-      description:
-        "A retro-inspired take on the UniKL jersey with a sport polo collar.",
-    },
-  };
-
+  let FETCHED_PRODUCTS = {};
   let colorCounter = 0;
   let typeGroupCounter = 0;
   let optionCounter = 0;
@@ -85,14 +14,26 @@
   let editingProductId = null;
 
   // ---------- Load Existing Product ----------
-  function populateExistingProducts() {
+  async function populateExistingProducts() {
     const select = document.getElementById("loadExistingProduct");
-    Object.entries(EXISTING_PRODUCTS).forEach(([id, p]) => {
+    if (!select) return;
+    
+    if (typeof supabaseClient !== 'undefined') {
+        const { data, error } = await supabaseClient.from('products').select('*');
+        if (!error && data) {
+            data.forEach(p => { FETCHED_PRODUCTS[p.id] = p; });
+        }
+    }
+
+    select.innerHTML = `<option value="">— Create New Product —</option>`;
+    Object.values(FETCHED_PRODUCTS).forEach(p => {
       const opt = document.createElement("option");
-      opt.value = id;
-      opt.textContent = `${p.categoryLabel} — ${p.colors.map((c) => c.name).join(" / ")}`;
+      opt.value = p.id;
+      const colorNames = p.colors ? p.colors.map(c => c.name).join(" / ") : "";
+      opt.textContent = `${p.name} — ${colorNames}`;
       select.appendChild(opt);
     });
+    
     select.addEventListener("change", () => {
       if (select.value) loadProductForEdit(select.value);
       else resetFormToNew();
@@ -103,110 +44,197 @@
     editingProductId = null;
     document.getElementById("saveProductBtn").textContent = "Save Product";
     document.getElementById("productForm").reset();
-    document.getElementById("newCategoryGroup").style.display = "none";
+    
+    document.getElementById("productTitle").value = "";
+    document.getElementById("basePrice").value = ""; 
+    document.getElementById("productDescription").value = "";
+    document.getElementById("skuPrefix").value = "";
+    document.getElementById("preorderDeadlineGroup").style.display = "none";
+    
     document.getElementById("colorVariantsList").innerHTML = "";
     document.getElementById("typeGroupsList").innerHTML = "";
+    document.getElementById("addonsList").innerHTML = "";
+    document.getElementById("promotionsList").innerHTML = "";
+    
+    document.querySelectorAll(".delivery-checkbox").forEach(cb => {
+        cb.checked = false;
+        const feeInput = cb.closest(".delivery-option-row").querySelector(".delivery-extra-fee");
+        if (feeInput) feeInput.value = "";
+    });
+    
     colorCounter = 0;
     typeGroupCounter = 0;
+    addonCounter = 0;
+    promoCounter = 0;
+    
     addColorVariant();
     refreshSizePriceInputs();
+    updateSkuPreview();
   }
 
   function loadProductForEdit(id) {
-    const p = EXISTING_PRODUCTS[id];
+    const p = FETCHED_PRODUCTS[id];
     if (!p) return;
     editingProductId = id;
     document.getElementById("saveProductBtn").textContent = "Update Product";
 
-    document.getElementById("productCategory").value = p.category;
-    document.getElementById("newCategoryGroup").style.display = "none";
+    // Basic Info
+    document.getElementById("productTitle").value = p.name || "";
+    document.getElementById("basePrice").value = p.base_price || 0;
+    document.getElementById("productDescription").value = p.description || "";
 
-    document.querySelector(`input[name="hasSizing"][value="${p.hasSizing ? "yes" : "no"}"]`).checked = true;
-    document.getElementById("sizingFieldsGroup").style.display = p.hasSizing ? "" : "none";
+    // Stock & Preorder
+    const stockRadio = document.querySelector(`input[name="stockType"][value="${p.stock_type || 'regular'}"]`);
+    if(stockRadio) stockRadio.checked = true;
+    document.getElementById("preorderDeadlineGroup").style.display = p.stock_type === "preorder" ? "" : "none";
+    if(p.preorder_deadline) {
+        document.getElementById("preorderDeadline").value = p.preorder_deadline.split('T')[0];
+    }
+
+    // SKU
+    document.getElementById("skuPrefix").value = p.sku_prefix || "";
+
+    // Sizing
+    const sizeRadio = document.querySelector(`input[name="hasSizing"][value="${p.has_sizing ? "yes" : "no"}"]`);
+    if(sizeRadio) sizeRadio.checked = true;
+    
+    document.getElementById("sizingFieldsGroup").style.display = p.has_sizing ? "" : "none";
     document.querySelectorAll(".size-checkbox").forEach((cb) => {
-      cb.checked = p.sizes.some((s) => s.id === cb.value);
+      cb.checked = p.sizes && p.sizes.some((s) => s.id === cb.value);
     });
     refreshSizePriceInputs();
-    p.sizes.forEach((s) => {
-      const input = document.querySelector(`[data-size-price="${s.id}"] input`);
-      if (input) input.value = s.priceAddition;
-    });
+    
+    if(p.sizes) {
+      p.sizes.forEach((s) => {
+        const input = document.querySelector(`[data-size-price="${s.id}"] input`);
+        if (input) input.value = s.priceAddition || 0;
+      });
+    }
 
+    const chartEl = document.getElementById("sizingChartSelect");
+    if(chartEl && p.size_guide_image) chartEl.value = p.size_guide_image;
+
+    // Colors & Images
     document.getElementById("colorVariantsList").innerHTML = "";
     colorCounter = 0;
-    p.colors.forEach((c) => {
-      addColorVariant();
-      const block = document.querySelector("#colorVariantsList .repeater-item:last-child");
-      block.querySelector(".color-name").value = c.name;
-      block.querySelector(".color-swatch").value = c.swatch;
-    });
+    if(p.colors && p.colors.length > 0) {
+      p.colors.forEach((c) => {
+        addColorVariant();
+        const block = document.querySelector("#colorVariantsList .repeater-item:last-child");
+        block.querySelector(".color-name").value = c.name;
+        block.querySelector(".color-swatch").value = c.swatch;
+        
+        // Repopulate Images in Preview UI
+        if(c.images && c.images.length > 0) {
+            const thumbImg = block.querySelector(".thumb-preview");
+            thumbImg.src = c.images[0];
+            thumbImg.style.display = "block";
+            
+            const galleryRow = block.querySelector(".gallery-preview-row");
+            const galleryImages = c.images.slice(1);
+            galleryRow.innerHTML = galleryImages.map(url => `<img src="${url}">`).join("");
+        }
+      });
+    }
 
+    // Type Groups
     document.getElementById("typeGroupsList").innerHTML = "";
     typeGroupCounter = 0;
-    p.typeGroups.forEach((g) => {
-      addTypeGroup();
-      const groupEl = document.querySelector("#typeGroupsList .repeater-item:last-child");
-      groupEl.querySelector(".group-name").value = g.name;
-      groupEl.querySelector(".group-category").value = g.category;
-      groupEl.querySelector(".type-options-list").innerHTML = "";
-      g.options.forEach((opt) => {
-        addTypeOption(groupEl);
-        const optRow = groupEl.querySelector(".type-options-list .repeater-row:last-child");
-        optRow.querySelector(".type-option-name").value = opt.name;
-        optRow.querySelector(".type-option-price").value = opt.priceAddition;
+    if(p.type_groups) {
+      p.type_groups.forEach((g) => {
+        addTypeGroup();
+        const groupEl = document.querySelector("#typeGroupsList .repeater-item:last-child");
+        groupEl.querySelector(".group-name").value = g.name;
+        groupEl.querySelector(".group-category").value = g.category;
+        groupEl.querySelector(".type-options-list").innerHTML = "";
+        g.options.forEach((opt) => {
+          addTypeOption(groupEl);
+          const optRow = groupEl.querySelector(".type-options-list .repeater-row:last-child");
+          optRow.querySelector(".type-option-name").value = opt.name;
+          optRow.querySelector(".type-option-price").value = opt.priceAddition;
+        });
       });
-    });
+    }
 
-    document.getElementById("productDescription").value = p.description;
+    // Addons
+    document.getElementById("addonsList").innerHTML = "";
+    addonCounter = 0;
+    if(p.addons) {
+        p.addons.forEach(a => {
+            addAddon();
+            const addonEl = document.querySelector("#addonsList .repeater-item:last-child");
+            addonEl.querySelector(".addon-name").value = a.name || "";
+            addonEl.querySelector(".addon-price").value = a.priceAddition || 0;
+            addonEl.querySelector(".addon-maxlen").value = a.maxLength || "";
+            addonEl.querySelector(".addon-required").checked = !!a.required;
+        });
+    }
+
+    // Payments
+    if(p.allowed_payments) {
+        document.querySelectorAll(".product-payment-checkbox").forEach(cb => {
+            cb.checked = p.allowed_payments.includes(cb.value);
+        });
+    }
+
+    // Delivery Options
+    if(p.delivery_options) {
+        document.querySelectorAll(".delivery-checkbox").forEach(cb => {
+            const matched = p.delivery_options.find(d => d.id === cb.value);
+            cb.checked = !!matched;
+            if(matched) {
+                const feeInput = cb.closest(".delivery-option-row").querySelector(".delivery-extra-fee");
+                if (feeInput) feeInput.value = matched.extraFee || 0;
+            }
+        });
+    }
+
+    // Promos
+    document.getElementById("promotionsList").innerHTML = "";
+    promoCounter = 0;
+    if(p.promotions) {
+        p.promotions.forEach(pr => {
+            addPromotion();
+            const promoEl = document.querySelector("#promotionsList .repeater-item:last-child");
+            promoEl.querySelector(".promo-trigger").value = pr.trigger || "";
+            promoEl.querySelector(".promo-threshold").value = pr.threshold || 0;
+            promoEl.querySelector(".promo-discount-type").value = pr.discountType || "";
+            promoEl.querySelector(".promo-discount-value").value = pr.discountValue || 0;
+        });
+    }
+
     updateAllColorPreviews();
+    updateSkuPreview();
   }
 
-  // ---------- Basic Info / Category ----------
+  // ---------- Basic Info ----------
   function getCurrentCategoryLabel() {
-    const select = document.getElementById("productCategory");
-    if (select.value === NEW_CATEGORY_VALUE) {
-      return document.getElementById("newCategoryName").value || "New Category";
-    }
-    return select.options[select.selectedIndex] ? select.options[select.selectedIndex].text : "";
+    return document.getElementById("productTitle").value || "Product";
   }
 
   function updateAllColorPreviews() {
     document.querySelectorAll("#colorVariantsList .repeater-item").forEach((block) => {
       const nameInput = block.querySelector(".color-name");
       const preview = block.querySelector(".color-name-preview");
-      const colorName = nameInput.value || "Colour";
-      preview.textContent = `Card name: ${getCurrentCategoryLabel()} - ${colorName}`;
+      if(preview) {
+        const colorName = nameInput.value || "Colour";
+        preview.textContent = `Card name: ${getCurrentCategoryLabel()} - ${colorName}`;
+      }
     });
-  }
-
-  // ---------- Basic Info ----------
-  function populateCategories() {
-    const select = document.getElementById("productCategory");
-    select.innerHTML =
-      Object.entries(window.AdminData.CATEGORY_LABELS)
-        .map(([slug, label]) => `<option value="${slug}">${label}</option>`)
-        .join("") + `<option value="${NEW_CATEGORY_VALUE}">+ Create New Category</option>`;
-
-    select.addEventListener("change", () => {
-      document.getElementById("newCategoryGroup").style.display =
-        select.value === NEW_CATEGORY_VALUE ? "" : "none";
-      updateAllColorPreviews();
-    });
-    document.getElementById("newCategoryName").addEventListener("input", updateAllColorPreviews);
   }
 
   // ---------- Stock Type ----------
   function wireStockType() {
     document.querySelectorAll('input[name="stockType"]').forEach((radio) => {
       radio.addEventListener("change", () => {
-        const isPreorder = document.querySelector('input[name="stockType"]:checked').value === "preorder";
+        const checked = document.querySelector('input[name="stockType"]:checked');
+        const isPreorder = checked && checked.value === "preorder";
         document.getElementById("preorderDeadlineGroup").style.display = isPreorder ? "" : "none";
       });
     });
   }
 
   // ---------- Sizing ----------
-  
   function populateSizingCharts() {
       const select = document.getElementById("sizingChartSelect");
       if (!select) return;
@@ -224,43 +252,36 @@
 
   function renderSizeCheckboxes() {
     const row = document.getElementById("sizeCheckboxRow");
-    row.innerHTML = SIZE_LIST.map(
-      (s) => `
-      <label class="size-chip">
-        <input type="checkbox" class="size-checkbox" value="${s}">
-        ${s}
-      </label>
-    `
-    ).join("");
+    if(!row) return;
+    row.innerHTML = SIZE_LIST.map((s) => `<label class="size-chip"><input type="checkbox" class="size-checkbox" value="${s}">${s}</label>`).join("");
   }
 
   function refreshSizePriceInputs() {
     const checked = Array.from(document.querySelectorAll(".size-checkbox:checked")).map((c) => c.value);
     const container = document.getElementById("sizePriceInputs");
+    if(!container) return;
+    
     const existing = {};
     container.querySelectorAll("[data-size-price]").forEach((el) => {
       existing[el.dataset.sizePrice] = el.querySelector("input").value;
     });
-    container.innerHTML = checked
-      .map(
-        (s) => `
+    container.innerHTML = checked.map((s) => `
       <div class="size-price-item" data-size-price="${s}">
         <label>${s}</label>
         <input type="number" step="0.01" placeholder="0.00" value="${existing[s] || ""}">
-      </div>
-    `
-      )
-      .join("");
+      </div>`).join("");
   }
 
   function wireSizing() {
     document.querySelectorAll('input[name="hasSizing"]').forEach((radio) => {
       radio.addEventListener("change", () => {
-        const hasSizing = document.querySelector('input[name="hasSizing"]:checked').value === "yes";
+        const checked = document.querySelector('input[name="hasSizing"]:checked');
+        const hasSizing = checked && checked.value === "yes";
         document.getElementById("sizingFieldsGroup").style.display = hasSizing ? "" : "none";
       });
     });
-    document.getElementById("sizeCheckboxRow").addEventListener("change", refreshSizePriceInputs);
+    const sizeRow = document.getElementById("sizeCheckboxRow");
+    if(sizeRow) sizeRow.addEventListener("change", refreshSizePriceInputs);
   }
 
   // ---------- Colour Variants ----------
@@ -310,6 +331,8 @@
   function wireColorVariants() {
     document.getElementById("addColorBtn").addEventListener("click", addColorVariant);
     const list = document.getElementById("colorVariantsList");
+    const titleInput = document.getElementById("productTitle");
+    if(titleInput) titleInput.addEventListener("input", updateAllColorPreviews);
 
     list.addEventListener("click", (e) => {
       const removeId = e.target.dataset.removeColor;
@@ -336,7 +359,7 @@
       }
     });
 
-    addColorVariant(); // start with one colour block, since most products have at least one
+    addColorVariant(); 
   }
 
   // ---------- Type Variant Groups ----------
@@ -391,7 +414,7 @@
       <button type="button" class="add-option-btn" data-add-option>+ Add Option</button>
     `;
     document.getElementById("typeGroupsList").appendChild(wrap);
-    addTypeOption(wrap); // start each group with one option
+    addTypeOption(wrap);
   }
 
   function wireTypeGroups() {
@@ -437,9 +460,10 @@
           <input type="number" class="addon-maxlen" placeholder="e.g. 12">
         </div>
       </div>
-      <label style="display:flex; align-items:center; gap:8px; font-size:0.82rem; font-weight:600; margin-top:4px;">
-        <input type="checkbox" class="addon-required" style="width:16px; height:16px;">
-        Required (customer must fill this in)
+      <label class="toggle-switch" style="margin-top:12px;">
+        <input type="checkbox" class="addon-required">
+        <div class="slider"></div>
+        <span style="font-size:0.82rem; font-weight:600; margin-left:8px;">Required (customer must fill this in)</span>
       </label>
     `;
     document.getElementById("addonsList").appendChild(wrap);
@@ -455,7 +479,6 @@
   }
 
   // ---------- Delivery Options ----------
-  
   function renderPaymentOptions() {
       let payments = [];
       try {
@@ -463,7 +486,6 @@
           if (stored) {
               payments = JSON.parse(stored);
           } else {
-              // fallback mock
               payments = [
                   {id: "qr_bank", title: "QR Code / Bank Transfer", isActive: true},
                   {id: "tng_spay", title: "TNG / SPay Later", isActive: true},
@@ -485,18 +507,20 @@
 
   function renderDeliveryOptions() {
     const list = document.getElementById("deliveryOptionsList");
-    list.innerHTML = DELIVERY_MODES.map(
-      (mode) => `
+    if(!list) return;
+    list.innerHTML = DELIVERY_MODES.map((mode) => `
       <div class="delivery-option-row">
-        <input type="checkbox" class="delivery-checkbox" value="${mode.id}" data-code="${mode.code}">
-        <div class="delivery-info">
+        <label class="toggle-switch">
+          <input type="checkbox" class="delivery-checkbox" value="${mode.id}" data-code="${mode.code}">
+          <div class="slider"></div>
+        </label>
+        <div class="delivery-info" style="margin-left: 12px;">
           <div class="delivery-name">${mode.label}</div>
           <div class="delivery-code">SKU letter: ${mode.code}</div>
         </div>
         <input type="number" step="0.01" class="delivery-extra-fee" placeholder="+RM 0.00">
       </div>
-    `
-    ).join("");
+    `).join("");
     list.addEventListener("change", updateSkuPreview);
   }
 
@@ -553,46 +577,44 @@
 
   // ---------- SKU ----------
   function updateSkuPreview() {
-    const prefix = (document.getElementById("skuPrefix").value || "----").toUpperCase();
+    const prefixInput = document.getElementById("skuPrefix");
+    if(!prefixInput) return;
+    const prefix = (prefixInput.value || "----").toUpperCase();
     const checkedCodes = Array.from(document.querySelectorAll(".delivery-checkbox:checked")).map((c) => c.dataset.code);
     const preview = document.getElementById("skuPreview");
     if (!checkedCodes.length) {
       preview.textContent = `Preview: ${prefix}-1234X  (select a delivery option to see the real letter)`;
     } else {
-      preview.textContent =
-        "Preview: " + checkedCodes.map((code) => `${prefix}-1234${code}`).join("  or  ");
+      preview.textContent = "Preview: " + checkedCodes.map((code) => `${prefix}-1234${code}`).join("  or  ");
     }
   }
 
   function wireSku() {
     const input = document.getElementById("skuPrefix");
+    if(!input) return;
     input.addEventListener("input", () => {
       input.value = input.value.toUpperCase().replace(/[^A-Z]/g, "");
       updateSkuPreview();
     });
   }
 
-  // ---------- Save / Preview ----------
+  // ---------- Gather Data ----------
   function gatherFormData() {
-    const categoryLabel = getCurrentCategoryLabel();
-    const categorySelect = document.getElementById("productCategory");
-    const isNewCategory = categorySelect.value === NEW_CATEGORY_VALUE;
-    const categorySlug = isNewCategory
-      ? categoryLabel
-          .toLowerCase()
-          .trim()
-          .replace(/[^a-z0-9]+/g, "-")
-          .replace(/(^-|-$)/g, "")
-      : categorySelect.value;
+    const productTitle = document.getElementById("productTitle").value.trim();
+    // Auto-generate a slug from the title (e.g. "Home Jersey" -> "home-jersey")
+    const categorySlug = productTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
+    const basePriceEl = document.getElementById("basePrice");
+    const basePrice = basePriceEl ? (Number(basePriceEl.value) || 0) : 0;
 
     const colors = Array.from(document.querySelectorAll("#colorVariantsList .repeater-item")).map((el) => {
-      const colorName = el.querySelector(".color-name").value;
       return {
-        name: colorName,
-        cardName: `${categoryLabel} - ${colorName || "Colour"}`,
+        name: el.querySelector(".color-name").value,
         swatch: el.querySelector(".color-swatch").value,
-        thumbnailAttached: !!el.querySelector(".thumb-file").files.length,
-        galleryImageCount: el.querySelector(".gallery-files").files.length,
+        // We temporarily grab the UI preview src so we know if an image exists 
+        // when we loop through this in wireSave() later.
+        _existingThumbSrc: el.querySelector(".thumb-preview").getAttribute("src"),
+        _existingGallerySrcs: Array.from(el.querySelectorAll(".gallery-preview-row img")).map(i => i.getAttribute("src"))
       };
     });
 
@@ -626,60 +648,192 @@
       discountValue: Number(el.querySelector(".promo-discount-value").value) || 0,
     }));
 
-    const hasSizing = document.querySelector('input[name="hasSizing"]:checked').value === "yes";
+    const sizeChecked = document.querySelector('input[name="hasSizing"]:checked');
+    const hasSizing = sizeChecked && sizeChecked.value === "yes";
+    
     const sizes = hasSizing
-      ? Array.from(document.querySelectorAll(".size-checkbox:checked")).map((cb) => ({
-          id: cb.value,
-          priceAddition:
-            Number(document.querySelector(`[data-size-price="${cb.value}"] input`).value) || 0,
-        }))
+      ? Array.from(document.querySelectorAll(".size-checkbox:checked")).map((cb) => {
+          const inputEl = document.querySelector(`[data-size-price="${cb.value}"] input`);
+          return {
+            id: cb.value,
+            priceAddition: inputEl ? (Number(inputEl.value) || 0) : 0,
+          };
+        })
       : [];
 
-    const stockType = document.querySelector('input[name="stockType"]:checked').value;
+    const stockTypeEl = document.querySelector('input[name="stockType"]:checked');
+    const stockType = stockTypeEl ? stockTypeEl.value : "regular";
+
+    const preorderEl = document.getElementById("preorderDeadline");
+    const skuEl = document.getElementById("skuPrefix");
+    const chartEl = document.getElementById("sizingChartSelect");
 
     return {
       editingProductId,
-      category: categorySlug,
-      categoryLabel,
-      isNewCategory,
+      productTitle,
+      categorySlug,
+      basePrice,
       stockType,
-      preorderDeadline: stockType === "preorder" ? document.getElementById("preorderDeadline").value : null,
+      preorderDeadline: stockType === "preorder" && preorderEl ? preorderEl.value : null,
       hasSizing,
       sizes,
-      sizingChart: hasSizing ? document.getElementById("sizingChartSelect").value : null,
+      sizingChart: hasSizing && chartEl ? chartEl.value : null,
       colors,
       typeGroups,
       addons,
       allowedPayments,
       deliveryOptions,
-      isNewArrival,
-      collection,
-      description: document.getElementById("productDescription").value,
+      description: document.getElementById("productDescription") ? document.getElementById("productDescription").value : "",
       promotions,
-      skuPrefix: document.getElementById("skuPrefix").value.toUpperCase(),
+      skuPrefix: skuEl ? skuEl.value.toUpperCase() : "",
     };
   }
 
-  function renderPreview(data) {
-    const panel = document.getElementById("productPreviewPanel");
-    const content = document.getElementById("productPreviewContent");
-    const heading = panel.querySelector("h3");
-    heading.textContent = data.editingProductId ? "Product Updated ✓" : "Product Captured ✓";
-    content.textContent = JSON.stringify(data, null, 2);
-    panel.style.display = "block";
-    panel.scrollIntoView({ behavior: "smooth", block: "start" });
+  // ---------- Supabase Image Upload & Save ----------
+  async function uploadImage(file, path) {
+    if (typeof supabaseClient === 'undefined') throw new Error("Supabase client not loaded.");
+    const { data, error } = await supabaseClient.storage
+      .from('product-images')
+      .upload(path, file, { cacheControl: '3600', upsert: true });
+    
+    if (error) throw error;
+    
+    const { data: publicUrlData } = supabaseClient.storage
+      .from('product-images')
+      .getPublicUrl(path);
+      
+    return publicUrlData.publicUrl;
   }
 
   function wireSave() {
-    document.getElementById("productForm").addEventListener("submit", (e) => {
+    const form = document.getElementById("productForm");
+    const saveBtn = document.getElementById("saveProductBtn");
+
+    if (!form || !saveBtn) return;
+
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const data = gatherFormData();
-      renderPreview(data);
+      
+      saveBtn.disabled = true;
+      saveBtn.textContent = "Uploading Images & Saving...";
+
+      try {
+        const data = gatherFormData();
+        const productId = data.editingProductId || `${data.categorySlug}-${Date.now()}`;
+
+        // Upload images for each color variant OR preserve existing ones
+        const colorBlocks = document.querySelectorAll("#colorVariantsList .repeater-item");
+        for (let i = 0; i < colorBlocks.length; i++) {
+          const block = colorBlocks[i];
+          const thumbFile = block.querySelector(".thumb-file").files[0];
+          const galleryFiles = Array.from(block.querySelector(".gallery-files").files);
+          
+          const finalImages = []; 
+
+          // 1. Handle Thumbnail
+          if (thumbFile) {
+            const thumbPath = `${productId}/${data.colors[i].name}/thumb_${Date.now()}`;
+            const thumbUrl = await uploadImage(thumbFile, thumbPath);
+            finalImages.push(thumbUrl);
+          } else if (data.colors[i]._existingThumbSrc && !data.colors[i]._existingThumbSrc.startsWith("blob:")) {
+            // Keep the old image from Supabase if we didn't upload a new one
+            finalImages.push(data.colors[i]._existingThumbSrc);
+          }
+
+          // 2. Handle Gallery Images
+          if (galleryFiles.length > 0) {
+            for (let j = 0; j < galleryFiles.length; j++) {
+              const galPath = `${productId}/${data.colors[i].name}/gallery_${j}_${Date.now()}`;
+              const galUrl = await uploadImage(galleryFiles[j], galPath);
+              finalImages.push(galUrl);
+            }
+          } else if (data.colors[i]._existingGallerySrcs) {
+            // Keep existing gallery images
+            data.colors[i]._existingGallerySrcs.forEach(src => {
+                if(src && !src.startsWith("blob:")) finalImages.push(src);
+            });
+          }
+          
+          data.colors[i].images = finalImages;
+          
+          // Cleanup temporary preview properties before DB insertion
+          delete data.colors[i]._existingThumbSrc;
+          delete data.colors[i]._existingGallerySrcs;
+        }
+
+        if (typeof supabaseClient === 'undefined') {
+            alert("No Supabase connection found! Check supabaseClient.js.");
+            return;
+        }
+
+        const { error } = await supabaseClient
+          .from('products')
+          .upsert({
+            id: productId,
+            name: data.productTitle,
+            category: data.categorySlug,
+            description: data.description,
+            base_price: data.basePrice,
+            stock_type: data.stockType,
+            preorder_deadline: data.preorderDeadline || null,
+            sku_prefix: data.skuPrefix,
+            colors: data.colors,
+            type_groups: data.typeGroups,
+            has_sizing: data.hasSizing,
+            sizes: data.sizes,
+            size_guide_image: data.sizingChart,
+            addons: data.addons,
+            allowed_payments: data.allowedPayments,
+            delivery_options: data.deliveryOptions,
+            promotions: data.promotions
+          });
+
+        if (error) throw error;
+        // --- STORAGE CLEANUP ---
+        // If updating an existing product, delete the old images from the Supabase bucket 
+        // if they are no longer in the updated product payload.
+        if (data.editingProductId && FETCHED_PRODUCTS[data.editingProductId]) {
+            const oldProduct = FETCHED_PRODUCTS[data.editingProductId];
+            let oldUrls = [];
+            if (oldProduct.colors) {
+                oldProduct.colors.forEach(c => { if(c.images) oldUrls.push(...c.images); });
+            }
+            
+            let newUrls = [];
+            data.colors.forEach(c => { if(c.images) newUrls.push(...c.images); });
+
+            const toDeleteUrls = oldUrls.filter(url => !newUrls.includes(url));
+            if (toDeleteUrls.length > 0) {
+                const pathsToDelete = toDeleteUrls.map(url => {
+                    const parts = url.split('/product-images/');
+                    return parts.length > 1 ? parts[1] : null;
+                }).filter(Boolean);
+
+                if (pathsToDelete.length > 0) {
+                    await supabaseClient.storage.from('product-images').remove(pathsToDelete);
+                    console.log("Cleaned up orphaned images:", pathsToDelete);
+                }
+            }
+        }
+        // --- END STORAGE CLEANUP ---
+
+        alert("Product saved successfully to database!");
+        
+        // Refresh the dropdown and clear the form so the new item shows up
+        await populateExistingProducts();
+        resetFormToNew();
+
+      } catch (err) {
+        console.error("Save Error:", err);
+        alert("Failed to save product: " + err.message);
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = "Save Product";
+      }
     });
   }
 
   document.addEventListener("DOMContentLoaded", function () {
-    populateCategories();
     populateExistingProducts();
     wireStockType();
     populateSizingCharts();

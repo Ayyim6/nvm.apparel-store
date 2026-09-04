@@ -48,53 +48,55 @@
         renderPayments();
     }
 
-    function renderPayments() {
+function renderPayments() {
         const container = document.getElementById("paymentListContainer");
         container.innerHTML = payments.map(p => `
-            <div class="payment-item" data-id="${p.id}">
-                <div class="payment-item-head">
+            <div class="admin-form-card" data-id="${p.id}" style="margin-bottom: 20px;">
+                <div class="repeater-item-head" style="border-bottom: 1px dashed var(--a-border); padding-bottom: 14px; margin-bottom: 16px;">
                     <div>
-                        <h4 style="margin-bottom:4px;">${p.title || 'New Payment Method'}</h4>
-                        <span style="font-size:0.75rem; color:var(--a-ink-soft);">ID: ${p.id}</span>
+                        <h4 style="font-size: 1.1rem; font-family: 'Archivo Black', sans-serif;">${p.title || 'New Payment Method'}</h4>
+                        <span style="font-size:0.75rem; color:var(--a-ink-soft); font-family: 'Space Mono', monospace;">ID: ${p.id}</span>
                     </div>
-                    <div style="display:flex; gap:10px; align-items:center;">
-                        <button type="button" class="remove-btn remove-payment" style="margin-right:10px;">Delete</button>
-                        <label class="toggle-switch" title="Active">
-                            <input type="checkbox" class="is-active-toggle" ${p.isActive ? 'checked' : ''}>
-                            <div class="slider"></div>
-                        </label>
+                    <div style="display:flex; gap:14px; align-items:center;">
+                        <button type="button" class="remove-btn remove-payment">Remove</button>
                         <label class="toggle-switch" title="Coming Soon">
-                            <span style="font-size:0.8rem; margin-right:4px;">Coming Soon</span>
+                            <span style="font-size:0.8rem; font-weight: 600;">Coming Soon</span>
                             <input type="checkbox" class="coming-soon-toggle" ${p.comingSoon ? 'checked' : ''}>
                             <div class="slider" style="background:#888;"></div>
+                        </label>
+                        <label class="toggle-switch" title="Active">
+                            <span style="font-size:0.8rem; font-weight: 600;">Active</span>
+                            <input type="checkbox" class="is-active-toggle" ${p.isActive ? 'checked' : ''}>
+                            <div class="slider"></div>
                         </label>
                     </div>
                 </div>
                 
-                <div class="form-row-2">
+                <div class="form-row-2 form-field-admin">
                     <div>
                         <label>Title</label>
-                        <input type="text" class="p-title" value="${p.title}" style="width:100%; margin-bottom:14px; padding:10px; border-radius:8px; border:1px solid var(--a-border);">
+                        <input type="text" class="p-title" value="${p.title}" placeholder="Payment Name">
                         
-                        <label>Description (HTML allowed)</label>
-                        <textarea class="p-desc" rows="4" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--a-border); margin-bottom:14px;">${p.description}</textarea>
+                        <label style="margin-top: 14px;">Description (HTML allowed)</label>
+                        <textarea class="p-desc" rows="4" placeholder="Instructions for the customer...">${p.description}</textarea>
                         
-                        <div style="display:flex; align-items:center; gap: 10px; margin-bottom:10px;">
-                            <input type="checkbox" class="p-require-receipt" ${p.requireReceipt ? 'checked' : ''} style="width:18px; height:18px;">
-                            <span style="font-size:0.85rem;">Require Customer to Upload Receipt</span>
-                        </div>
+                        <label class="toggle-switch" style="margin-top: 16px;">
+                            <input type="checkbox" class="p-require-receipt" ${p.requireReceipt ? 'checked' : ''}>
+                            <div class="slider"></div>
+                            <span style="font-size:0.85rem; font-weight: 600; margin-left: 8px;">Require Customer to Upload Receipt</span>
+                        </label>
                     </div>
                     
                     <div>
                         <label>Small Logo (Optional)</label>
-                        <div class="img-upload-box upload-logo-btn">
+                        <div class="upload-box upload-logo-btn">
                             Click to upload logo icon
                             <input type="file" accept="image/*" class="p-logo-upload" style="display:none;">
                             ${p.logo ? `<img src="${p.logo}" class="img-preview logo-preview">` : '<img src="" class="img-preview logo-preview" style="display:none;">'}
                         </div>
                         
                         <label style="margin-top:14px; display:block;">QR Code Image (Optional)</label>
-                        <div class="img-upload-box upload-qr-btn">
+                        <div class="upload-box upload-qr-btn">
                             Click to upload QR Code
                             <input type="file" accept="image/*" class="p-qr-upload" style="display:none;">
                             ${p.qrImage ? `<img src="${p.qrImage}" class="img-preview qr-preview">` : '<img src="" class="img-preview qr-preview" style="display:none;">'}

@@ -3,24 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Manage Products — NVM Store Admin</title>
+<title>Manage Products & Storefront — NVM Store Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/admin.css">
 <style>
-  .manage-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-  .manage-table th { text-align: left; padding-bottom: 10px; border-bottom: 1px solid var(--a-border); font-size: 0.8rem; color: var(--a-ink-soft); }
-  .manage-table td { padding: 14px 0; border-bottom: 1px solid var(--a-border); vertical-align: middle; }
-  .toggle-switch { display: inline-flex; align-items: center; cursor: pointer; gap: 8px; }
-  .toggle-switch input { display: none; }
-  .slider { width: 44px; height: 24px; background: #ccc; border-radius: 34px; position: relative; transition: .4s; }
-  .slider:before { content: ""; position: absolute; width: 18px; height: 18px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .4s; }
-  .toggle-switch input:checked + .slider { background: var(--a-green); }
-  .toggle-switch input:checked + .slider:before { transform: translateX(20px); }
-  
-  .section-toggle-card { display: flex; align-items: center; justify-content: space-between; background: var(--a-paper); border: 1px solid var(--a-border); padding: 20px; border-radius: 12px; margin-bottom: 20px; }
-  .section-toggle-info h4 { font-family: 'Archivo Black', sans-serif; font-size: 1.1rem; margin-bottom: 4px; }
-  .section-toggle-info p { font-size: 0.85rem; color: var(--a-ink-soft); }
+    /* Fixed Table Fonts & Layout */
+    .product-table { width: 100%; border-collapse: collapse; margin-top: 16px; font-family: 'Inter', sans-serif; }
+    .product-table th, .product-table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--a-border); vertical-align: middle; }
+    .product-table th { font-size: 0.85rem; color: var(--a-ink-soft); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+    .product-table td { font-size: 0.95rem; color: var(--a-ink); }
+    .product-table img { width: 48px; height: 60px; object-fit: cover; border-radius: 6px; background: #eee; display: block; }
+    
+    /* New Color Badge Style */
+    .color-badge { display: inline-block; padding: 4px 8px; margin: 2px; border-radius: 4px; background: var(--a-bg); border: 1px solid var(--a-border); font-size: 0.75rem; color: var(--a-ink-soft); font-weight: 500; }
+    
+    .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; background: #e0f2fe; color: #0284c7; text-transform: uppercase; letter-spacing: 0.5px; }
+    .visibility-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--a-border); font-family: 'Inter', sans-serif; }
 </style>
 </head>
 <body>
@@ -30,67 +29,65 @@
 
   <main class="admin-main">
     <div class="admin-header">
-      <h1>Manage Products</h1>
-      <p>Control visibility of product sections and individual products on the storefront.</p>
+      <h1>Manage Products & Storefront</h1>
+      <p>Control category visibility on the storefront, set new arrivals, and manage your live database inventory.</p>
     </div>
 
-    <!-- GLOBAL SECTION SETTINGS -->
+    <!-- STOREFRONT SETTINGS -->
     <div class="admin-form-card">
-      <h3>Storefront Sections Visibility</h3>
+      <h3 style="font-family: 'Inter', sans-serif;">Storefront Settings</h3>
+      <p class="field-note">These settings immediately affect the Home and Collections pages.</p>
       
-      <label class="section-toggle-card">
-        <div class="section-toggle-info">
-          <h4>New Arrivals Tab</h4>
-          <p>Show or hide the "New Arrivals" tab in the main navigation and homepage section.</p>
-        </div>
-        <div class="toggle-switch">
-          <input type="checkbox" id="toggleNewArrivals" checked>
-          <div class="slider"></div>
-        </div>
-      </label>
+      <div class="form-field-admin" style="margin-top: 16px; max-width: 400px;">
+          <label style="font-family: 'Inter', sans-serif;">Active "New Arrivals" Category (Homepage)</label>
+          <select id="newArrivalSelect" style="font-family: 'Inter', sans-serif;">
+              <option value="">Loading categories...</option>
+          </select>
+      </div>
 
-      <label class="section-toggle-card">
-        <div class="section-toggle-info">
-          <h4>Collections Tab</h4>
-          <p>Show or hide the "Collections" tab and grouping features.</p>
-        </div>
-        <div class="toggle-switch">
-          <input type="checkbox" id="toggleCollections" checked>
-          <div class="slider"></div>
-        </div>
-      </label>
+      <h4 style="margin-top: 24px; font-size: 0.9rem; margin-bottom: 8px; font-family: 'Inter', sans-serif;">Category Visibility (Collections Page)</h4>
+      <div id="categoryVisibilityList">
+          <!-- JS Rendered Toggles -->
+      </div>
+      
+      <button id="saveStorefrontBtn" class="admin-export-btn" style="margin-top: 20px;">Save Storefront Settings</button>
     </div>
 
-    <!-- PRODUCT LIST MANAGEMENT -->
+    <!-- DATABASE PRODUCT LIST -->
     <div class="admin-form-card">
-      <h3>Individual Product Settings</h3>
-      <table class="manage-table">
-        <thead>
-          <tr>
-            <th>Product</th>
-            <th>Category</th>
-            <th>Is New Arrival?</th>
-            <th>Visible on Site?</th>
-            <th style="width: 80px; text-align: center;">Actions</th>
-          </tr>
-        </thead>
-        <tbody id="productManageTableBody">
-          <!-- JS Rendered -->
-        </tbody>
-      </table>
+      <h3 style="font-family: 'Inter', sans-serif;">Manage Product List</h3>
+      <p class="field-note">All products currently saved in your Supabase database. To edit a product, use the "Add Product" tab dropdown.</p>
+      
+      <div style="overflow-x: auto;">
+          <table class="product-table">
+              <thead>
+                  <tr>
+                      <th>Image</th>
+                      <th>Product Title</th>
+                      <th>Colors</th> <!-- NEW COLUMN -->
+                      <th>Category</th>
+                      <th>Price</th>
+                      <th>Stock Type</th>
+                      <th>Actions</th>
+                  </tr>
+              </thead>
+              <tbody id="manageProductTableBody">
+                  <tr><td colspan="7" style="text-align: center;">Loading database...</td></tr>
+              </tbody>
+          </table>
+      </div>
     </div>
-    
-    <div class="admin-form-actions">
-        <button id="saveManageSettings" class="admin-export-btn">Save Changes</button>
-    </div>
-    
+
     <div class="admin-toast" id="adminToast"></div>
 
   </main>
 </div>
 
+<!-- SUPABASE CLIENT SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabaseClient.js"></script>
+
 <script src="js/admin-sidebar.js"></script>
-<script src="js/admin-inventory-data.js"></script>
 <script src="js/admin-product-manage.js"></script>
 </body>
 </html>

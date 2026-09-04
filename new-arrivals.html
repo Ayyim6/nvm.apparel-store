@@ -7,74 +7,94 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<style>
+  .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 24px; }
+  .featured-card { transition: transform 0.2s; }
+  .featured-card:hover { transform: translateY(-4px); }
+</style>
 </head>
-<body data-category="new-arrivals">
+<body>
 
-<div class="page-wrap has-hero">
+<div class="page-wrap">
 
   <!-- PILL NAV -->
-<div class="pill-nav-wrap">
+  <div class="pill-nav-wrap">
+    <button type="button" class="menu-btn" id="menuToggleBtn" aria-label="Open menu" title="Menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <a class="brand" href="index.html">NVM Store</a>
+    <nav class="pill-nav">
+      <a href="index.html">Home</a>
+      <a href="shop.html">Shop</a>
+      <a href="new-arrivals.html" class="active">New Arrivals</a>
+      <a href="collections.html">Collections</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <button type="button" class="cart-btn" id="cartToggleBtn" aria-label="Open cart" title="Cart">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
+        <path d="M3 3h2l2.4 12.2a2 2 0 0 0 2 1.8h8.2a2 2 0 0 0 2-1.6L21 8H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="badge" id="navCartCount">0</span>
+    </button>
+  </div>
 
-  <!-- Mobile menu drawer trigger -->
-  <button type="button" class="menu-btn" id="menuToggleBtn" aria-label="Open menu" title="Menu">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-      <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-    </svg>
-  </button>
+  <!-- NEW ARRIVALS HERO (Matches Category Page) -->
+  <div id="newArrivalsHero" style="
+      position: relative;
+      width: 100%;
+      height: 450px; 
+      background-color: #111;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: flex-end; /* Pushes the text down towards the bottom */
+      justify-content: center; /* Centers the text horizontally */
+      padding-bottom: 50px; /* Breathing room from the bottom edge */
+  ">
+      <!-- Dark gradient overlay so white text always pops -->
+      <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 60%); z-index: 1;"></div>
+      
+      <!-- The Title -->
+      <h1 id="newArrivalsTitle" style="
+          position: relative; 
+          z-index: 2; 
+          color: #ffffff; 
+          font-family: 'Archivo Black', sans-serif; 
+          font-size: 2.2rem; 
+          text-align: center;
+          margin: 0;
+          text-shadow: 0 4px 12px rgba(0,0,0,0.8);
+          letter-spacing: 1px;
+      ">
+          New Arrivals
+      </h1>
+  </div>
 
-  <a class="brand" href="index.html">NVM Store</a>
-
-  <!-- Centered navigation -->
-  <nav class="pill-nav">
-    <a href="index.html">Home</a>
-    <a href="shop.html">Shop</a>
-    <a href="new-arrivals.html" class="active">New Arrivals</a>
-    <a href="collections.html">Collections</a>
-    <a href="about.html">About</a>
-    <a href="contact.html">Contact</a>
-  </nav>
-
-  <!-- Cart drawer trigger -->
-  <button type="button" class="cart-btn" id="cartToggleBtn" aria-label="Open cart" title="Cart">
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
-      <path
-        d="M3 3h2l2.4 12.2a2 2 0 0 0 2 1.8h8.2a2 2 0 0 0 2-1.6L21 8H6"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"/>
-    </svg>
-    <span class="badge" id="navCartCount">0</span>
-  </button>
+  <main class="page-container" style="padding-top: 40px; padding-bottom: 80px; max-width: 1200px; margin: 0 auto;">
+      <div class="shop-controls" style="margin-bottom: 24px; text-align: center;">
+          <h2 id="newArrivalsGridTitle" style="font-family: 'Inter', sans-serif; font-size: 1.2rem; font-weight: 500; color: var(--ink);">Fresh Drops</h2>
+      </div>
+      
+      <!-- Product Grid -->
+      <div class="product-grid" id="newArrivalsProductGrid" style="padding: 0 20px;">
+          <!-- JS Rendered -->
+      </div>
+  </main>
 
 </div>
 
-  <!-- HEADER (image/title/description filled in by category.js) -->
-  <div class="category-hero" id="categoryHero">
-    <div class="category-hero-content">
-      <h1 id="categoryTitle">New Arrivals</h1>
-      <p id="categoryDescription"></p>
-    </div>
-  </div>
-
-  <!-- PRODUCT GRID (filled in by category.js) -->
-  <h2 class="category-section-title" id="categoryGridTitle">Shop the Collection</h2>
-  <div class="product-grid" id="categoryProductGrid">
-    <div class="loading-state">Loading products...</div>
-  </div>
-
-  <!-- GALLERY -->
-  <h2 class="category-section-title">Product Gallery</h2>
-  <div class="category-gallery" id="categoryGallery"></div>
-
-</div>
-
+<!-- SUPABASE SCRIPTS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabaseClient.js"></script>
+
+<!-- APP SCRIPTS -->
+<script src="js/new-arrivals.js"></script>
 <script src="js/cart.js"></script>
 <script src="js/cart-drawer.js"></script>
 <script src="js/nav-drawer.js"></script>
-<script src="js/product-card.js"></script>
-<script src="js/category.js"></script>
+
 </body>
 </html>

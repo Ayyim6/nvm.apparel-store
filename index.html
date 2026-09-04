@@ -7,6 +7,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<style>
+  /* Base styles for the product cards on the homepage */
+  .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 24px; padding: 0 20px 40px 20px; max-width: 1200px; margin: 0 auto; }
+  .featured-card { transition: transform 0.2s; }
+  .featured-card:hover { transform: translateY(-4px); }
+</style>
 </head>
 <body>
 
@@ -14,7 +20,6 @@
 
 <!-- PILL NAV -->
 <div class="pill-nav-wrap">
-
   <!-- Mobile menu drawer trigger -->
   <button type="button" class="menu-btn" id="menuToggleBtn" aria-label="Open menu" title="Menu">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -47,10 +52,8 @@
     </svg>
     <span class="badge" id="navCartCount">0</span>
   </button>
-
 </div>
 
-  <!-- HERO -->
 <!-- HERO SLIDESHOW -->
 <section class="hero-slider-section">
   <div class="hero-slider-container">
@@ -119,7 +122,7 @@
   <section class="category-section" id="categories">
     <div class="category-section-head">
       <h2>Shop By Category</h2>
-      <a href="shop.html">View All Categories →</a>
+      <a href="collections.html">View All Categories →</a>
     </div>
     <div class="category-grid">
 
@@ -166,6 +169,17 @@
     </div>
   </section>
 
+  <!-- NEW ARRIVALS DB SECTION -->
+  <section class="category-section" id="new-arrivals" style="margin-top: 40px;">
+    <div class="category-section-head">
+      <h2 id="new-arrivals-heading">Fresh Drops</h2>
+      <a href="new-arrivals.html">Shop All New Arrivals →</a>
+    </div>
+    <div class="product-grid" id="featured-grid">
+        <!-- JS Rendered from Supabase -->
+    </div>
+  </section>
+
   <!-- LOWER STRIP -->
   <section class="lower-strip">
     <div class="mini-card dark">
@@ -194,6 +208,7 @@
 <script src="js/cart-drawer.js"></script>
 <script src="js/nav-drawer.js"></script>
 
+<!-- SLIDER SCRIPT -->
 <script>
   document.addEventListener("DOMContentLoaded", function() {
     const slides = document.querySelectorAll('.hero-slide');
@@ -207,6 +222,78 @@
     }
   });
 </script>
-</body>
 
+<!-- SUPABASE NEW ARRIVALS SCRIPT -->
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+    const featuredGrid = document.getElementById("featured-grid"); 
+    
+    if (!featuredGrid) return;
+    featuredGrid.innerHTML = "<p style='grid-column:1/-1;text-align:center;'>Loading new arrivals...</p>";
+
+    if (typeof window.supabaseClient === 'undefined') {
+        featuredGrid.innerHTML = "<p style='grid-column:1/-1;text-align:center;'>Database connection error.</p>";
+        return;
+    }
+
+    // 1. Find out which category is marked as "New Arrival" in settings
+    let activeNewArrival = "home-jerseys"; // Default fallback
+    try {
+        const storedSite = localStorage.getItem("nvm_site_settings");
+        if (storedSite) activeNewArrival = JSON.parse(storedSite).activeNewArrival;
+    } catch(e) {}
+
+    // 2. Fetch products for that specific category
+    const { data: products, error } = await window.supabaseClient
+        .from('products')
+        .select('*')
+        .ilike('category', `%${activeNewArrival}%`)
+        .limit(4); // Only show 4 cards on the homepage
+
+    if (error || !products || products.length === 0) {
+        featuredGrid.innerHTML = "<p style='grid-column:1/-1;text-align:center;'>New arrivals dropping soon.</p>";
+        return;
+    }
+
+    // Update heading based on the active category (optional but looks nice)
+    const formattedTitle = activeNewArrival.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    document.getElementById("new-arrivals-heading").textContent = `Latest ${formattedTitle}`;
+
+    // 3. Render the cards
+    featuredGrid.innerHTML = "";
+    products.forEach(product => {
+        const colors = (product.colors && product.colors.length > 0) ? product.colors : [{name: "Default", images: []}];
+        
+        // Only show the first color variant on the homepage to save space
+        const firstColor = colors[0];
+        
+        const cardData = {
+            id: product.id,
+            name: `${product.name} — ${firstColor.name}`,
+            price: product.base_price || 0,
+            image_url: (firstColor.images && firstColor.images.length > 0) ? firstColor.images[0] : 'images/placeholder.jpg',
+            stock_qty: product.stock_qty || 10,
+            href: `product.html?id=${product.id}&color=${encodeURIComponent(firstColor.name)}`
+        };
+
+        const card = document.createElement('div');
+        card.className = 'featured-card';
+        
+        card.innerHTML = `
+            <a href="${cardData.href}" class="card-link" style="text-decoration: none; color: inherit;">
+              <div class="card-image-wrapper" style="position: relative; overflow: hidden; border-radius: 12px; background: var(--surface-alt);">
+                <img src="${cardData.image_url}" alt="${cardData.name}" loading="lazy" style="width: 100%; aspect-ratio: 4/5; object-fit: cover;">
+                ${cardData.stock_qty <= 0 ? '<span class="badge sold-out" style="position: absolute; top: 10px; left: 10px; background: black; color: white; padding: 4px 8px; font-size: 0.75rem; border-radius: 4px;">Sold Out</span>' : ''}
+              </div>
+              <div class="card-info" style="margin-top: 12px; text-align: left;">
+                <h3 style="font-size: 1rem; margin: 0 0 4px 0; font-family: 'Inter', sans-serif;">${cardData.name}</h3>
+                <p class="price" style="font-weight: bold; margin: 0; color: var(--ink);">RM ${parseFloat(cardData.price).toFixed(2)}</p>
+              </div>
+            </a>
+        `;
+        featuredGrid.appendChild(card);
+    });
+});
+</script>
+</body>
 </html>

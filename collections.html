@@ -7,99 +7,65 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
-  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 </head>
 <body>
 
 <div class="page-wrap">
 
   <!-- PILL NAV -->
-<div class="pill-nav-wrap">
+  <div class="pill-nav-wrap">
+    <button type="button" class="menu-btn" id="menuToggleBtn" aria-label="Open menu" title="Menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <a class="brand" href="index.html">NVM Store</a>
+    <nav class="pill-nav">
+      <a href="index.html">Home</a>
+      <a href="shop.html">Shop</a>
+      <a href="new-arrivals.html">New Arrivals</a>
+      <a href="collections.html" class="active">Collections</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <button type="button" class="cart-btn" id="cartToggleBtn" aria-label="Open cart" title="Cart">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
+        <path d="M3 3h2l2.4 12.2a2 2 0 0 0 2 1.8h8.2a2 2 0 0 0 2-1.6L21 8H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="badge" id="navCartCount">0</span>
+    </button>
+  </div>
 
-  <!-- Mobile menu drawer trigger -->
-  <button type="button" class="menu-btn" id="menuToggleBtn" aria-label="Open menu" title="Menu">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-      <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-    </svg>
-  </button>
-
-  <a class="brand" href="index.html">NVM Store</a>
-
-  <!-- Centered navigation -->
-  <nav class="pill-nav">
-    <a href="index.html">Home</a>
-    <a href="shop.html">Shop</a>
-    <a href="new-arrivals.html">New Arrivals</a>
-    <a href="collections.html" class="active">Collections</a>
-    <a href="about.html">About</a>
-    <a href="contact.html">Contact</a>
-  </nav>
-
-  <!-- Cart drawer trigger -->
-  <button type="button" class="cart-btn" id="cartToggleBtn" aria-label="Open cart" title="Cart">
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
-      <path
-        d="M3 3h2l2.4 12.2a2 2 0 0 0 2 1.8h8.2a2 2 0 0 0 2-1.6L21 8H6"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"/>
-    </svg>
-    <span class="badge" id="navCartCount">0</span>
-  </button>
-
-</div>
-
-  
   <!-- COLLECTIONS HEADER -->
-  <div class="shop-header" style="text-align: center; padding-bottom: 20px;">
+  <div class="shop-header" style="text-align: center; padding-top: 120px; padding-bottom: 20px;">
     <h1>Collections</h1>
     <p>Explore our curated tiers of premium streetwear and sportswear.</p>
   </div>
 
-  <div class="collections-wrap">
-    <div class="collection-row" style="background-image: url('images/headerbg.jpg');">
-      <div class="collection-info" data-aos="fade-up">
-        <h2>Black and White Edition</h2>
-        <p style="margin-bottom: 20px; font-size: 1.1rem;">Engineered for peak performance.</p>
-        <a href="category.html?category=home-jerseys" class="btn-primary">Explore Collection</a>
-      </div>
-    </div>
-
-    <div class="collection-row" style="background-image: url('images/black-2.jpg');">
-      <div class="collection-info" data-aos="fade-up">
-        <h2>Away & Alternate</h2>
-        <p style="margin-bottom: 20px; font-size: 1.1rem;">Dark, bold, and unapologetic.</p>
-        <a href="category.html?category=away-jerseys" class="btn-primary">Explore Collection</a>
-      </div>
-    </div>
-
-    <div class="collection-row" style="background-image: url('images/retro-1.jpg');">
-      <div class="collection-info" data-aos="fade-up">
-        <h2>The 90s Archive</h2>
-        <p style="margin-bottom: 20px; font-size: 1.1rem;">Vintage aesthetics meet modern fits.</p>
-        <a href="category.html?category=retro-kits" class="btn-primary">Explore Collection</a>
-      </div>
-    </div>
+  <!-- DYNAMIC COLLECTIONS WRAP -->
+  <div class="collections-wrap" id="dynamicCollectionsList">
+      <!-- JS Rendered Rows -->
   </div>
 
 </div>
-<!-- Supabase client library (from CDN) -->
+
+<!-- REQUIRED SCRIPTS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabaseClient.js"></script>
+<script src="js/collections.js"></script>
 <script src="js/cart.js"></script>
 <script src="js/cart-drawer.js"></script>
 <script src="js/nav-drawer.js"></script>
-
 
 <!-- AOS Animation Library -->
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
   document.addEventListener("DOMContentLoaded", function() {
     AOS.init({
-      duration: 1000, /* Animation duration in ms */
-      once: true,     /* Whether animation should happen only once - while scrolling down */
-      offset: 100     /* Offset (in px) from the original trigger point */
+      duration: 1000, 
+      once: true,     
+      offset: 100     
     });
   });
 </script>

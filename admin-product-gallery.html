@@ -7,15 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/admin.css">
-<style>
-  .upload-box { border: 2px dashed var(--a-border); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: border-color .2s; margin-bottom: 20px; background: var(--a-bg); }
-  .upload-box:hover { border-color: var(--a-accent); }
-  .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-top: 10px; }
-  .gallery-item { position: relative; width: 100%; aspect-ratio: 1; border-radius: 8px; overflow: hidden; border: 1px solid var(--a-border); }
-  .gallery-item img { width: 100%; height: 100%; object-fit: cover; }
-  .gallery-item .remove-img { position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 10px; cursor: pointer; }
-  .gallery-item .thumb-label { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.6); color: white; font-size: 0.6rem; text-align: center; padding: 2px 0; font-weight: bold; }
-</style>
 </head>
 <body>
 
@@ -25,30 +16,57 @@
   <main class="admin-main">
     <div class="admin-header">
       <h1>Product Gallery & Media</h1>
-      <p>Manage collection header images, product gallery sequence, and sizing charts.</p>
+      <p>Manage collection sequence, header images, category galleries, and product variants.</p>
+    </div>
+
+    <!-- COLLECTION SEQUENCE -->
+    <div class="admin-form-card">
+      <h3>Collection / Category Sequence</h3>
+      <p class="field-note">Rearrange the order of your collections. This exact order will be used on the storefront's Collections page.</p>
+      <div id="collectionOrderList" style="display:flex; flex-direction:column; gap:8px; margin-top: 14px;">
+          <!-- JS Rendered -->
+      </div>
     </div>
 
     <!-- COLLECTION HEADERS -->
     <div class="admin-form-card">
       <h3>Collection Header Images</h3>
-      <p class="field-note">Assign header cover images for specific collections or categories.</p>
+      <p class="field-note">Assign header cover images. (Only 1 image allowed per category - uploading a new one replaces the old one).</p>
       <div class="form-row-2" style="align-items: center;">
-          <div>
-              <label>Select Collection</label>
-              <select id="headerCollectionSelect" style="width:100%; margin-bottom:10px;">
-                  <option value="campus-essentials">Campus Essentials</option>
-                  <option value="sports-performance">Sports Performance</option>
-                  <option value="retro-kits">Retro Kits</option>
+          <div class="form-field-admin">
+              <label>Select Category</label>
+              <select id="headerCollectionSelect">
+                  <!-- JS Rendered -->
               </select>
           </div>
-          <div>
-             <div class="upload-box" id="uploadHeaderBox" style="margin-bottom:0; padding:10px;">
-                 <strong>Click to Upload Header Image</strong>
+          <div class="form-field-admin">
+             <div class="upload-box" id="uploadHeaderBox" style="margin-top: 22px;">
+                 <strong>Click to Upload / Replace Header</strong>
                  <input type="file" id="headerImageUpload" accept="image/*" style="display:none;">
              </div>
           </div>
       </div>
-      <img id="headerPreview" src="" style="width:100%; height: 150px; object-fit: cover; border-radius:12px; margin-top:10px; display:none; border:1px solid var(--a-border);">
+      <div id="headerPreviewContainer" style="position:relative; margin-top:14px; display:none;">
+          <img id="headerPreview" src="" style="width:100%; height: 200px; object-fit: cover; border-radius:12px; border:1px solid var(--a-border);">
+          <button id="removeHeaderBtn" type="button" class="remove-btn" style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.8); color:white; padding: 6px 12px; border-radius: 6px; cursor: pointer; border: none; font-weight: bold;">X Remove Image</button>
+      </div>
+    </div>
+
+    <!-- CATEGORY / COLLECTION GALLERY -->
+    <div class="admin-form-card">
+      <h3>Category / Collection Gallery</h3>
+      <p class="field-note">Upload images that will show at the bottom of the category/collection page.</p>
+      <div class="form-field-admin" style="max-width: 50%;">
+          <label>Select Category</label>
+          <select id="catGallerySelect">
+               <!-- JS Rendered -->
+          </select>
+      </div>
+      <div class="upload-box" id="uploadCatGalleryBox" style="margin-top: 16px;">
+          <strong>Click to Upload Category Images</strong>
+          <input type="file" id="catGalleryImageUpload" accept="image/*" multiple style="display:none;">
+      </div>
+      <div class="gallery-grid" id="catGalleryGrid"></div>
     </div>
 
     <!-- PRODUCT GALLERY -->
@@ -56,20 +74,20 @@
       <h3>Product Gallery & Thumbnails</h3>
       <p class="field-note">Upload images, set the primary thumbnail, and order the gallery for a specific product variant.</p>
       
-      <div class="form-row-2">
+      <div class="form-row-2 form-field-admin">
           <div>
               <label>Select Product</label>
-              <select id="galleryProductSelect" style="width:100%;"></select>
+              <select id="galleryProductSelect"></select>
           </div>
           <div>
               <label>Variant / Color</label>
-              <select id="galleryVariantSelect" style="width:100%;"></select>
+              <select id="galleryVariantSelect"></select>
           </div>
       </div>
 
-      <div class="upload-box" id="uploadGalleryBox" style="margin-top: 14px; padding:14px;">
+      <div class="upload-box" id="uploadGalleryBox" style="margin-top: 16px;">
           <strong>Click to Upload Product Images</strong>
-          <p style="font-size:0.75rem; color:var(--a-ink-soft); margin-top:4px;">Drag and drop not fully supported in this demo. Click to select.</p>
+          <p style="font-size:0.75rem; font-weight:400; margin-top:4px;">Images upload and save to the database immediately.</p>
           <input type="file" id="galleryImageUpload" accept="image/*" multiple style="display:none;">
       </div>
 
@@ -85,11 +103,11 @@
       <div id="sizingChartList">
          <!-- JS Rendered -->
       </div>
-      <button class="admin-add-btn" id="addChartBtn" style="margin-top:10px;">+ Add New Sizing Chart</button>
+      <button class="admin-add-btn" id="addChartBtn" style="margin-top:14px;">+ Add New Sizing Chart</button>
     </div>
 
     <div class="admin-form-actions">
-        <button id="saveGallerySettings" class="admin-export-btn">Save All Media</button>
+        <button id="saveGallerySettings" class="admin-export-btn">Save All Local Media</button>
     </div>
     
     <div class="admin-toast" id="adminToast"></div>
@@ -97,8 +115,11 @@
   </main>
 </div>
 
+<!-- SUPABASE CLIENT SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabaseClient.js"></script>
+
 <script src="js/admin-sidebar.js"></script>
-<script src="js/admin-inventory-data.js"></script>
 <script src="js/admin-product-gallery.js"></script>
 </body>
 </html>

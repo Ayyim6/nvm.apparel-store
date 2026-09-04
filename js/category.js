@@ -1,158 +1,139 @@
-/**
- * category.js — reusable category shop page
- * -----------------------------------------------------------------
- * Powers category.html (generic — reads ?category=<slug> from the
- * URL) AND new-arrivals.html (pinned — reads <body data-category="
- * new-arrivals">, so its URL stays clean). Same engine either way:
- * look up the slug, fill in the header image/title/description,
- * render the matching products, render the gallery strip.
- *
- * CATEGORIES and MOCK_PRODUCTS below are placeholder data standing
- * in for what should eventually be real Supabase columns:
- *   - a `categories` table (or a `category` text column on
- *     products) holding title/description/header_image per slug
- *   - assigning a product to a category (or multiple) — including a
- *     way to flag "is this a new arrival"
- * Once that exists, swap loadCategory() below for a real query
- * (supabaseClient.from('products').select('*').eq('category', slug))
- * instead of the local lookups — everything else on this page reads
- * from whatever loadCategory() returns, so nothing else needs to
- * change.
- *
- * If a slug doesn't match any known category (a product with no
- * category assigned, or a bad/old link), this redirects to the
- * general shop page rather than showing a broken page.
- */
-(function () {
-  const CATEGORIES = {
-    "home-jerseys": {
-      title: "Home Jerseys",
-      description: "The core lineup — built for match day and everyday wear alike.",
-      headerImage: "images/headerbg.jpg",
-      productIds: ["unikl-home"],
-      galleryImages: ["images/black-2.jpg", "images/white-2.jpg", "images/black-3.jpg"],
-    },
-    "away-jerseys": {
-      title: "Away Jerseys",
-      description: "Dark, sleek, and built to stand out on the road.",
-      headerImage: "images/black-2.jpg",
-      productIds: [],
-      galleryImages: ["images/black-1.jpg", "images/black-3.jpg"],
-    },
-    "retro-kits": {
-      title: "Retro Kits",
-      description: "Vintage aesthetics, modern fit.",
-      headerImage: "images/retro-1.jpg",
-      productIds: ["unikl-retro"],
-      galleryImages: ["images/retro-1.jpg"],
-    },
-    "training-wear": {
-      title: "Training Wear",
-      description: "Built to move — for the pitch, the gym, or the street.",
-      headerImage: "images/black-3.jpg",
-      productIds: [],
-      galleryImages: [],
-    },
-    "accessories": {
-      title: "Accessories",
-      description: "Finish the look.",
-      headerImage: "images/white-3.jpg",
-      productIds: [],
-      galleryImages: [],
-    },
-    "new-arrivals": {
-      title: "New Arrivals",
-      description: "The latest drops, fresh off the line. Get them before they sell out.",
-      headerImage: "images/headerbg.jpg",
-      // placeholder: shows the 2 colourways as separate cards, until an
-      // admin page can flag specific products/variants as "new arrival"
-      productIds: ["unikl-home-black", "unikl-home-white"],
-      galleryImages: ["images/white-1.jpg", "images/black-1.jpg", "images/retro-1.jpg"],
-    },
-  };
-
-  // Lightweight stand-in for a real product row, shaped to match what
-  // buildProductCardHTML() (product-card.js) already expects. Kept as
-  // its own small lookup rather than reaching into product.js's
-  // module-private PRODUCTS object.
-  const MOCK_PRODUCTS = {
-    "unikl-home": {
-      id: "unikl-home",
-      name: "UniKL Home Jersey",
-      description: "Relaxed-fit jersey in a soft knit, built for campus days and match days alike.",
-      price: 89,
-      image_url: "images/black-1.jpg",
-      stock_qty: 10,
-    },
-    "unikl-retro": {
-      id: "unikl-retro",
-      name: "UniKL Retro Jersey",
-      description: "A retro-inspired take on the UniKL jersey with a sport polo collar.",
-      price: 99,
-      image_url: "images/retro-1.jpg",
-      stock_qty: 10,
-    },
-    // Card-only entries: same underlying product (unikl-home) shown as two
-    // separate cards, one per colourway, each deep-linking straight into
-    // that colour on the product page via ?color=.
-    "unikl-home-black": {
-      id: "unikl-home-black",
-      name: "UniKL Home Jersey — Black Edition",
-      description: "Relaxed-fit jersey in a soft knit, built for campus days and match days alike.",
-      price: 89,
-      image_url: "images/black-1.jpg",
-      stock_qty: 10,
-      href: "product.html?id=unikl-home&color=black",
-    },
-    "unikl-home-white": {
-      id: "unikl-home-white",
-      name: "UniKL Home Jersey — White Edition",
-      description: "Relaxed-fit jersey in a soft knit, built for campus days and match days alike.",
-      price: 89,
-      image_url: "images/white-1.jpg",
-      stock_qty: 10,
-      href: "product.html?id=unikl-home&color=white",
-    },
-  };
-
-  document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
     const params = new URLSearchParams(window.location.search);
-    const slug = document.body.dataset.category || params.get("category");
-    const category = CATEGORIES[slug];
+    let slug = params.get("category");
 
-    if (!category) {
-      window.location.replace("shop.html");
-      return;
+    // Fallback if data-category is hardcoded on the body
+    if (!slug && document.body.dataset.category) {
+        slug = document.body.dataset.category;
     }
 
-    document.title = category.title + " — NVM Store";
-    document.getElementById("categoryTitle").textContent = category.title;
-    document.getElementById("categoryDescription").textContent = category.description;
-    document.getElementById("categoryHero").style.backgroundImage = `url('${category.headerImage}')`;
-    document.getElementById("categoryGridTitle").textContent = "Shop " + category.title;
+    // Find the product grid (using both possible IDs just in case)
+    const grid = document.getElementById("categoryProductGrid") || document.getElementById("product-grid");
+    if (!grid) return;
 
-    const grid = document.getElementById("categoryProductGrid");
-    const products = category.productIds.map((id) => MOCK_PRODUCTS[id]).filter(Boolean);
+    grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px;">Loading collection...</p>';
 
-    if (!products.length) {
-      grid.innerHTML = `<div class="empty-state">No products in this category yet — check back soon!</div>`;
+    if (!slug) {
+        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px;">No category specified.</p>';
+        return;
+    }
+
+    // 1. Fetch Local Admin Settings (Header image & Gallery)
+    let siteSettings = { activeNewArrival: "home-jerseys" };
+    let gallerySettings = { headers: {}, galleries: {} };
+    try {
+        const storedSite = localStorage.getItem("nvm_site_settings");
+        if (storedSite) siteSettings = JSON.parse(storedSite);
+        const storedGallery = localStorage.getItem("nvm_gallery_settings");
+        if (storedGallery) gallerySettings = JSON.parse(storedGallery);
+    } catch(e) {}
+
+    // Handle "New Arrivals" redirection logic if clicked from homepage
+    if (slug === "new-arrivals") {
+        slug = siteSettings.activeNewArrival;
+    }
+
+    // 2. Setup Page Headers & Background Images
+    const formattedTitle = slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    document.title = formattedTitle + " — NVM Store";
+    
+    // Update Text Elements if they exist
+    const titleEl = document.getElementById("categoryTitle");
+    if (titleEl) titleEl.textContent = formattedTitle;
+    
+    const gridTitleEl = document.getElementById("categoryGridTitle");
+    if (gridTitleEl) gridTitleEl.textContent = "Shop " + formattedTitle;
+
+    // Update the Hero Background image
+    const heroEl = document.getElementById("categoryHero");
+    if (heroEl) {
+        const headerImg = gallerySettings.headers[slug] || 'images/headerbg.jpg';
+        heroEl.style.backgroundImage = `url('${headerImg}')`;
+    }
+
+    // 3. Fetch Products from Supabase
+    if (typeof supabaseClient === 'undefined') {
+        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Database connection error.</p>';
+        return;
+    }
+
+    const { data: categoryProducts, error } = await supabaseClient
+        .from('products')
+        .select('*')
+        .eq('category', slug); // Exact match for the category slug
+
+    // 4. Render Products as Cards
+    if (error || !categoryProducts || categoryProducts.length === 0) {
+        grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 40px;">No products found in this collection yet.</p>`;
     } else {
-      grid.innerHTML = "";
-      products.forEach((product) => {
-        const card = document.createElement("div");
-        card.className = "featured-card";
-        card.innerHTML = buildProductCardHTML(product);
-        grid.appendChild(card);
-      });
+        grid.innerHTML = "";
+        categoryProducts.forEach(product => {
+            // Read colors array or use a default if missing
+            const colors = (product.colors && product.colors.length > 0) ? product.colors : [{name: "Default", images: []}];
+            
+            // Loop through each color variant to create an individual card
+            colors.forEach(color => {
+                const cardData = {
+                    id: product.id,
+                    name: `${product.name} — ${color.name}`,
+                    price: product.base_price || 0,
+                    image_url: (color.images && color.images.length > 0) ? color.images[0] : 'images/placeholder.jpg',
+                    stock_qty: product.stock_qty || 10,
+                    href: `product.html?id=${product.id}&color=${encodeURIComponent(color.name)}`
+                };
+
+                const card = document.createElement("div");
+                card.className = "featured-card";
+                
+                // Matches the beautiful styling from the Shop page
+                card.innerHTML = `
+                    <a href="${cardData.href}" class="card-link" style="text-decoration: none; color: inherit;">
+                      <div class="card-image-wrapper" style="position: relative; overflow: hidden; border-radius: 12px; background: var(--surface-alt);">
+                        <img src="${cardData.image_url}" alt="${cardData.name}" loading="lazy" style="width: 100%; aspect-ratio: 4/5; object-fit: cover; display: block;">
+                        ${cardData.stock_qty <= 0 ? '<span class="badge sold-out" style="position: absolute; top: 10px; left: 10px; background: black; color: white; padding: 4px 8px; font-size: 0.75rem; border-radius: 4px;">Sold Out</span>' : ''}
+                      </div>
+                      <div class="card-info" style="margin-top: 12px; text-align: left;">
+                        <h3 style="font-size: 1rem; margin: 0 0 4px 0; font-family: 'Inter', sans-serif;">${cardData.name}</h3>
+                        <p class="price" style="font-weight: bold; margin: 0; color: var(--ink);">RM ${parseFloat(cardData.price).toFixed(2)}</p>
+                      </div>
+                    </a>
+                `;
+                grid.appendChild(card);
+            });
+        });
     }
 
-    const galleryEl = document.getElementById("categoryGallery");
-    if (category.galleryImages && category.galleryImages.length) {
-      galleryEl.innerHTML = category.galleryImages
-        .map((src) => `<div class="category-gallery-item"><img src="${src}" alt="${category.title}"></div>`)
-        .join("");
+    // 5. Render Shared Category Gallery
+    // Look for the gallery wrapper container in your category.html file
+    const gallerySection = document.getElementById("categoryGallerySection"); 
+    const galleryGrid = document.getElementById("categoryGallery");
+    
+    const sharedImages = gallerySettings.galleries[`cat_${slug}`] || [];
+    
+    if (sharedImages.length > 0) {
+        // We have images! Show the gallery.
+        if (gallerySection) gallerySection.style.display = "block";
+        if (galleryGrid) {
+            galleryGrid.style.display = "grid"; 
+            
+            // Add some clean layout CSS to the grid if it doesn't already have it
+            galleryGrid.style.gridTemplateColumns = "repeat(auto-fit, minmax(250px, 1fr))";
+            galleryGrid.style.gap = "16px";
+
+            galleryGrid.innerHTML = sharedImages.map(src => `
+                <div class="category-gallery-item" style="border-radius: 12px; overflow: hidden; aspect-ratio: 4/5;">
+                    <img src="${src}" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy">
+                </div>
+            `).join("");
+        }
     } else {
-      galleryEl.style.display = "none";
+        // No images? Hide the entire gallery section so there are no empty gaps.
+        if (gallerySection) gallerySection.style.display = "none";
+        if (galleryGrid) galleryGrid.style.display = "none";
+        
+        // Failsafe: if you just have an <h3> title right above the grid, hide that too.
+        if (galleryGrid && galleryGrid.previousElementSibling) {
+            galleryGrid.previousElementSibling.style.display = "none";
+        }
     }
-  });
-})();
+});
